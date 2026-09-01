@@ -1,0 +1,640 @@
+/* ==========================================================================
+   PROJECT PAGE
+
+   The second surface on the site: one project, in full. Figma node 124:475.
+
+   It shares the landing page's tokens, grid and bar — styles.css is imported
+   ahead of this file — and adds only what this page is. Nothing here belongs to
+   the landing choreography and nothing here is imported by it.
+
+   Two things about the numbers. Every length is in design units, where 1 unit is
+   1px on the 1470 artboard (--vr resolves 1rem to that), so the values below are
+   the design's own figures rather than conversions of them. And several of the
+   design's absolute offsets turned out to be derivable, which is how they are
+   written here:
+
+     figure left 295 + width 840 -> centre 715, half of the 1430 measure, so the
+       figure is centred rather than placed
+     rail left 966.66 -> column 9 to the unit, so the rail is on the grid
+     counter top 330.42 and thumbs top 299.3 -> both centre on 337.3, the middle
+       of the 634.594 media block, so the two are one centred row
+     rail items 195.47 / 329.84 / 424.63 -> a 56 gap after each preceding block,
+       so the rail is a stack, not three placements
+
+   Written mobile-first, like the rest of the site: the design has no narrow
+   variant, so below 768 this is a single stacked column and the design's twelve
+   columns are picked up above it.
+   ========================================================================== */
+
+/* The bar on this page does not travel. There is no print for it to rest on, so
+   it is locked to the top and wears the over-paper state from the markup rather
+   than waiting for the first scroll frame to put it there — which also means
+   this page needs no scroll listener at all. --nav-y is left alone; the
+   transform is simply dropped. */
+.nav--locked {
+  transform: none;
+}
+
+.project {
+  /* The bar is fixed and 37.594 tall; the design starts the container at 38. */
+  padding: 38rem var(--grid-margin) 144rem;
+}
+
+@media (min-width: 768px) {
+  .project {
+    min-height: 797rem;
+  }
+}
+
+/* ==========================================================================
+   MEDIA — the slide stage
+   ========================================================================== */
+
+/* The stage is sized to the deck, and everything in this block derives from two
+   numbers so that stays true.
+
+   The Figma page draws its figure at 840 x 584.531 — a 1.437 frame, from when the
+   content was one landscape still. The deck is 16:9, so the width holds at the
+   design's 840 (the two 295 gutters either side are what the thumbnail strips
+   live in, and widening the figure would take that room) and the height comes
+   down to 840 at 16:9. The stage then tightens around it, keeping the design's
+   own clearances rather than leaving 112 units of dead paper inside the frame.
+
+   The clearances, from the design: 25.031 above and below the figure inside the
+   stage window ((634.594 - 584.531) / 2), 20 above the window, and 56 below it
+   (710.594 - 20 - 634.594) — which is the same 56 the detail rail is spaced on.
+
+   A deck at another aspect needs --figure-h changed here and STAGE.h changed in
+   scripts/build-images.mjs, and the two must agree. */
+.media {
+  /* The frame fills the height and the width follows, which is the opposite of
+     how it started and the reason it is now much larger.
+
+     The reference project page does the same thing: its frame is 840 x 635 with
+     the picture contained, and because its photographs are portrait they fill
+     that 635 and leave the width short. A 16:9 deck contained in the same frame
+     does the reverse — it fills 840 of width and leaves 162 of height unused,
+     which is why this was the smallest media on the site rather than the largest.
+
+     So the height leads. 634.594 is the design's own stage window; the frame now
+     takes all of it, and 16:9 makes that 1127.7 wide — a third wider than the 840
+     it was, and 80% more picture.
+
+     Capped by the window as well as by the design, so a short viewport shrinks
+     the frame instead of pushing the meta row off the bottom: 164.062 is the bar,
+     the 20 above the stage, the 56 below it and the stage's own two clearances.
+
+     That cap alone put the media block's foot exactly on the fold, which left the
+     whole meta row below it — the title, client, year and type all needed a
+     scroll to reach. So the reserve below is subtracted as well: the frame gives
+     up the height the first row needs rather than the row going under.
+
+     --meta-reserve is measured, not guessed. 60 is what the row's content
+     actually occupies from its own top — set by the [TYPE] cell, which is the
+     tallest of the four (its label, then 8, then a 23 chip) rather than by the
+     title. 12 more so the row lands clear of the edge instead of flush against
+     it. Above about 900 of viewport nothing is given up at all: the design's
+     634.594 is still the smaller of the two, and the row already fits. */
+  --meta-reserve: 72rem;
+  --figure-h: min(
+    634.594rem,
+    calc(100dvh - 164.062rem - var(--meta-reserve))
+  );
+  --figure-w: calc(var(--figure-h) * 16 / 9);
+  --stage-h: calc(var(--figure-h) + 50.062rem);
+
+  position: relative;
+  padding-top: 20rem;
+}
+
+/* On narrow there is no room for the counter and thumbnails beside the figure, so
+   the block collapses to the figure alone and the controls take a row beneath
+   it — which is why the height is only claimed from 768 up. */
+@media (min-width: 768px) {
+  .media {
+    height: calc(20rem + var(--stage-h) + 56rem);
+  }
+}
+
+/* The stage clips: the figure is 584.531 inside a 634.594 window, and a slide
+   whose aspect differs is cropped by the window rather than allowed to change
+   the block's height. */
+.media__stage {
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .media__stage {
+    height: var(--stage-h);
+  }
+}
+
+/* Centred, and carrying its own designed box in the same way the index plates
+   carry theirs — the figure is sized to its image, not to the grid.
+   position: relative is load-bearing: the slides are absolute and stacked, and
+   without it they resolve against .media__stage and fill the whole window instead
+   of the figure. */
+.media__figure {
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  max-width: var(--figure-w);
+  aspect-ratio: 16 / 9;
+}
+
+@media (min-width: 768px) {
+  .media__figure {
+    /* The design's clearance above the figure inside the stage window. */
+    margin-top: 25.031rem;
+    width: var(--figure-w);
+    height: var(--figure-h);
+  }
+}
+
+/* Every slide is in the DOM and stacked, and the swap is a cut — the same
+   decision the index's viewer makes, for the same reason. Fading between two
+   photographs of the same scene reads as a dissolve nobody asked for, and a
+   `src` swap would flash on first advance.
+
+   contain, not cover: the frame is a frame, not a crop. The slide keeps its own
+   proportions and is centred in the box, so a source wider than 840/584.531 —
+   which a 16:9 frame is — loses nothing off its sides. Where the two aspects
+   differ the paper shows through, and since the figure draws no background and
+   the page is the same paper, that reads as a smaller picture rather than as
+   letterboxing. */
+.media__slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  visibility: hidden;
+}
+
+.media__slide.is-current {
+  visibility: visible;
+}
+
+/* --- the two halves that advance the stage -------------------------------- */
+
+/* The design lays two 715-wide buttons over the stage, edge to edge: the left
+   half steps back, the right half steps forward. They are invisible and carry no
+   label, so they are given one for anything not using a mouse.
+   Absolute rather than a flex row so they cover the figure without being in the
+   figure's way; hidden on narrow, where a full-width tap target either side of
+   a photograph is a trap rather than a control. */
+.media__step {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .media__step {
+    display: block;
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    width: 50%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    /* The stage is the only thing to look at on this page, so the cursor says
+       which way the half goes rather than the page drawing an arrow over the
+       photograph. */
+    cursor: pointer;
+  }
+
+  .media__step--prev {
+    left: 0;
+  }
+
+  .media__step--next {
+    right: 0;
+  }
+}
+
+/* --- counter and thumbnails ----------------------------------------------- */
+
+/* One row beneath the figure on narrow; on wide, the two gutters either side of
+   it, on the media block's own centre line. */
+.media__controls {
+  display: flex;
+  align-items: center;
+  gap: 24rem;
+  padding-top: 16rem;
+}
+
+@media (min-width: 768px) {
+  .media__controls {
+    /* Both sides sit on the middle of the stage window, which starts 20 down —
+       and translate(-50%) hangs the row on that line rather than on its own top
+       edge. */
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(20rem + var(--stage-h) / 2);
+    z-index: 3;
+    transform: translateY(-50%);
+    padding-top: 0;
+    /* Three tracks: the two gutters, and the figure's own width between them. The
+       middle track holds nothing — it exists so each strip is bounded by the
+       figure's edge and cannot run underneath it. (1430 - 840) / 2 = 295 per
+       gutter, less the 24 grid gap, is what caps a strip at three thumbnails. */
+    display: grid;
+    /* minmax(0, 1fr), not 1fr. A bare 1fr is minmax(auto, 1fr), and that auto
+       minimum is the track's min-content width — so a strip too wide for its
+       gutter pushes the gutter wider rather than overflowing it. That is fatal
+       here specifically because project-gallery.js measures this track to decide
+       how many thumbnails fit: the strip would inflate the box it was being
+       measured against, and the answer came back "they fit" whatever was in it.
+       A zero minimum makes the track an honest share of what the figure leaves. */
+    grid-template-columns: minmax(0, 1fr) var(--figure-w) minmax(0, 1fr);
+    /* That empty middle track is still part of this row's box, and the row is
+       stacked over the figure — so the row itself must not take the clicks the
+       stepping halves are there to receive. */
+    pointer-events: none;
+  }
+
+  .media__side--before {
+    grid-column: 1;
+  }
+
+  .media__side--after {
+    grid-column: 3;
+  }
+}
+
+.media__side {
+  display: flex;
+  align-items: center;
+  gap: 24rem;
+}
+
+@media (min-width: 768px) {
+  /* The strip is pushed out to the figure's edge, so the passed slides read
+     continuously into the stage. */
+  .media__side--before {
+    justify-content: flex-end;
+  }
+}
+
+.media__count {
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  /* The one red thing on the page. --color-red was already declared and unused;
+     this is what the design spends it on. */
+  color: var(--color-red);
+}
+
+/* Out of the strip's flow on wide, pinned to the margin.
+   It has to be: the gutter track is 271 (the 24 grid gap either side of the
+   figure takes it down from 295), and a full three-thumbnail strip is 228. With
+   the counter still in that flow the pair needs 275, so at four slides or more
+   the two would start to overlap. The counter's place is fixed and known, so it
+   is placed rather than laid out, and the strip gets the whole track. */
+@media (min-width: 768px) {
+  .media__count {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.media__thumbs {
+  display: flex;
+  gap: 24rem;
+}
+
+/* A row, always — the design's arrangement, and the one that reads as a strip
+   rather than as a list.
+   The bigger frame leaves less gutter than three thumbnails need, and the way
+   that is paid for is the COUNT, not the axis: project-gallery.js measures the
+   track and shows as many as fit, up to the design's three. So the strip stays
+   horizontal at every size and simply gets shorter where the room does. */
+@media (min-width: 768px) {
+  .media__thumbs {
+    pointer-events: auto;
+  }
+}
+
+/* The design's button is 60 x 76, drawn portrait for a portrait crop. The deck is
+   16:9, so the height follows the deck instead — a 76-tall box would hold a 34-tall
+   picture and 42 of nothing. The design's 60 width is what the strip's geometry is
+   built on, so that is the dimension held.
+   Held at 70%, with no lit state: the slide showing is the stage, not a thumbnail,
+   so every thumbnail in both strips is a slide you are not on. Both dimensions are
+   set — the leaf is a fixed box, so neither is left to `auto`.
+   Larger on narrow, where the thumbnails are the only control on the page (the
+   stepping halves are a mouse affordance and are hidden there) and 60 x 34 is too
+   small a target for a thumb. There is room for it: the window drops to one a side
+   below 768, so only two are ever up. */
+.media__thumb {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  width: 100rem;
+  height: calc(100rem * 9 / 16);
+  opacity: 0.7;
+  cursor: pointer;
+  transition: opacity var(--dur) var(--ease);
+}
+
+@media (min-width: 768px) {
+  .media__thumb {
+    width: 60rem;
+    height: calc(60rem * 9 / 16);
+  }
+}
+
+.media__thumb:hover,
+.media__thumb:focus-visible {
+  opacity: 1;
+}
+
+/* The attribute alone would lose: `hidden` is a UA `display: none` and the rule
+   above sets `display: block` at higher specificity, so a hidden thumbnail would
+   go on taking its 60 units of the strip. */
+.media__thumb[hidden] {
+  display: none;
+}
+
+/* Contained too, so the thumbnail shows the same framing its slide does. The
+   button keeps the design's 60 x 76 — it is the hit area and the row's geometry
+   — and the picture sits centred inside it. */
+.media__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ==========================================================================
+   META — title, client, year, type
+   ========================================================================== */
+
+/* The rule above this row and the one above the overview are the only two on the
+   page, and they are the index's own rule colour. */
+.meta {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: 20rem var(--grid-gutter);
+  border-top: 1px solid var(--color-index-grey);
+  padding: 18rem 0 80rem;
+}
+
+
+/* Back on the page's twelve columns, and this is now the whole of the alignment
+   the row was built to have. The bar above is on the same twelve — mark on 1,
+   Projects on 4, About on 6, LinkedIn on 9 — so putting these fields on 1, 4, 6
+   and 9 lands each under the thing it belongs to, by grid arithmetic rather than
+   by measurement.
+   What was here before was four tracks measured off the bar's words at runtime,
+   because the bar's items were centred in a five-column rhythm and sat on no line
+   anything could be given in CSS. With the bar on twelve columns that machinery
+   has nothing left to do, and bar-columns.js is deleted. */
+@media (min-width: 768px) {
+  .meta {
+    grid-auto-rows: minmax(40.594rem, auto);
+    gap: 0 var(--grid-gutter);
+  }
+}
+
+.meta__field {
+  grid-column: 1 / -1;
+}
+
+.meta__title {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: 21rem;
+  line-height: calc(23.1 / 21);
+  font-weight: 400;
+  color: var(--color-graphite);
+}
+
+/* The label sits in a 17.594 box — the same row unit the bar and the footer use
+   — with the type nudged 3 down inside it. */
+.meta__label,
+.detail__label {
+  display: block;
+  height: 17.594rem;
+  padding-top: 3rem;
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  text-transform: uppercase;
+  color: var(--color-system-grey);
+}
+
+.meta__value {
+  padding-top: 8rem;
+  font-family: var(--font-primary);
+  font-size: 12rem;
+  line-height: calc(13.2 / 12);
+  color: var(--color-graphite);
+}
+
+/* Type reads as a set of tags rather than a sentence, so it is a list of chips
+   on the paper's shade. */
+.meta__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5rem;
+  padding-top: 8rem;
+}
+
+.meta__tag {
+  padding: 0 4rem;
+  background: var(--color-paper-shade);
+  font-family: var(--font-secondary);
+  font-size: 10rem;
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--color-graphite);
+}
+
+/* Stacked with the fields on narrow — it needs the full measure explicitly, or
+   auto-placement drops it into a single 1/12 column and the three words wrap
+   into a column of their own. A button also centres its own label, which is
+   wrong everywhere here. */
+.meta__more {
+  grid-column: 1 / -1;
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  text-transform: uppercase;
+  color: var(--color-graphite);
+  cursor: pointer;
+}
+
+.meta__more:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+}
+
+/* One column each, in bar order: title under the mark, client under PROJECTS,
+   year under ABOUT, type under LINKEDIN. */
+@media (min-width: 768px) {
+  .meta__title {
+    grid-column: 1 / span 3;
+  }
+
+  .meta__field--client {
+    grid-column: 4 / span 2;
+  }
+
+  .meta__field--year {
+    grid-column: 6 / span 3;
+  }
+
+  .meta__field--type {
+    grid-column: 9 / span 4;
+    grid-row: 1;
+  }
+
+
+  /* Shares the Type field's cell rather than taking a row of its own. The design
+     puts it 21 from the block's top, which — against the 18 the block is padded
+     by — is the label line: the button sits level with [TYPE] at the left of the
+     same cell, and the tags hang below both. Both need an explicit row, or the
+     one without it is pushed to row 2. */
+  .meta__more {
+    grid-column: 10 / -1;
+    grid-row: 1;
+    justify-self: end;
+    align-self: start;
+    padding-top: 3rem;
+  }
+}
+
+/* ==========================================================================
+   DETAIL — overview, and the right-hand rail
+   ========================================================================== */
+
+/* One grid, one flow. The overview takes the first row across the measure; every
+   rail block after it takes its own row in columns 9-12. That is what the
+   design's three absolute tops resolve to once the 56 gaps are read as gaps. */
+.detail {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: 40rem var(--grid-gutter);
+  border-top: 1px solid var(--color-index-grey);
+  padding-top: 24rem;
+}
+
+@media (min-width: 768px) {
+  .detail {
+    gap: 56rem var(--grid-gutter);
+  }
+}
+
+.detail__overview {
+  grid-column: 1 / -1;
+  font-family: var(--font-primary);
+  font-size: 21rem;
+  line-height: calc(23.1 / 21);
+  color: var(--color-graphite);
+  text-wrap: pretty;
+}
+
+.detail__block {
+  grid-column: 1 / -1;
+}
+
+.detail__body {
+  padding-top: 8rem;
+  font-family: var(--font-primary);
+  font-size: 12rem;
+  line-height: calc(13.2 / 12);
+  color: var(--color-graphite);
+  text-wrap: pretty;
+}
+
+@media (min-width: 768px) {
+  .detail__label--overview {
+    grid-column: 1 / span 2;
+    grid-row: 1;
+  }
+
+  .detail__overview {
+    grid-column: 4 / -1;
+    grid-row: 1;
+    padding-left: 40rem;
+  }
+
+  /* Column 9 is the rail, to the unit. The 56 of left padding and 40 of right
+     are the design's own insets within it. */
+  .detail__block {
+    grid-column: 9 / span 4;
+    padding-left: 56rem;
+    padding-right: 40rem;
+  }
+}
+
+/* --- credits -------------------------------------------------------------- */
+
+/* Roles against names: a description list, because that is what it is. The role
+   column is the design's 133 and the names take the rest. */
+.credits {
+  display: grid;
+  grid-template-columns: 133rem 1fr;
+  gap: 8rem 20rem;
+  margin: 0;
+  padding-top: 8rem;
+  font-family: var(--font-primary);
+  font-size: 12rem;
+  line-height: calc(13.2 / 12);
+  color: var(--color-graphite);
+}
+
+.credits dt {
+  grid-column: 1;
+}
+
+.credits dd {
+  grid-column: 2;
+  margin: 0;
+}
+
+/* Auto-placement's cursor never moves backwards, so a dt after two dds lands on
+   a fresh row rather than beside the second name — which is what lets the row gap
+   do double duty. The gap is the 8 the design puts between roles; a second name
+   cancels it, because a pair of names reads as one entry. */
+.credits dd + dd {
+  margin-top: -8rem;
+}
+
+/* ==========================================================================
+   FOOT
+   ========================================================================== */
+
+/* On the landing page the footer sits inside .sheet, which supplies the page
+   margins. Here it is a direct child of the body, so it brings its own — the
+   same margin, so the two footers land on the same x. */
+.foot--standalone {
+  padding-left: var(--grid-margin);
+  padding-right: var(--grid-margin);
+}
+
+/* ==========================================================================
+   ACCESSIBILITY
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  /* The slides already cut rather than fade, so the thumbnail's dim is the only
+     thing on this page with a duration. */
+  .media__thumb {
+    transition-duration: 1ms;
+  }
+}

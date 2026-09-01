@@ -1,0 +1,17 @@
+{
+  "name": "portfolio",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/build-images.mjs && node scripts/build-gallery.mjs && vite build",
+    "preview": "vite preview",
+    "images": "node scripts/build-images.mjs",
+    "gallery": "node scripts/build-gallery.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.33.5",
+    "vite": "^5.4.21"
+  }
+}

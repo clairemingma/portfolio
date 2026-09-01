@@ -1,0 +1,836 @@
+/* ==========================================================================
+   Claire Ong — portfolio
+
+   Type scale follows the Bureau Rouge model: the root font-size IS the design
+   unit (--vr), so every `Nrem` below is "N units on the 1440 artboard". Above
+   1440px the unit caps at 1px, so the layout stops growing and gains margin
+   instead; below it, everything scales down together.
+
+   Numbers with decimals (37.594rem, 52.898rem) are lifted verbatim from the
+   Figma frame rather than rounded — several of them are load-bearing, e.g. the
+   nav's height is what every derived scroll number is measured from.
+   ========================================================================== */
+
+/* Two families, matching the design: WT Kormelink TRIAL for anything set as
+   text, Inter for every small uppercase label. Until the woff2 files land in
+   public/fonts these rules resolve to nothing and the serif stack falls through
+   to Spectral, so the page is correct in structure and close in voice either
+   way. Dropping the files in is the whole swap. */
+@font-face {
+  font-family: "WT Kormelink TRIAL";
+  src: url("/fonts/wt-kormelink-trial-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "WT Kormelink TRIAL";
+  src: url("/fonts/wt-kormelink-trial-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --vr: 0.26667vw; /* mobile: 1 unit == 1px at 375 */
+
+  --font-primary: "WT Kormelink TRIAL", "Spectral", Georgia, serif;
+  --font-secondary: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* The wordmark is its own face — a third one, where the design had it as the
+     serif in italic. Fallbacks are the two script faces most likely to be
+     installed before `cursive`, so a failed webfont still reads as a signature
+     rather than dropping to the body serif and looking like nothing happened. */
+  --font-mark: "La Belle Aurore", "Segoe Script", "Bradley Hand", cursive;
+
+  --color-white: #fff;
+  --color-paper: #fdfdfa;
+  --color-paper-shade: #f5f4f3;
+  --color-index-grey: #c8c8c8;
+  --color-system-grey: #919191;
+  --color-graphite: #404040;
+  /* The accent. Cerulean, at the print's own hue. It dressed the bar's Contact
+     link until that was removed; it now shows only in ::selection, and the note
+     on why it is this exact blue lives with the ::selection rule. */
+  --color-link: #0074a6;
+  --color-red: #a00909;
+
+  --grid-columns: 4;
+  --grid-gutter: 12rem;
+  --grid-margin: 16rem;
+
+  /* One curve and one duration for every eased state change on the page. Both
+     are the reference's: it uses a very small set, all 250–450ms, and this is
+     its symmetric ease-in-out — the one it eases the header's colour on.
+     Anything that needs a different feel here should be a considered exception,
+     not a second default. */
+  --ease: cubic-bezier(0.37, 0, 0.63, 1);
+  --dur: 250ms;
+
+  /* Written by main.js. Defaults keep the page usable before JS runs. */
+  --vh: 100vh;
+  --nav-h: 37.594rem;
+  --t1: 60vh; /* phase-1 runway: distance the about copy takes to exit */
+  --p1: 0;
+  /* Resting place is the middle of the print, per the design, so the bar never
+     flashes at the top before the first scroll frame runs. */
+  --nav-rest: calc((var(--vh) - var(--nav-h)) / 2);
+  --nav-y: var(--nav-rest);
+  --stage-y: 0px; /* how far the window onto the print has closed */
+  /* Left edge of the bar's ABOUT label, for the about copy to hang off. Measured
+     by scroll-choreography.js because About is centred on the page and so sits on
+     no grid line — see the .about rule. This default is only what lands at
+     1440. */
+  --about-left: calc(var(--grid-margin) + 678rem);
+  /* How far the about copy travels in phase 1: its own top offset plus its own
+     height, so it ends fully off the fold. Measured, because the height depends
+     on how the copy wraps and on which serif has loaded. */
+  --about-rise: calc(var(--nav-rest) + var(--nav-h) + 36rem);
+  /* The bar's white -> graphite change is a class, not a value: see
+     .nav.is-over-paper. There is no intermediate state to interpolate. */
+}
+
+/* Every grid on this site uses minmax(0, 1fr) rather than a bare 1fr, and that is
+   a correctness fix rather than a style. A bare 1fr is minmax(auto, 1fr), whose
+   auto minimum is the track's min-content width — so any item too wide for its
+   share widens its own column and shoves every column after it along.
+   It bit twice. The thumbnail strip inflated the gutter it was being measured
+   against, so the measurement always said it fitted. And the wordmark, at 128
+   in a 98 column, pushed the bar's twelve out to 128/95.6/95.6/... — which moved
+   ABOUT 19 off the column the about copy was sitting on. Neither showed up as a
+   broken layout; both showed up as things quietly failing to line up. */
+@media (min-width: 768px) {
+  :root {
+    --vr: min(0.06944vw, 1px); /* 1 unit == 1px at 1440 and above */
+    --grid-columns: 12;
+    --grid-gutter: 20rem;
+    --grid-margin: 20rem;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: var(--vr);
+  -webkit-text-size-adjust: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: 16rem;
+  line-height: 1.45;
+  color: var(--color-graphite);
+  background: var(--color-paper);
+  overflow-x: hidden;
+}
+
+img,
+picture {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ol,
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+p {
+  margin: 0;
+}
+
+::selection {
+  background: var(--color-link);
+  color: var(--color-paper);
+}
+
+/* ==========================================================================
+   STAGE — fixed landing plate
+   ========================================================================== */
+
+/* The print travels with the scroll. .stage is fixed so it can be pinned through
+   phase 1, then translates up by --stage-y through phase 2 — and everything
+   inside goes with it, so the print slides away at scroll speed rather than
+   being wiped in place. Because .stage's lower edge and the paper's leading edge
+   move at the same rate they stay exactly coincident, so the paper follows
+   immediately behind the print with no gap and no overlap. */
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  height: var(--vh);
+  overflow: hidden;
+  transform: translate3d(0, calc(-1 * var(--stage-y)), 0);
+  will-change: transform;
+}
+
+.stage__plate,
+.stage__plate img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* What is behind the print until the print arrives — and it has to stand on its
+   own, because on a real connection it stands alone for a couple of seconds. The
+   design's flat grey did not: the bar's type on this plate is WHITE, and white on
+   #c8c8c8 is 1.7:1. Legible enough to see that something is wrong and not enough
+   to read, which is exactly how it looked — a broken page.
+
+   Two things instead. The colour is the print's own dominant register, #508db1,
+   which is 92% of the plate — so the ground is already roughly the right ground,
+   and white on it is 3.4:1 rather than 1.7:1. And over that, a 24px inline copy of
+   the plate itself, generated by the image build (see src/hero-lqip.css): scaled
+   to cover, it is pure blur, which is all that is wanted — the right colours in
+   the right places while the real thing resolves on top.
+
+   The fallback chain is deliberate. No generated file means no --hero-lqip, which
+   means no background-image, which means the colour shows. Nothing to break. */
+.stage__plate {
+  background-color: #508db1;
+  background-image: var(--hero-lqip);
+  background-size: cover;
+  background-position: 50% 50%;
+}
+
+/* No fade from the blurred copy to the real one. It was a cross-fade over 420ms,
+   and it was wrong twice: on any fast connection the plate arrives in about 50ms,
+   so what it animated was a wait that had not happened — a blur that resolves for
+   no reason reads as an effect rather than as loading. And it held the plate at
+   opacity 0 until script said otherwise, so with JavaScript off the cyanotype
+   never appeared at all and the placeholder was all anyone ever saw.
+   The swap is a cut, which is what this file already says about the index plates
+   for the same reason. */
+
+/* The scan is square and the design crops it dead centre, which puts the
+   gypsophila spray behind the mark and leaves the leaf's flat field under the
+   copy — the one part of the print that will hold white type unaided. */
+.stage__plate img {
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+/* No grain layer here: the grain is baked into the scan in assets/, so the only
+   job left is not to destroy it — which is why the hero is built at a higher
+   webp quality than the previews. */
+
+.stage__grid,
+.stage__foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: var(--grid-gutter);
+  color: var(--color-white);
+}
+
+/* The copy hangs directly beneath the nav's ABOUT link — same column, same
+   left padding — so both are placed by the grid and neither needs to know
+   where the other ended up. */
+.stage__grid {
+  top: calc(var(--nav-rest) + var(--nav-h));
+  padding: 0 var(--grid-margin);
+}
+
+.about {
+  grid-column: 1 / -1;
+}
+
+/* Phase 1 carries the copy off the top of the page rather than wiping it inside
+   a window, so there is nothing to clip: the travel is the whole gesture.
+   --about-rise is measured by main.js as the copy's own top offset plus its own
+   height, so at --p1 = 1 its last line has just cleared the fold — and since
+   nothing else moves until phase 2, the page cannot start scrolling until the
+   copy is genuinely gone.
+
+   Full opacity the whole way. It crosses the bar early on — the bar rests
+   mid-print and the copy starts immediately beneath it — and passes behind. */
+.about__copy {
+  font-family: var(--font-primary);
+  font-size: 16rem;
+  line-height: calc(17.6 / 16);
+  text-wrap: pretty;
+  transform: translate3d(0, calc(var(--p1) * -1 * var(--about-rise)), 0);
+  will-change: transform;
+}
+
+/* Hangs off the left edge of the bar's ABOUT label, which is measured and
+   published as --about-left by scroll-choreography.js.
+
+   It has to be measured, and this is the one place on the site where that is
+   still true. About is centred on the page rather than justified to a column, so
+   its text edge is its span's left plus half of whatever the span has left over —
+   and the leftover depends on how wide the word renders. There is no grid line
+   to give the copy instead.
+
+   The offset is relative to the grid's content box, which starts one margin in,
+   hence the subtraction. Running to the last column so the copy still ends on the
+   right margin. */
+@media (min-width: 768px) {
+  .about {
+    grid-column: 1 / -1;
+    margin-left: calc(var(--about-left) - var(--grid-margin));
+  }
+}
+
+/* --- the print's own correspondence line --------------------------------- */
+
+.stage__foot {
+  bottom: 0;
+  grid-auto-rows: 17.594rem;
+  align-items: center;
+  padding: 10rem var(--grid-margin);
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  text-transform: uppercase;
+}
+
+.stage__foot-link {
+  grid-column: 1 / span 2;
+}
+
+.stage__foot-mail {
+  grid-column: 3 / span 2;
+  text-align: right;
+}
+
+/* The same two columns the bar's collected pair uses — 9 and 12 — because this
+   line is what rises into the bar. Sharing the columns is what makes that
+   arrival purely vertical: nothing slides sideways on the way up. */
+@media (min-width: 768px) {
+  .stage__foot {
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  }
+
+  .stage__foot-link {
+    grid-column: 9;
+    justify-self: start;
+  }
+
+  .stage__foot-mail {
+    grid-column: 10 / -1;
+    justify-self: end;
+    text-align: right;
+  }
+}
+
+/* ==========================================================================
+   NAV
+   ========================================================================== */
+
+/* Mobile has no frame in the design. Four columns cannot hold a 24-unit mark
+   and three links on one grid row without either wrapping or colliding, so the
+   bar falls back to a single spread row — the arrangement the rest of this page
+   uses at narrow widths — and picks the grid up again at 768. */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  column-gap: 12rem;
+  row-gap: 6rem;
+  padding: 10rem var(--grid-margin);
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-white);
+  /* A 2D translate, and no will-change: both are deliberate.
+     translate3d plus will-change promoted the bar to its own compositing layer,
+     and the bar's height is 37.594 units — fractional at every device ratio. A
+     promoted layer whose bounds land on a fraction is the usual source of a
+     hairline seam along its edge, and it is the kind of artifact that shows on
+     GPU compositing while staying invisible to a software-rasterised
+     screenshot. The bar is four short text runs; repainting it costs nothing,
+     so there is no reason to hold a layer for it. --nav-y is rounded to whole
+     pixels in main.js for the same family of reasons. */
+  transform: translate(0, var(--nav-y));
+}
+
+/* The bar is white on the print and graphite on the paper.
+
+   The *trigger* is a threshold, not a scroll-linked blend: is-over-paper is set
+   only once the paper has covered the bar's whole band, so the change begins the
+   moment the bar is completely against the white and not a pixel before. Half
+   way across the crossing the type is still fully white.
+
+   The *colour* then eases over 250ms. That separation is what the reference
+   does — it puts `transition: color 0.25s` on the element that owns the colour
+   and lets the children inherit, while the state itself flips discretely. It is
+   not the same thing as interpolating the colour against scroll position, which
+   smears the change across the whole crossing and reads as mush.
+
+   Only colour is eased. The background snaps, and that is invisible: what it
+   snaps to is the same paper already behind the bar. */
+.nav {
+  transition: color var(--dur) var(--ease);
+}
+
+.nav.is-over-paper {
+  color: var(--color-graphite);
+  background: var(--color-paper);
+}
+
+/* The design's own 20 and 24, kept — measured rather than assumed, because the
+   first guess was to enlarge them and that was wrong twice over.
+   La Belle Aurore inks 1.37x its font size (ascent 0.72 + descent 0.65 per em),
+   where a serif inks about 0.9. So at the same nominal size it draws half again
+   as tall as the serif this replaced: 24 already reads larger than the old mark,
+   and no increase was needed. And it cannot have one — the bar is 37.594 and the
+   mark is centred in it, so anything past about 24.7 pushes ink above the
+   viewport once the bar locks. At 36 the ascender was cut by 7.2. */
+.nav__mark {
+  font-family: var(--font-mark);
+  font-size: 24rem;
+  line-height: 1;
+  /* Capped to the bar's own row unit, with the glyphs centred in it and allowed
+     to overflow. From 768 up grid-auto-rows already does this; below it the bar
+     is a flex row and the mark would set its height instead — at 36 that took
+     the bar from 42 to 52. --nav-h is what every scroll number on the landing
+     page is derived from, so the bar's height is not the wordmark's to change. */
+  height: 17.594rem;
+  display: flex;
+  align-items: center;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+/* --- the collected pair -------------------------------------------------- */
+
+/* LinkedIn and the address are not in the bar at rest. They belong to the print
+   while the print is on screen — its own correspondence line carries them — and
+   they arrive in the bar at the moment the print has gone behind it.
+   That moment is already exact without any measuring: the print's lower edge
+   stops at --nav-h, and its correspondence line is --nav-h tall and sits at its
+   foot, so at the lock the line occupies precisely the bar's band, in columns 4
+   and 5, which are the columns these two take. The pair fades up as the line
+   passes behind, so the two read as one arrival rather than as a swap.
+   visibility as well as opacity: a transparent link is still in the tab order,
+   and tabbing to an invisible address at the top of a page whose bar has not
+   locked yet is a trap. */
+.nav__link--linkedin,
+.nav__link--mail {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .nav__link--linkedin,
+  .nav__link--mail {
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--dur) var(--ease),
+      visibility var(--dur) linear;
+  }
+
+  .nav.is-over-paper .nav__link--linkedin,
+  .nav.is-over-paper .nav__link--mail {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* The address copies rather than opening a mail client, so it is a button. A
+   button inherits none of the bar's type, hence the reset — everything else
+   about it is a .nav__link and is styled as one. */
+.nav__link--mail,
+.stage__foot-mail,
+.foot__mail {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* The bar has no accent any more: Contact carried the blue and Contact is gone.
+   --color-link is still what ::selection is dressed in, so the tuning that went
+   into it is not wasted — see the note on it in :root. */
+
+/* The bar sits on the page's twelve, not a rhythm of its own. It used to run on
+   five, which is why every item was centred in its column and why anything
+   wanting to line up with one had to be told where it landed by JavaScript.
+   Twelve columns put each item on a line instead, so alignment is a grid fact:
+
+     mark      column 1        justified left, on the measure's edge
+     Projects  column 4        justified RIGHT, so it ends on that column's edge
+     About     columns 6-7     CENTRED, which is the page's centre
+     LinkedIn  column 9        the same column the print's own line uses
+     address   columns 10-12   justified right, so it ends on the right margin
+
+   About is the deliberate exception, and spanning 6-7 is how it is both. Twelve
+   columns are symmetric about the boundary between 6 and 7, so a span of those
+   two centres on exactly half the viewport — 735 of 1470, 960 of 1920. It reads
+   as page-centred because it is, and it is still expressed as a grid placement
+   rather than as a transform fighting the grid.
+
+   The consequence is that About sits on no grid line, so anything aligning to its
+   left edge has to be told where that is. The about copy does, and
+   scroll-choreography.js measures it for exactly that reason. */
+@media (min-width: 768px) {
+  .nav {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    /* Fixed row height, so the 24-unit mark overflows its row rather than
+       setting the bar's height. The bar measures 37.594 units either way, and
+       every derived scroll number is taken from that. */
+    grid-auto-rows: 17.594rem;
+    align-items: center;
+    gap: var(--grid-gutter);
+  }
+
+  .nav__mark {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .nav__link--projects {
+    grid-column: 4;
+    justify-self: end;
+  }
+
+  /* Centred across 6 and 7, which is the page's centre. See the note above. */
+  .nav__link--about {
+    grid-column: 6 / span 2;
+    justify-self: center;
+  }
+
+  .nav__link--linkedin {
+    grid-column: 9;
+    justify-self: start;
+  }
+
+  /* Spans to the end so its right edge is the measure's, whatever the address
+     grows to — column 12 alone would clip a longer one. */
+  .nav__link--mail {
+    grid-column: 10 / -1;
+    justify-self: end;
+    text-align: right;
+  }
+}
+
+/* A plain underline on the word, appearing instantly.
+
+   Not a ::after bar: the links are placed on the grid with large left padding,
+   so the <a> box is several times wider than its text and any full-width rule
+   drawn on it reads as a long line floating away from the label. Underlining the
+   word itself is exactly as wide as the word. The comma sits outside the span,
+   so it stays clear of the rule — which is what the old bar's right inset was
+   reaching for. */
+.nav__link:hover .nav__link-word,
+.nav__link:focus-visible .nav__link-word {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+}
+
+/* ==========================================================================
+   RUNWAY + SHEET
+   ========================================================================== */
+
+/* Exactly the scroll the pinned sequence consumes: one viewport for the plate
+   plus the phase-1 distance. .sheet therefore lands flush under the nav at the
+   instant the nav locks. */
+.runway {
+  height: calc(var(--vh) + var(--t1));
+}
+
+/* The paper is exactly one viewport tall, and that is both the floor and the
+   ceiling.
+
+   The floor, because the choreography cannot finish without it: max scroll would
+   leave the print's lower band uncovered, so the bar would never turn graphite,
+   never take its background, and the print's own correspondence line would read
+   straight through it. The extra --nav-h is the strip the locked bar sits over.
+
+   The ceiling, because there is nothing below the index — no more sections — so
+   any paper past the fold is just empty white to scroll through. A column
+   layout puts the index in the space that is left and the footer on the floor of
+   it, instead of padding the void out to a fixed height. */
+.sheet {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  /* min-height, not height: on a short viewport the seven rows plus the footer
+     can exceed a viewport, and they must push the paper taller rather than
+     overflow a fixed box. Where they fit — which is everywhere normal — this
+     resolves to exactly one viewport. */
+  min-height: calc(var(--vh) + var(--nav-h));
+  background: var(--color-paper);
+  padding: 0 var(--grid-margin);
+}
+
+/* ==========================================================================
+   PROJECTS
+   ========================================================================== */
+
+/* Takes whatever height the footer leaves and centres the index in it, so the
+   index still arrives on an open field — the design's intent — without the page
+   running on past the fold to do it. The top padding clears the locked bar,
+   which overlaps the paper's first --nav-h. */
+.projects {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: calc(var(--nav-h) + 24rem) 0 24rem;
+}
+
+/* The plates are absolutely centred on this box, which is the row block. */
+.projects__body {
+  position: relative;
+}
+
+.index__row {
+  border-bottom: 1px solid var(--color-index-grey);
+}
+
+.index__row:first-child {
+  border-top: 1px solid var(--color-index-grey);
+}
+
+/* One row is always current, because one plate is always up — so the dim state
+   is the resting state, not a hover effect, and it is driven off .is-current
+   rather than :hover. That keeps a single source of truth: project-viewer.js
+   moves the class, and the plate and the undimmed row can never disagree.
+
+   The design dims the whole caption rather than recolouring it, which keeps the
+   grey client line and the graphite title in their designed relationship — and
+   it dims the type only: the rules hold the index together and stay at full
+   strength throughout. */
+.index__link {
+  opacity: 0.3;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.index__row.is-current .index__link {
+  opacity: 1;
+}
+
+.index__link {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: var(--grid-gutter);
+  align-items: start;
+  padding: 10rem 0 11rem;
+}
+
+.index__year {
+  grid-column: 1;
+  padding-left: 16rem;
+  font-family: var(--font-secondary);
+  font-size: 10rem;
+  line-height: 1.25;
+  color: var(--color-graphite);
+}
+
+.index__caption {
+  display: grid;
+  gap: 3.5rem;
+  grid-column: 2 / -1;
+  text-align: right;
+}
+
+.index__client {
+  font-family: var(--font-secondary);
+  font-size: 10rem;
+  line-height: 1.25;
+  text-transform: uppercase;
+  color: var(--color-system-grey);
+}
+
+.index__title {
+  font-family: var(--font-primary);
+  font-size: 14rem;
+  line-height: calc(15.4 / 14);
+  color: var(--color-graphite);
+}
+
+@media (min-width: 768px) {
+  .index__caption {
+    grid-column: 11 / span 2;
+    /* Column 11 lands 5 units left of where the design sets the caption. */
+    padding-left: 5rem;
+    text-align: left;
+  }
+}
+
+/* --- centred viewer ------------------------------------------------------ */
+
+/* The rows put their type at the far edges and leave the middle empty; the
+   plate lands in that channel. pointer-events: none is load-bearing — the
+   plate covers the middle of every row, and the row is the hover target. */
+.viewer {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .viewer {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 744rem;
+    height: 606rem;
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+    pointer-events: none;
+  }
+}
+
+/* Both leaf dimensions come from the plate's own Figma variant, so no preview
+   is stretched to a shared box.
+
+   The swap is a cut, not a transition: no fade, no scale, no easing. The plates
+   are all already in the DOM and decoded, so hiding one and showing the next
+   lands in a single frame — which is the point. The only transform here is the
+   centring one, and it is identical in both states so it cannot animate. */
+.viewer__plate {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--pv-w) * 1rem);
+  height: calc(var(--pv-h) * 1rem);
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  visibility: hidden;
+}
+
+.viewer__plate.is-active {
+  visibility: visible;
+}
+
+/* ==========================================================================
+   FOOT
+   ========================================================================== */
+
+.foot {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  grid-auto-rows: 17.594rem;
+  gap: var(--grid-gutter);
+  align-items: center;
+  padding: 10rem 0;
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+}
+
+/* Four columns will not hold the line and a 20-character address on one row at
+   375, so on narrow the line takes its own row above them. */
+.foot__rule {
+  grid-column: 1 / -1;
+  color: var(--color-system-grey);
+}
+
+.foot__link {
+  grid-column: 1 / span 2;
+  text-transform: uppercase;
+}
+
+.foot__mail {
+  grid-column: 3 / span 2;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+/* Same five columns as the bar, and the same rule: the outer columns justify
+   outward to the margins, the inner ones centre.
+   From 768 up the pair is gone from here — the bar has collected it by the time
+   this is on screen, and having both on one screen made the bar's copies read as
+   a duplicate rather than as an arrival. The line keeps column 1, so the footer
+   becomes what it always was underneath: the copyright, on its own.
+   Below 768 they stay: the bar has only four columns there and cannot hold the
+   mark, two words and a 20-character address on one row, and a bar that wrapped
+   to two rows would change --nav-h, which every scroll number here derives
+   from. */
+@media (min-width: 768px) {
+  .foot {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .foot__rule {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  /* Scoped to the footer that has been collected from, not to .foot__* at
+     large: the project pages use this same footer and have a bar that never
+     travels and never takes the pair, so hiding it there would lose the only
+     contact on the page. The modifier says which case this is. */
+  .foot--collected .foot__link,
+  .foot--collected .foot__mail {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY
+   ========================================================================== */
+
+/* Text for anything not looking at the page. Lives here rather than in each
+   surface's own stylesheet — every one of them imports this, and three copies of
+   the same eight declarations is three places for them to drift.
+   No `margin: -1px`: that belongs to the older recipe where `clip` needed the box
+   dragged off its own edge. clip-path does the hiding, and the negative margin
+   only put the element at x -1, which is real overflow the narrow-page assertions
+   catch. Offsets are left auto so the box keeps its static position. */
+.u-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* The plates already cut rather than fade, and the copy is driven by scroll
+     position rather than a transition, so the only thing left to damp is the
+     index's dim. */
+  .index__link {
+    transition-duration: 1ms;
+  }
+}
+
+:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 4rem;
+}
