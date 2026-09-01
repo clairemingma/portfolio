@@ -25,3 +25,5 @@ assets/projects/Dexcom x SKIMS Confidence Underneath/
 
 # Source frames for a project that does not exist yet; nothing references them.
 assets/projects/The Evolution of Color Trends in Runway Fashion/
+.vercel
+.env*
