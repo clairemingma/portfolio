@@ -1,0 +1,17 @@
+# Vercel builds from the repository, so this should never be the only thing
+# standing between an excluded file and the deploy. It is here so that a deploy
+# run from a local directory cannot publish what the repository deliberately
+# omits either.
+
+node_modules
+dist
+scripts/.manifests
+scripts/.verify
+
+# Held back — the Confidence Underneath project is not published. Mirrors
+# .gitignore; see the note there.
+projects/confidence-underneath/
+assets/projects/Dexcom x SKIMS Confidence Underneath/
+
+# Nothing references these.
+assets/projects/The Evolution of Color Trends in Runway Fashion/
