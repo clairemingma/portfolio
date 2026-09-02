@@ -1,0 +1,674 @@
+/* ==========================================================================
+   DECK PAGE
+
+   Every project on this site: a presentation, read sideways. Drawn from Figma
+   node 162:6820, which is the Color Trends page, but nothing below is that
+   project's — this is the template both project pages are built on, and a third
+   would want it unchanged.
+
+   It shares the landing page's tokens and bar; styles.css is imported ahead of
+   this file. It replaced a stage-and-thumbnail-strip page, which showed one
+   slide at a time in a fixed frame and whose stylesheet and modules are gone —
+   see commit 7b95f3d if that shape is ever wanted back.
+
+   Numbers are in design units, as everywhere else on the site: 1 unit is 1px on
+   the 1470 artboard, and --vr resolves 1rem to it.
+
+   THE PAGE HAS NO VERTICAL SCROLL. The scroll axis is horizontal and it is the
+   only one; the wheel and the arrow keys are re-aimed onto it by
+   src/project-deck.js. Everything below is written on that assumption — most
+   plainly, the fact that 100dvh is a fixed budget here rather than a first
+   screenful.
+
+   Three of the design's absolute offsets turned out to be derivable, and are
+   written here as the derivation rather than as the number:
+
+     brief width 342 -> columns 1-3 (3 x 100.833 + 2 x 20 on the 1470 grid), so
+       the brief is on the grid rather than measured
+     first slide left 503 -> the column-5 line to the unit (20 + 4 x 120.833),
+       which is also the number the sticky progress row keys off
+     slides top 192 -> centred in what is left of the height once the bar
+       (37.594) and the progress band (116.594) are taken off it, which is where
+       the design's 192 lands to within 2 units
+
+   Written mobile-first like the rest of the site. The design has no narrow
+   variant; below 768 the track keeps its axis and the brief takes a screen of
+   its own, because a 826-wide slide beside a 342-wide brief has nowhere to go
+   on a phone.
+   ========================================================================== */
+
+:root {
+  /* The progress row's band, measured from the bottom of the page: the row's own
+     40, sitting directly on top of the 37.594 every page on this site reserves
+     at its foot.
+
+     The design draws the row higher — y 815 on a 931.594 page, which is 116.594
+     up, the footer band plus a 39 clearance plus the row. That clearance is
+     dropped. It was holding the row off a footer that is not there to be held
+     off: by the time the row exists the paper panel carrying the copyright has
+     scrolled off the left edge, so the 39 was clear of nothing and only kept the
+     row floating short of the bottom. */
+  --progress-row: 40rem;
+  --progress-band: calc(37.594rem + var(--progress-row));
+
+  /* One column of the page grid, as a length. The grid is used arithmetically
+     here rather than as a `display: grid` — the track is a horizontal flow, so
+     there is no grid container for anything on it to be a child of, and the
+     columns still have to be honoured. */
+  --col: calc(
+    (100vw - 2 * var(--grid-margin) - (var(--grid-columns) - 1) *
+          var(--grid-gutter)) / var(--grid-columns)
+  );
+
+  /* The column-5 line, where the first slide's left edge sits. */
+  --col5: calc(var(--grid-margin) + 4 * (var(--col) + var(--grid-gutter)));
+
+  /* Where the word PROJECTS starts in the bar, and so where the dark panel
+     starts. It cannot be written as a grid quantity: the bar sets that link
+     flush RIGHT in column 4, so its left edge is column 4's right edge less the
+     width of the word — a text measurement, in whichever face has loaded.
+     project-deck.js measures it and writes it here, the same arrangement
+     styles.css already uses for --about-left on the landing page.
+
+     The fallback is that arithmetic done with the design's own figure for the
+     link (63.742) plus the gutter, so the panel is within a pixel of right
+     before the module runs and the measurement only trues it up against the
+     real font. */
+  --projects-left: calc(var(--col5) - 83.742rem);
+
+  --slide-gap: 40rem;
+
+  /* Dark before the first slide. The design's flat 81, which is what narrow
+     keeps — there is no PROJECTS to derive it from down there. Above 768 it
+     becomes a leftover instead; see the media query.
+     The TRAILING inset is not this number — see the padding on .deck__stage. */
+  --deck-inset: 81rem;
+
+  /* The slide box. Height leads and width follows, because height is the scarce
+     dimension: the page cannot scroll vertically, so a slide that does not fit
+     is a slide with a piece missing.
+
+     The cap is the design's 465, or what the band between the bar and the slider
+     leaves once a 40 clearance is taken off it, whichever is smaller. Only the
+     second ever binds, and only on a short window — from about 620 of height up,
+     465 is already the smaller number.
+
+     On narrow the width cap wins instead, so a phone shows one whole slide
+     rather than two thirds of one. */
+  --slide-h-max: min(
+    465rem,
+    calc(100dvh - var(--nav-h) - var(--progress-band) - 40rem)
+  );
+  --slide-w: min(
+    calc(var(--slide-h-max) * 16 / 9),
+    calc(100vw - 2 * var(--grid-margin))
+  );
+  --slide-h: calc(var(--slide-w) * 9 / 16);
+
+  /* Paper to the left of the panel. On narrow the bar is a spread flex row and
+     PROJECTS sits on nothing, so the brief simply takes a screen of its own and
+     a sliver of dark shows to signal there is more. */
+  --deck-lead: calc(100vw - 40rem);
+}
+
+@media (min-width: 768px) {
+  :root {
+    /* The panel begins where PROJECTS does, and the first slide still lands on
+       the column-5 line — so the dark before it is whatever lies between the
+       two, rather than a number of its own. That comes out at the gutter plus
+       the width of the word, about 84, where the design had a flat 81. Two real
+       alignments instead of one, and the 81 was only ever the arithmetic that
+       produced them. */
+    --deck-lead: var(--projects-left);
+    --deck-inset: calc(var(--col5) - var(--projects-left));
+  }
+}
+
+/* The page is one screen and does not scroll. Both axes are pinned here rather
+   than only overflow-y: a stray horizontal overflow on the document would give
+   the browser a second horizontal scroller outside .deck, and the wheel would
+   drive whichever one happened to be under the pointer. */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Inherited from styles.css and actively wrong here: the wheel handler writes
+   scrollLeft on every tick, and a smooth scroller would animate towards each
+   one and be interrupted by the next, which reads as lag rather than as
+   smoothness. */
+.deck {
+  scroll-behavior: auto;
+}
+
+/* The bar does not travel on this page — there is no print to rest on — so it
+   wears .nav--locked exactly as the project page does. */
+.nav--locked {
+  transform: none;
+}
+
+/* ==========================================================================
+   THE TRACK
+   ========================================================================== */
+
+/* The one scroller on the page. overflow-x: auto rather than a transform on a
+   fixed track, because it is a real scroller: trackpad swipes, the arrow keys,
+   Home and End, momentum and the browser's own scroll anchoring all come free,
+   and project-deck.js only has to redirect the wheel's vertical delta into it.
+   A transform would have had to reimplement every one of those.
+
+   The scrollbar itself is hidden: the design draws its own indicator (the
+   progress row), and a native bar along the bottom edge would be a second one
+   saying the same thing in a different visual language. */
+/* Charcoal, though the panel inside it is charcoal too and paints over all of
+   this at rest. It is here for the push past the end: the track slides left
+   under a build-up, and what it uncovers on the right is this. Paper would have
+   shown a white strip tearing open at the edge of the last slide. --- and the
+   paper the deck starts on is therefore painted by .deck__lead rather than left
+   to the body, or it would be charcoal too. */
+.deck {
+  height: 100dvh;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: var(--color-charcoal);
+  /* Stops a horizontal swipe at either end from being handed to the browser as
+     a back/forward gesture. On a deck this is the difference between hitting
+     the last slide and leaving the site. */
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.deck::-webkit-scrollbar {
+  display: none;
+}
+
+/* max-content, so the track is as wide as the paper panel and the deck panel
+   put together and no wider. That total is also what the progress fill divides
+   by, and what puts the panel's right edge exactly on the viewport's at the end
+   of the scroll — which is why the fixed progress row is never over paper. */
+.deck__track {
+  display: flex;
+  width: max-content;
+  height: 100%;
+}
+
+/* The build-up past the last slide drags the whole track left, so the deck goes
+   on travelling after the scroll has run out and the push has somewhere to show
+   itself. project-deck.js writes the transform.
+
+   Untransitioned while the push is happening — it has to answer the gesture
+   frame for frame, or it reads as an animation rather than as the deck being
+   pulled. The transition is added only for the spring back, and only when the
+   push is abandoned.
+
+   A transform, not scroll: it changes nothing about layout or scrollWidth, so
+   "am I at the end" stays true all the way through the build-up. Driving this
+   with scroll instead would have moved the end away from under the gesture. */
+.deck__track.is-springing {
+  transition: transform 300ms var(--ease);
+}
+
+/* --- the paper panel ------------------------------------------------------- */
+
+/* Everything set on paper — the brief and the copyright — travels with the
+   scroll rather than staying put, which is the design's own arrangement: both
+   sit inside the 11102-wide body, not beside it. By the time the deck is under
+   the progress row they are long gone off the left edge, and that is the point.
+   The bar is the only thing on this page that does not move. */
+.deck__lead {
+  position: relative;
+  flex: none;
+  width: var(--deck-lead);
+  /* Explicit, not inherited from the body: the scroller behind it is charcoal
+     now — see the note there. */
+  background: var(--color-paper);
+}
+
+/* --- the dark panel -------------------------------------------------------- */
+
+/* The padding is the layout. The two vertical insets bound the space the
+   presentation actually occupies, and `align-items: center` puts the slides in
+   the middle of it:
+
+     TOP is the bar's height, because that is where the grey BEGINS. The panel
+       runs the full height of the window, but its top 37.594 is behind an
+       opaque paper bar, so the grey you can see starts under the bar and not at
+       the panel's own edge.
+     BOTTOM is the progress row's band, because that is where the slider
+       begins. Below that line the space belongs to the control, not to the deck.
+
+   So the slides are centred between the top of the grey and the top of the
+   slider — the two edges anyone actually reads the picture against.
+
+   This is a deliberate departure from the design, which draws the slides at y
+   192 with 116.594 reserved below them. Both of its numbers are measured against
+   things the built page does not have in the same places, and reproducing them
+   faithfully reproduced a picture sitting visibly high in its own panel.
+
+   The two horizontal insets are deliberately different, and they are the deck's
+   two rest positions:
+
+     LEFT is whatever lies between the panel's edge and the column-5 line, so
+       the panel begins on the bar's PROJECTS and the first slide still lands on
+       the grid. About 84; the design's flat 81 was only the arithmetic that
+       produced the same pair.
+     RIGHT is the row's own gap, so the end label is bracketed by an equal 40 on
+       both sides — 40 off the last slide, 40 off the end of the page.
+
+   The panel's right edge is still the track's right edge, which is what keeps
+   the fixed progress row over dark for the whole of its life — and its LEFT
+   edge is what summons the row in the first place. project-deck.js measures
+   this element for that; see [data-stage] there. */
+.deck__stage {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--slide-gap);
+  padding: var(--nav-h) var(--slide-gap) var(--progress-band) var(--deck-inset);
+  background: var(--color-charcoal);
+}
+
+/* The slide box is 16:9 and so is every frame in the deck, so `contain` and
+   `cover` render identically today. It is `contain` because that is what the
+   rest of the site does and because it is the one that stays correct if a frame
+   is ever replaced by one that is not 16:9 — the box gives way, not the picture.
+
+   Height leads and width follows, because height is the scarce dimension: the
+   page cannot scroll vertically, so a slide that does not fit is a slide with a
+   piece missing. The 465 cap is the design's. Below it the height is whatever
+   the band leaves less a 40 clearance, and on narrow the width caps at the
+   measure instead so a phone shows one whole slide rather than two thirds of
+   one.
+
+   Both dimensions are set explicitly. The frames are a fixed box on a flex row
+   and neither may be left to `auto` — an unsized img would lay the row out at
+   the sources' 3840 and the track would be 46000 units wide until they decoded. */
+.deck__slide {
+  flex: none;
+  width: var(--slide-w);
+  height: var(--slide-h);
+  object-fit: contain;
+}
+
+/* --- the end of the deck --------------------------------------------------- */
+
+/* The two ways out: the last thing on the track, standing where a thirteenth
+   slide would.
+
+   A flex item rather than a placed one, and that is the whole of the pair's
+   outer geometry. The row's own gap puts the group 40 clear of the last slide;
+   the panel's trailing padding — the same 40, declared once as --slide-gap —
+   leaves it 40 from the end of the page. Neither number is written here.
+
+   Being in the flow, the group extends the track: the deck runs 40 plus the
+   pair's width past the last slide, and the thing that ends against the screen
+   is NEXT rather than the slide. */
+/* The inner spacing is the page's twelve columns: the first label gets a track
+   one column plus its gutter wide — the grid's own step — so the second one's
+   left edge lands exactly one step along.
+
+   Measured between their LEFT edges rather than as a gap between their boxes,
+   because that is what a column rhythm is: things start on the lines, whatever
+   the width of the word sitting on one. A 120 gap between two short words would
+   read as two unrelated items; a step between their starts reads as a pair on
+   the grid.
+
+   Grid tracks rather than a min-width on the label, and the difference is not
+   cosmetic. A min-width would have made RESTART's own box a column wide, so the
+   seventy-odd units of empty space after the word would have been part of the
+   button — hoverable, underlining, clickable, and invisible. `justify-items:
+   start` keeps each label exactly as wide as its own text and lets the TRACK
+   carry the spacing.
+
+   The second track is max-content, so a longer word grows the group rather than
+   being clipped by it. */
+.deck__end {
+  display: grid;
+  flex: none;
+  grid-template-columns: calc(var(--col) + var(--grid-gutter)) max-content;
+  align-items: center;
+  justify-items: start;
+}
+
+/* nowrap, because a flex item is free to break and "RE" over "START" is the
+   shape this would otherwise take when the row runs out of patience. */
+.deck__end-link {
+  flex: none;
+  white-space: nowrap;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--color-white);
+  cursor: pointer;
+}
+
+/* The bar's underline, on the word itself — there is no comma to keep clear of
+   here, so the whole label takes it. */
+.deck__end-link:hover,
+.deck__end-link:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+}
+
+/* The gauge for the keep-scrolling gesture: NEXT drawing its own underline as a
+   push past the last slide accumulates. project-deck.js writes the width.
+
+   It is the hover underline, made partial — same 1px, same colour, sat at the
+   same 0.28em below the text — so what a push builds towards is visibly the
+   state the label already has when you point at it. Reaching full IS the hover
+   look, and then the page turns.
+
+   No transition. The rule has to track the gesture exactly or it stops being a
+   gauge and becomes an animation that happens to end in a navigation; the only
+   way to know how much further to push is for the line to be where the push is. */
+.deck__end-link {
+  position: relative;
+}
+
+.deck__push {
+  position: absolute;
+  left: 0;
+  bottom: -0.28em;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+}
+
+/* ==========================================================================
+   BRIEF — title, facts, copy, source
+   ========================================================================== */
+
+/* Placed rather than laid out: 222 is the design's own top and there is nothing
+   above it on the paper to derive it from. It is safe to pin because this page
+   cannot scroll — the brief is roughly 312 tall from 222, so it clears the
+   copyright band by a wide margin at any viewport the design targets. */
+.brief {
+  position: absolute;
+  left: var(--grid-margin);
+  top: 222rem;
+  display: flex;
+  flex-direction: column;
+  gap: 20rem;
+  width: calc(3 * var(--col) + 2 * var(--grid-gutter));
+}
+
+.brief__title {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: 21rem;
+  line-height: calc(23.1 / 21);
+  font-weight: 400;
+  color: var(--color-graphite);
+}
+
+/* Two of the page's twelve columns, which is the design's 222 to within a third
+   of a unit. The row gap is the design's 10; the column gap is the grid's own,
+   which is what makes the pair land on columns 1 and 2 rather than merely being
+   222 wide. */
+.brief__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10rem var(--grid-gutter);
+  width: calc(2 * var(--col) + var(--grid-gutter));
+}
+
+.brief__label {
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  text-transform: uppercase;
+  color: var(--color-system-grey);
+}
+
+.brief__value {
+  font-family: var(--font-primary);
+  font-size: 12rem;
+  line-height: calc(13.2 / 12);
+  color: var(--color-graphite);
+}
+
+/* The indent is the design's, and it is large on purpose — it is the whole of
+   the paragraph's relationship to the two columns above it, which is why it is
+   121.335 and not a round number. */
+.brief__text {
+  font-family: var(--font-primary);
+  font-size: 16rem;
+  line-height: normal;
+  text-indent: 121.335rem;
+  color: var(--color-graphite);
+  text-wrap: pretty;
+}
+
+/* Both lines are 10 and graphite, and the type is set on the container so they
+   cannot drift apart. That is the design: the pair is one label repeated, not a
+   grey heading over a darker link — which is what it briefly was here, when the
+   first line still wore .brief__label and came out at 11 in system grey. */
+.brief__source {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10rem;
+  font-family: var(--font-secondary);
+  font-size: 10rem;
+  line-height: normal;
+  text-transform: uppercase;
+  color: var(--color-graphite);
+}
+
+.brief__link:hover,
+.brief__link:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+}
+
+/* ==========================================================================
+   FOOT
+   ========================================================================== */
+
+/* Not the site's .foot. That one is a five-column grid across the full measure,
+   and here the only cell of it that is ever visible is the first — the rest of
+   the row is behind the dark panel from the opening frame onward. So this is
+   the line on its own, in the same 10 / 17.594 / 10 band the real footer keeps,
+   which is what makes it land on the same baseline as the footer on every other
+   page. */
+.deck__foot {
+  position: absolute;
+  left: var(--grid-margin);
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--grid-gutter);
+  height: 37.594rem;
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+}
+
+.deck__foot-rule {
+  color: var(--color-system-grey);
+}
+
+/* The contact pair, below 768 only — the same trade the landing page's
+   .foot--collected makes, for the same reason. From 768 up the bar carries both
+   and a second copy down here reads as a duplicate; below 768 the bar has four
+   columns and cannot, and this is where they live instead. */
+.deck__foot-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-transform: uppercase;
+  color: var(--color-graphite);
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .deck__foot-link {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   PROGRESS — the counter and the slider
+   ========================================================================== */
+
+/* Fixed, and outside the scroller entirely. The design draws this row inside the
+   dark panel at the deck's own left inset, which is where it would be if it
+   travelled; it does not travel. It appears at the moment the dark panel's left
+   edge reaches the window's — when the presentation is the whole screen and
+   there is no paper left in view — and then holds that position for the rest of
+   the scroll. So its home is the viewport rather than the track, and a fixed
+   element cannot be a child of the thing it is meant to stay still against.
+
+   left and right are the page margins, so the row measures 1430 at 1470: the
+   design's own width, arrived at from the margins rather than typed in.
+
+   The ROW takes no clicks; the slider inside it does. A 40-tall invisible bar
+   spanning the whole measure would swallow drags meant for the deck behind it,
+   and the counter is a label. So the pointer is turned off here and back on for
+   the one child that is a control. */
+.progress {
+  position: fixed;
+  left: var(--grid-margin);
+  right: var(--grid-margin);
+  bottom: calc(var(--progress-band) - var(--progress-row));
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 20rem;
+  height: var(--progress-row);
+  pointer-events: none;
+  color: var(--color-white);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--dur) var(--ease),
+    visibility 0s linear var(--dur);
+}
+
+/* The delay on `visibility` is what makes the fade out visible: without it the
+   row is hidden on the first frame of the transition and the opacity animates
+   on something already gone. Zeroed on the way in so it is paintable
+   immediately. */
+.progress.is-live {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s, 0s;
+}
+
+/* A fixed box and lining figures, so the slider's left edge does not step
+   sideways when the counter goes from one digit to two. 40 is the design's, and
+   it holds [12/12] at 11px Inter with room to spare. */
+.progress__count {
+  flex: none;
+  width: 40rem;
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+}
+
+/* 1370 at 1470, which is what is left of the row once the counter and the gap
+   are taken off it — so the design's number is the result here rather than the
+   input. */
+.progress__slider {
+  position: relative;
+  flex: 1 1 auto;
+  height: 100%;
+}
+
+/* The control, and only once there is one. project-deck.js sets role="slider"
+   on mount, so this whole block is inert until the module has run — the cursor
+   never promises an interaction the page cannot perform.
+
+   The hit area is the full 40 of the row's height, not the 1px line. The line
+   is what the design draws; the band is what a finger can find, and it is why
+   there is no thumb to draw — you press the band rather than catching a handle.
+
+   touch-action: none, because a horizontal drag here has to scrub rather than be
+   claimed by the browser as a pan of the scroller behind it.
+
+   user-select is what stops a drag along the row from turning into a text
+   selection, and it is here rather than as a preventDefault on the press for a
+   reason worth keeping: preventDefault would also suppress the focus a click
+   confers, and focusing by hand instead makes Chrome treat it as a keyboard
+   focus and draw the ring on every mouse click. The browser has to do the
+   focusing for the modality to be right. */
+.progress__slider[role='slider'] {
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* The one state the control adds to the design: the untravelled part of the line
+   comes up from 40% while the slider is under the cursor, focused, or being
+   dragged. Enough to say the line is live, and it changes nothing about the
+   composition — the fill and the geometry are exactly as drawn. */
+.progress__track {
+  transition: opacity var(--dur) var(--ease);
+}
+
+.progress__slider[role='slider']:hover .progress__track,
+.progress__slider[role='slider']:focus-visible .progress__track,
+.progress.is-scrubbing .progress__track {
+  opacity: 0.7;
+}
+
+/* Both rules draw the same hairline down the middle of the row; the fill is the
+   travelled part of it at full strength over the untravelled part at 40%. A
+   real 1px rather than 1rem: a hairline that scales with the viewport is a
+   hairline that lands on a fraction of a device pixel and renders as a grey
+   smear at some widths and not others. */
+.progress__track,
+.progress__fill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 1px;
+  background: var(--color-white);
+}
+
+.progress__track {
+  right: 0;
+  opacity: 0.4;
+}
+
+/* Width is written by project-deck.js, as a percentage of the track. The seed
+   is 0 rather than the design's 85.923: the row is invisible until the deck
+   reaches the margin, and the first thing it should show is where the scroll
+   actually is. */
+.progress__fill {
+  width: 0;
+}
+
+/* ==========================================================================
+   ACCESSIBILITY
+   ========================================================================== */
+
+/* The scroller is focusable so the deck can be read without a pointer — see the
+   key handling in project-deck.js. The outline is drawn inside, because an
+   outline offset outward on an element the size of the viewport is clipped on
+   all four sides and shows as nothing. */
+.deck:focus-visible {
+  outline: 1px solid var(--color-graphite);
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress,
+  .progress__track {
+    transition-duration: 1ms;
+  }
+}

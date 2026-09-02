@@ -45,15 +45,18 @@
 
   --color-white: #fff;
   --color-paper: #fdfdfa;
-  --color-paper-shade: #f5f4f3;
   --color-index-grey: #c8c8c8;
   --color-system-grey: #919191;
   --color-graphite: #404040;
+  /* Neutral/Charcoal, the one named colour variable in the Figma file. It is
+     not graphite and not black: it is the ground the deck page's presentation
+     panel is laid on, dark enough that a slide's own white reads as the slide
+     rather than as the page. */
+  --color-charcoal: #1a1a1a;
   /* The accent. Cerulean, at the print's own hue. It dressed the bar's Contact
      link until that was removed; it now shows only in ::selection, and the note
      on why it is this exact blue lives with the ::selection rule. */
   --color-link: #0074a6;
-  --color-red: #a00909;
 
   --grid-columns: 4;
   --grid-gutter: 12rem;

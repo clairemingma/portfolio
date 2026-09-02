@@ -7,7 +7,7 @@
 // the layout will not show.
 import sharp from 'sharp';
 import { copyFile, mkdir, readdir, rm, writeFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 
 const OUT = 'public/img';
 const VIDEO_OUT = 'public/video';
@@ -40,36 +40,32 @@ const PROJECTS = [
   { slug: 'glowwie', w: 606, h: 606 },
 ];
 
-// The project pages' slide galleries: one directory of frames each, giving a
-// large stage plate per slide plus the thumbnail that selects it. Directory-
-// driven rather than a listed manifest — a deck arrives as a folder and grows by
-// a file, and neither should mean editing this script.
+// The project pages' decks: one directory of frames each, one plate per slide.
+// Directory-driven rather than a listed manifest — a deck arrives as a folder,
+// grows by a file and shrinks by one, and none of that should mean editing this
+// script.
 //
 // Nothing here crops. `fit: 'inside'` scales a frame down until it fits the box
 // and stops, so the delivered plate keeps the source's own aspect ratio and every
 // pixel of it — the box gives way, not the picture. CSS contains rather than
 // covers for the same reason.
 //
-// The boxes are therefore sized to the deck, not the other way round. The Figma
-// page draws its figure at 840x584.531, a 1.437 frame from when the content was a
-// single landscape still; the deck is 16:9, so the height comes down to 840 at
-// 16:9 and the stage tightens around it. project-page.css derives its geometry
-// from the same ratio — if a deck ever arrives at another aspect, STAGE.h here
-// and --figure-h there are the two numbers to change, and they must agree.
+// The boxes are therefore sized to the deck, not the other way round. Both decks
+// on the site are 3840x2160 throughout, so 16:9 is the shape, and 840 wide is a
+// little over half the widest slide box the layout ever asks for (826.66 at the
+// 1470 artboard) — which at 2x is comfortably more pixels than any screen shows.
+// A deck at another aspect would need STAGE.h changed here; --slide-h in
+// deck-page.css derives the box from the same ratio, and the two must agree.
 const STAGE = { w: 840, h: (840 * 9) / 16 };
-// Same aspect as the stage, so a thumbnail is a true miniature and the button
-// needs no dead space around it.
-//
-// Sized to the LARGEST box any layout gives a thumbnail, not the most common one:
-// the strip button is 60 on wide but 100 on narrow, and the deck viewer's drawer
-// asks for about 50. Built at 60 it was being upscaled 1.7x on a narrow retina
-// screen — the one place the picture is largest. One plate at the maximum, scaled
-// down by CSS everywhere else, is cheaper than three sizes and cannot regress.
-const THUMB = { w: 100, h: (100 * 9) / 16 };
+
 const PAGES = [
   {
     slug: 'confidence-underneath',
     dir: 'assets/projects/Dexcom x SKIMS Confidence Underneath',
+  },
+  {
+    slug: 'ten-years-of-color',
+    dir: 'assets/projects/The Evolution of Color Trends in Runway Fashion',
   },
 ];
 
@@ -166,59 +162,57 @@ for (const page of PAGES) {
   }
   await mkdir(`${OUT}/projects/${page.slug}`, { recursive: true });
 
+  // Any of the four, because the intake should not care: a deck arrives however
+  // the tool it was built in exports. What matters is the resolution, and the
+  // scale check below is what enforces that.
+  //
+  // The sources here are webp, and deliberately. They are photographs, and PNG
+  // stores photographs losslessly — which for 29 slides at 3840x2160 came to
+  // 130 MB against 15 MB for the identical pixels as webp q92. The delivered
+  // plate is lossy either way, so the lossless intermediate bought nothing and
+  // cost 115 MB of permanent repository history. Export JPEG or webp, not PNG.
+  //
   // Numeric sort, not lexical: the deck's own numbering is unpadded, and a
   // lexical sort puts 10 before 2. The delivered file keeps the source's stem, so
   // slide 7 of the deck stays 7.webp — adding a frame later inserts a file
   // instead of renumbering every one after it, which would silently invalidate
   // every path in the markup.
+  const FRAME = /\.(png|jpe?g|webp)$/i;
   const frames = (await readdir(page.dir))
-    .filter((f) => /\.png$/i.test(f))
+    .filter((f) => FRAME.test(f))
     .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
-    .map((file) => ({ file, name: file.replace(/\.png$/i, '') }));
+    .map((file) => ({ file, name: file.replace(FRAME, '') }));
 
   const scales = new Set();
+  let sourceBytes = 0;
   for (const frame of frames) {
     const src = `${page.dir}/${frame.file}`;
     const { width: sw, height: sh } = await sharp(src).metadata();
+    // statSync, not metadata().size — sharp only populates that for buffer
+    // inputs, so from a path it came back undefined and the report read 0.0 MB.
+    sourceBytes += statSync(src).size;
     // Per frame, not per deck: one odd export should be delivered at whatever it
     // can honestly fill rather than upscaled to match its neighbours.
     const scale = Math.min(DPR, sw / STAGE.w, sh / STAGE.h);
     scales.add(scale.toFixed(2));
 
-    // The stage plate: the whole frame, scaled to fit inside the box, never
-    // enlarged past it. The delivered file therefore has the source's aspect
-    // ratio, not the box's.
-    const plate = await sharp(src)
+    // The whole frame, scaled to fit inside the box, never enlarged past it. The
+    // delivered file therefore has the source's aspect ratio, not the box's.
+    await sharp(src)
       .resize({
         width: Math.round(STAGE.w * scale),
         height: Math.round(STAGE.h * scale),
         fit: 'inside',
         withoutEnlargement: true,
       })
-      .toBuffer();
-
-    await sharp(plate)
       .webp({ quality: 86 })
       .toFile(`${OUT}/projects/${page.slug}/${frame.name}.webp`);
-
-    // The thumbnail comes off the plate, not the source, so it is a true
-    // miniature of the slide it selects. Cutting both from the source
-    // independently lets the two disagree about framing.
-    await sharp(plate)
-      .resize({
-        width: Math.round(THUMB.w * DPR),
-        height: Math.round(THUMB.h * DPR),
-        fit: 'inside',
-        withoutEnlargement: true,
-      })
-      .webp({ quality: 82 })
-      .toFile(`${OUT}/projects/${page.slug}/${frame.name}-thumb.webp`);
   }
 
-  // The markup needs one <img> and one button per frame, and hand-keeping 18 of
-  // them in sync with a directory is how a gallery ends up pointing at a file
-  // that is no longer there. The list is written out here so the page can be
-  // regenerated from it rather than edited by hand — see scripts/build-gallery.mjs.
+  // The markup needs one <img> per frame, and hand-keeping seventeen of them in
+  // sync with a directory is how a deck ends up pointing at a file that is no
+  // longer there. The list is written out here so the page can be regenerated
+  // from it rather than edited by hand — see scripts/build-gallery.mjs.
   // Not under public/. This is a handoff between two build steps, and anything
   // under public/ is copied verbatim into the deploy — so it was shipping a build
   // artefact to production as though it were an asset.
@@ -228,8 +222,14 @@ for (const page of PAGES) {
     JSON.stringify({ slug: page.slug, frames: frames.map((f) => f.name) }, null, 2) + '\n',
   );
 
+  // The source weight is reported alongside the scale, because it is the one
+  // cost of this pipeline that is invisible until it is permanent: sources live
+  // in the repository so Vercel can build from them, and git does not delta
+  // binaries, so a heavy re-export is 100+ MB of history that cannot be taken
+  // back. Better to see it in the build output than to discover it in a clone.
   stageNotes.push(
-    `${page.slug} ${frames.length} slides at ${[...scales].join('/')}x`,
+    `${page.slug} ${frames.length} slides at ${[...scales].join('/')}x` +
+      ` from ${(sourceBytes / 1048576).toFixed(1)} MB of source`,
   );
 }
 

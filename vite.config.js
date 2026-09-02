@@ -17,7 +17,7 @@ const root = import.meta.dirname;
 // repository — and therefore from the deploy — without the build breaking on its
 // absence. Rollup errors on a missing input, so it has to be filtered here rather
 // than hoped about.
-const PROJECT_PAGES = ['confidence-underneath'];
+const PROJECT_PAGES = ['confidence-underneath', 'ten-years-of-color'];
 
 const input = { index: resolve(root, 'index.html') };
 for (const slug of PROJECT_PAGES) {

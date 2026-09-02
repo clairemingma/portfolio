@@ -8,10 +8,6 @@ dist
 scripts/.manifests
 scripts/.verify
 
-# Held back — the Confidence Underneath project is not published. Mirrors
-# .gitignore; see the note there.
-projects/confidence-underneath/
-assets/projects/Dexcom x SKIMS Confidence Underneath/
-
-# Nothing references these.
-assets/projects/The Evolution of Color Trends in Runway Fashion/
+# Nothing else is held back: both project pages ship and both are linked from
+# the landing index. Mirrors .gitignore; see the note there for how to hold one
+# back again.

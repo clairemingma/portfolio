@@ -11,19 +11,18 @@ public/img
 public/video
 
 # ---------------------------------------------------------------------------
-# Held out of the repository on purpose — the Confidence Underneath project is
-# not published yet.
+# Nothing is held back here any more. Both project pages ship, and both are
+# linked from the landing index, so both need their source frames in the
+# repository: Vercel builds from the checkout, and scripts/build-images.mjs
+# derives every slide plate from assets/. Excluded, the pages would still deploy
+# — neither projects/ directory is listed — but with nothing to build plates
+# from, so every slide would 404 behind a linked index row.
 #
-# The build tolerates all of this being missing: vite.config.js only takes page
-# inputs that exist, and both build scripts skip what is not in the checkout. So
-# the deploy builds the landing page and nothing complains.
-#
-# To publish it: delete this section, restore the index row's href, and commit.
+# To hold a project back again: list BOTH its projects/<slug>/ directory and its
+# assets/projects/<folder>/, and put the index row's href back to "#". The build
+# tolerates the absence — vite.config.js only takes page inputs that exist, and
+# both build scripts skip what is not in the checkout — so the deploy quietly
+# builds everything else.
 # ---------------------------------------------------------------------------
-projects/confidence-underneath/
-assets/projects/Dexcom x SKIMS Confidence Underneath/
-
-# Source frames for a project that does not exist yet; nothing references them.
-assets/projects/The Evolution of Color Trends in Runway Fashion/
 .vercel
 .env*

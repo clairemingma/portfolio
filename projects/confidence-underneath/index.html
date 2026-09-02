@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Confidence Underneath — Claire Ong</title>
+    <meta
+      name="description"
+      content="Confidence Underneath — FSF x SKIMS, 2026. A project by Claire Ong."
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="/img/projects/confidence-underneath/2.webp"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Same pair as the landing page: Inter is the design's label face and is
+         exact; Spectral stands in for WT Kormelink TRIAL until those woff2 files
+         land in public/fonts. See the @font-face block in styles.css. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=La+Belle+Aurore&family=Spectral:ital,wght@0,400;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Linked rather than imported by the module: an imported stylesheet is
+         injected by JavaScript in dev, so the browser paints the raw HTML first
+         and the page flashes unstyled. Here that flash would be an 18-image
+         column several screens tall before the track exists to lay it sideways. -->
+    <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="stylesheet" href="/src/deck-page.css" />
+    <script type="module" src="/src/deck-page.js"></script>
+  </head>
+
+  <body>
+    <!-- ==================================================================
+         NAV — the landing page's bar, locked. is-over-paper is set here
+         rather than by a scroll frame because on this page it is true from
+         the start, and it stays true: the bar is the one thing that does not
+         travel with the track.
+         ================================================================== -->
+    <header class="nav nav--locked is-over-paper">
+      <a class="nav__mark" href="/">Claire M Ong</a>
+      <a class="nav__link nav__link--projects" href="/#projects"
+        ><span class="nav__link-word">Projects</span>,</a
+      >
+      <a class="nav__link nav__link--about" href="/#about"
+        ><span class="nav__link-word">About</span>,</a
+      >
+      <a
+        class="nav__link nav__link--linkedin"
+        href="https://www.linkedin.com/in/clairemong/"
+        target="_blank"
+        rel="me noopener"
+        ><span class="nav__link-word">LinkedIn</span></a
+      >
+      <button
+        class="nav__link nav__link--mail"
+        type="button"
+        data-copy="mclaireong@gmail.com"
+      >
+        <span class="nav__link-word" data-copy-label>mclaireong@gmail.com</span>
+      </button>
+    </header>
+
+    <!-- ==================================================================
+         THE TRACK
+
+         The page's only scroller, and it runs sideways. tabindex makes it
+         focusable so the deck can be read from the keyboard; the label says
+         what the focus ring has landed on, since the element itself is just
+         the viewport. src/project-deck.js redirects the wheel onto it.
+         ================================================================== -->
+    <main
+      class="deck"
+      data-deck
+      tabindex="0"
+      aria-label="Confidence Underneath — presentation, scrolls horizontally"
+    >
+      <div class="deck__track" data-track>
+        <!-- The paper the deck starts beside. It travels with the track rather
+             than staying put: by the time the presentation is under the
+             progress row the brief is off the left edge, having been read. -->
+        <div class="deck__lead">
+          <section class="brief" data-margin aria-label="Project details">
+            <h1 class="brief__title">Confidence Underneath</h1>
+
+            <div class="brief__facts">
+              <span class="brief__label">[Client]</span>
+              <p class="brief__value">FSF x SKIMS</p>
+
+              <span class="brief__label">[Type]</span>
+              <p class="brief__value">Brand, Data, Campaign, Research</p>
+
+              <span class="brief__label">[Year]</span>
+              <p class="brief__value"><time datetime="2026">2026</time></p>
+            </div>
+
+            <!-- PLACEHOLDER. Carried over verbatim from the page this replaced,
+                 which said the same of itself. Nobody has written this copy yet
+                 and it should not be invented here — replace it with the real
+                 thing before this page ships. -->
+            <p class="brief__text">
+              Placeholder overview. Two or three sentences on what the project
+              was, what it set out to change, and where it landed. Replace this
+              copy; the layout is what is being shown here.
+            </p>
+
+            <!-- No source block. The deck template's is optional, and unlike
+                 Color Trends this project has no repository or notebook to
+                 point at. An empty pair of labels would be worse than none. -->
+          </section>
+
+          <!-- The site's footer row, reduced to what is ever visible here: the
+               deck panel covers everything right of the paper from the opening
+               frame onward, so the five-column grid the other pages use would
+               be four hidden cells and one line.
+               The pair below 768 is not decoration — the bar cannot hold the
+               mark, two words and a 20-character address on four columns, so it
+               drops them, and this is the only other place they appear. -->
+          <footer class="deck__foot">
+            <p class="deck__foot-rule">&copy; 2026 Claire Ong</p>
+            <a
+              class="deck__foot-link"
+              href="https://www.linkedin.com/in/clairemong/"
+              target="_blank"
+              rel="me noopener"
+              >LinkedIn</a
+            >
+            <button
+              class="deck__foot-link"
+              type="button"
+              data-copy="mclaireong@gmail.com"
+            >
+              <span data-copy-label>mclaireong@gmail.com</span>
+            </button>
+          </footer>
+        </div>
+
+        <!-- ================= THE DECK =================
+             GENERATED between the markers. Do not hand-edit: run
+             `npm run images` to build the frames from assets/, then
+             `npm run gallery` to write them in here. Everything outside the
+             markers is hand-written and is not touched.
+
+             The deck runs 2..18: there is no 1.png in the folder, and 19 — the
+             citations slide — has been taken out. So the counter's position and
+             the source filename are one apart, and the delivered files keep the
+             deck's own numbers rather than being renumbered. Adding a frame back
+             is a matter of putting the file in the folder; the directory is the
+             manifest. -->
+        <div class="deck__stage" data-stage>
+        <!-- slides:start -->
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/2.webp"
+          alt="Confidence Underneath — slide 1 of 17."
+          fetchpriority="high"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/3.webp"
+          alt="Confidence Underneath — slide 2 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/4.webp"
+          alt="Confidence Underneath — slide 3 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/5.webp"
+          alt="Confidence Underneath — slide 4 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/6.webp"
+          alt="Confidence Underneath — slide 5 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/7.webp"
+          alt="Confidence Underneath — slide 6 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/8.webp"
+          alt="Confidence Underneath — slide 7 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/9.webp"
+          alt="Confidence Underneath — slide 8 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/10.webp"
+          alt="Confidence Underneath — slide 9 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/11.webp"
+          alt="Confidence Underneath — slide 10 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/12.webp"
+          alt="Confidence Underneath — slide 11 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/13.webp"
+          alt="Confidence Underneath — slide 12 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/14.webp"
+          alt="Confidence Underneath — slide 13 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/15.webp"
+          alt="Confidence Underneath — slide 14 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/16.webp"
+          alt="Confidence Underneath — slide 15 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/17.webp"
+          alt="Confidence Underneath — slide 16 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="deck__slide"
+          data-slide
+          src="/img/projects/confidence-underneath/18.webp"
+          alt="Confidence Underneath — slide 17 of 17."
+          loading="lazy"
+          decoding="async"
+        />
+        <!-- slides:end -->
+
+          <!-- The two ways out, at the end of the deck — the last item on the
+               row, where a nineteenth slide would stand. Outside the markers,
+               so the gallery build never touches it.
+
+               RESTART is an action on this page and so a button; the other goes
+               somewhere and so is a link. They are styled alike because to a
+               reader they are one pair, but they are not the same kind of thing
+               and the markup should not pretend otherwise.
+
+               The link points at the landing page's project index. It is the
+               only honest destination today: this is the first of seven
+               projects there, and the second has no page yet. -->
+          <div class="deck__end">
+            <button class="deck__end-link" type="button" data-restart>
+              Restart
+            </button>
+            <!-- Says what to do, and still does it when clicked — which is the
+                 only way through on a touch screen, where there is no wheel to
+                 keep scrolling with.
+
+                 The accessible name is left as the visible words rather than
+                 being overridden to something tidier like "Next project":
+                 anything driving this page by voice says what it can see, and a
+                 name that does not contain the label is a name that cannot be
+                 spoken.
+
+                 The empty span is the gauge: project-deck.js grows it into an
+                 underline as a push past the last slide accumulates, and the
+                 page hands over when it is full. Inside the link on purpose —
+                 the thing that fills is the thing that is about to happen. -->
+            <a class="deck__end-link" href="/#projects" data-next
+              >Keep scrolling for next<span
+                class="deck__push"
+                data-push
+                aria-hidden="true"
+              ></span
+            ></a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ==================================================================
+         PROGRESS
+
+         Outside the scroller, because it does not scroll. It is hidden until
+         the dark panel's left edge reaches the window's — when the
+         presentation is the whole screen — and then holds that position to
+         the end of the deck. See the .progress rule in deck-page.css.
+
+         The counter's seed is written by scripts/build-gallery.mjs and is
+         what shows if the module never runs.
+         ================================================================== -->
+    <div class="progress" data-progress>
+      <p class="progress__count" data-count aria-live="polite">[1/17]</p>
+      <!-- A plain div here on purpose. project-deck.js promotes it to a real
+           slider on mount — role, tab stop, values — because without the module
+           it cannot be dragged, and a page that announces a slider it cannot
+           move is worse than one that announces nothing. -->
+      <div class="progress__slider" data-scrub>
+        <div class="progress__track"></div>
+        <div class="progress__fill" data-fill></div>
+      </div>
+    </div>
+  </body>
+</html>
