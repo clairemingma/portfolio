@@ -409,15 +409,24 @@ body {
   color: var(--color-graphite);
 }
 
-/* Two of the page's twelve columns, which is the design's 222 to within a third
-   of a unit. The row gap is the design's 10; the column gap is the grid's own,
-   which is what makes the pair land on columns 1 and 2 rather than merely being
-   222 wide. */
+/* Label on one column, value on two — so the facts grid is the full width of
+   the brief above it, columns 1 to 3, rather than the design's two.
+
+   The design gives the pair 222, which is columns 1 and 2, and that is right for
+   a value like "CSE 163" or a year. It is not right for a list: "Brand, Data,
+   Campaign, Research" broke over three lines in a single column and pushed every
+   row below it down. A value that has to wrap to be read is a value the grid is
+   too narrow for, so the grid widened rather than the copy being cut.
+
+   Explicit tracks rather than 1fr each, because the two are no longer equal: the
+   label keeps its single column and the value takes the two the label does not,
+   gutter included. The row gap is the design's 10; the column gap is the grid's
+   own, which is what keeps the value's left edge on the column-2 line. */
 .brief__facts {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: var(--col) calc(2 * var(--col) + var(--grid-gutter));
   gap: 10rem var(--grid-gutter);
-  width: calc(2 * var(--col) + var(--grid-gutter));
+  width: calc(3 * var(--col) + 2 * var(--grid-gutter));
 }
 
 .brief__label {
