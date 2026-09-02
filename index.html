@@ -150,15 +150,16 @@
             <!-- Seeded current: one project is always showing, and the design's
                resting state is the top one. project-viewer.js reads this rather
                than deciding for itself. -->
-            <!-- Every row rests on "#": the Confidence Underneath page exists
-                 locally but is held out of the repository, so linking to it here
-                 would be a dead link on the deployed site. One href to change
-                 when that page ships. -->
+            <!-- A row's href is live only where the page behind it ships. Two
+                 do — Confidence Underneath and Ten Years of Color — and both
+                 carry a real address. The other five rest on "#" because they
+                 have no page yet, and a row pointing at a page that is not in
+                 the deploy is a dead link rather than a promise. -->
             <li
               class="index__row is-current"
               data-project="confidence-underneath"
             >
-              <a class="index__link" href="#">
+              <a class="index__link" href="/projects/confidence-underneath/">
                 <span class="index__year">[2026]</span>
                 <span class="index__caption">
                   <span class="index__client">[FSF x SKIMS]</span>
@@ -194,7 +195,7 @@
               </a>
             </li>
             <li class="index__row" data-project="ten-years-of-color">
-              <a class="index__link" href="#">
+              <a class="index__link" href="/projects/ten-years-of-color/">
                 <span class="index__year">[2025]</span>
                 <span class="index__caption">
                   <span class="index__client">[University]</span>
