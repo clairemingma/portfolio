@@ -15,6 +15,46 @@ const VIDEO_OUT = 'public/video';
 const MANIFESTS = 'scripts/.manifests';
 const HERO = 'assets/hero-cyanotype.png';
 
+// The two cyanotype squares that pop out from behind the slides on the project
+// pages' dark panel. Neither plate is derived from the hero:
+//
+//   PRINT is the design's own square, taken from Figma node 217:7395 at 4x —
+//     1360 of the 340 it is drawn at. It is the same subject as the landing
+//     scan but not the same frame or the same grade: Figma bakes the node's
+//     image-fill adjustment into what it exports, so the export IS the colour
+//     the design shows, where covering a square with the hero scan was a
+//     different crop of a differently graded plate.
+//   WASH is the pale second exposure, node 217:7388's own fill at its full
+//     2446. Its export cannot be used the way PRINT's is — the node is clipped
+//     by the frame it sits in, so Figma hands back 184x220 of a 220 square —
+//     but the raw fill needs no grade fitted to stand in for it: against the
+//     export it comes back at k 0.97 per channel, which is resampling error.
+//
+// They are one subject in two grades, which is what they are named for — and not
+// one photograph lightened, either. Fitting a per-channel gain and offset from
+// one to the other lands at r 0.75, so no filter or white veil over one would
+// stand in for the other.
+//
+// Two further plates sit in assets/ unbuilt, nodes 238:7576 and 217:7389 — the
+// squares a third accent was drawn in before it was taken back out. They are
+// paler than these two and are different subjects rather than different grades.
+// Nothing draws them, so nothing delivers them; add them here when something
+// does.
+//
+// 720 is 2x the largest square the deck ever draws: three columns and their two
+// gutters, 342.5 units at the 1470 artboard. The two-column square is the same
+// file scaled down, which costs nothing — it is the same picture, and a second
+// rung for a 220-unit box would save 20 KB.
+//
+// Flattened for the reason the hero is, over charcoal rather than paper: these
+// sit on the dark panel, and the alpha channel the sources carry has no use here
+// either.
+const ACCENTS = [
+  { name: 'accent-print', src: 'assets/accent-cyanotype-print.webp' },
+  { name: 'accent-wash', src: 'assets/accent-cyanotype-wash.webp' },
+];
+const ACCENT = 720;
+
 // The one project whose plate moves. sharp does not touch video, so this is a
 // copy and a rename — the point is only that the delivered file keeps coming
 // from assets/ under the slug the markup asks for, instead of being a hand-
@@ -130,6 +170,19 @@ await writeFile(
   ].join('\n'),
 );
 
+for (const a of ACCENTS) {
+  await sharp(a.src)
+    .flatten({ background: '#1a1a1a' })
+    .resize({
+      width: ACCENT,
+      height: ACCENT,
+      fit: 'cover',
+      position: 'centre',
+    })
+    .webp({ quality: 86 })
+    .toFile(`${OUT}/${a.name}.webp`);
+}
+
 for (const p of PROJECTS) {
   await sharp(`assets/projects/${p.slug}.png`)
     .resize({
@@ -234,6 +287,7 @@ for (const page of PAGES) {
 }
 
 console.log(
-  `built hero from ${W}x${H} scan + ${PROJECTS.length} project previews at ${DPR}x` +
+  `built hero from ${W}x${H} scan + ${ACCENTS.length} deck accents at ${ACCENT}` +
+    ` + ${PROJECTS.length} project previews at ${DPR}x` +
     `, copied ${VIDEOS.length} clip, ${stageNotes.join('; ')}`,
 );

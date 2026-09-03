@@ -77,6 +77,26 @@
       aria-label="Confidence Underneath — presentation, scrolls horizontally"
     >
       <div class="deck__track" data-track>
+        <!-- The dark panel, and the only thing on this page that never moves. It
+             is one screen wide and sticks at the window's left edge from the
+             first frame — the paper and the presentation travel over it and off
+             to the left, and the grey and its cyanotype accents do not travel at
+             all.
+
+             Being first in the row is what puts it there: its flow position is
+             track x 0, which is already the window's left edge, so `left: 0` has
+             nothing to correct until the scroll starts and then holds it. It is
+             also what cuts the lower accent at the paper's right edge in the
+             opening frame, which is how the design draws it — the square is on
+             the page's grid at 384 and the paper runs to 420, so a sixth of it
+             is under the brief until the brief has gone.
+
+             It takes no space in the row — see the negative margin in
+             deck-page.css — so the paper still starts at track x 0 and the track
+             is no wider for it. Empty and aria-hidden: it is a surface, and
+             everything on it is decoration. -->
+        <div class="deck__panel" data-panel aria-hidden="true"></div>
+
         <!-- The paper the deck starts beside. It travels with the track rather
              than staying put: by the time the presentation is under the
              progress row the brief is off the left edge, having been read. -->
@@ -106,9 +126,11 @@
               monitors, yet tight seams, friction, and adhesives that irritate
               the skin are a daily reminder that fashion wasn’t made for them.
               For the 2026 Fashion Scholarship Fund competition, I developed a
-              cross-industry collaboration strategy for Dexcom x SKIMS that
-              reimagines adaptive apparel through consumer research, competitive
-              analysis, and full-funnel marketing — so nobody has to choose
+              cross-industry collaboration strategy for Dexcom x SKIMS through
+              consumer research, competitive analysis, and full-funnel
+              marketing. Confidence Underneath is an adaptive wear line
+              engineered with light, breathable, non-irritant fabrics that
+              secure sensors without compression, so nobody has to choose
               between health and confidence.
             </p>
 

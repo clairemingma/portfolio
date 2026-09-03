@@ -60,10 +60,20 @@
           var(--grid-gutter)) / var(--grid-columns)
   );
 
-  /* The column-5 line, where the first slide's left edge sits. */
-  --col5: calc(var(--grid-margin) + 4 * (var(--col) + var(--grid-gutter)));
+  /* One step of the grid: a column and the gutter after it, which is the
+     distance between two column LINES. Every offset on this page that is "on the
+     grid" is the margin plus some whole number of these.
 
-  /* Where the word PROJECTS starts in the bar, and so where the dark panel
+     It is also the page's vertical unit, and that is not an assumption — it is
+     the design's. The accents below sit on twelve rows as well as twelve
+     columns, and those rows are what the columns would be if the page were
+     SQUARE: same margin, same gutter, so the same step. See .deck__accent. */
+  --col-step: calc(var(--col) + var(--grid-gutter));
+
+  /* The column-5 line, where the first slide's left edge sits. */
+  --col5: calc(var(--grid-margin) + 4 * var(--col-step));
+
+  /* Where the word PROJECTS starts in the bar, and so where the presentation
      starts. It cannot be written as a grid quantity: the bar sets that link
      flush RIGHT in column 4, so its left edge is column 4's right edge less the
      width of the word — a text measurement, in whichever face has loaded.
@@ -71,7 +81,7 @@
      styles.css already uses for --about-left on the landing page.
 
      The fallback is that arithmetic done with the design's own figure for the
-     link (63.742) plus the gutter, so the panel is within a pixel of right
+     link (63.742) plus the gutter, so the stage is within a pixel of right
      before the module runs and the measurement only trues it up against the
      real font. */
   --projects-left: calc(var(--col5) - 83.742rem);
@@ -105,7 +115,7 @@
   );
   --slide-h: calc(var(--slide-w) * 9 / 16);
 
-  /* Paper to the left of the panel. On narrow the bar is a spread flex row and
+  /* Paper to the left of the deck. On narrow the bar is a spread flex row and
      PROJECTS sits on nothing, so the brief simply takes a screen of its own and
      a sliver of dark shows to signal there is more. */
   --deck-lead: calc(100vw - 40rem);
@@ -113,7 +123,7 @@
 
 @media (min-width: 768px) {
   :root {
-    /* The panel begins where PROJECTS does, and the first slide still lands on
+    /* The stage begins where PROJECTS does, and the first slide still lands on
        the column-5 line — so the dark before it is whatever lies between the
        two, rather than a number of its own. That comes out at the gutter plus
        the width of the word, about 84, where the design had a flat 81. Two real
@@ -161,12 +171,12 @@ body {
    The scrollbar itself is hidden: the design draws its own indicator (the
    progress row), and a native bar along the bottom edge would be a second one
    saying the same thing in a different visual language. */
-/* Charcoal, though the panel inside it is charcoal too and paints over all of
-   this at rest. It is here for the push past the end: the track slides left
-   under a build-up, and what it uncovers on the right is this. Paper would have
-   shown a white strip tearing open at the edge of the last slide. --- and the
-   paper the deck starts on is therefore painted by .deck__lead rather than left
-   to the body, or it would be charcoal too. */
+/* Charcoal, though .deck__panel is charcoal too and covers all of this at rest.
+   It is here for the push past the end: the track slides left under a build-up,
+   and the panel goes with it — it is IN the track — so what opens up on the
+   right is this. Paper would have shown a white strip tearing at the edge of the
+   last slide. And the paper the deck starts on is therefore painted by
+   .deck__lead rather than left to the body, or it would be charcoal too. */
 .deck {
   height: 100dvh;
   overflow-x: auto;
@@ -183,10 +193,10 @@ body {
   display: none;
 }
 
-/* max-content, so the track is as wide as the paper panel and the deck panel
-   put together and no wider. That total is also what the progress fill divides
-   by, and what puts the panel's right edge exactly on the viewport's at the end
-   of the scroll — which is why the fixed progress row is never over paper. */
+/* max-content, so the track is as wide as the paper and the stage put together
+   and no wider. That total is also what the progress fill divides by, and what
+   puts the stage's right edge exactly on the viewport's at the end of the
+   scroll. */
 .deck__track {
   display: flex;
   width: max-content;
@@ -227,14 +237,52 @@ body {
 
 /* --- the dark panel -------------------------------------------------------- */
 
+/* The grey, and it is ONE SCREEN WIDE and it never moves. `position: sticky`
+   with `left: 0` in a horizontal scroller, at the HEAD of the track: its flow
+   position is track x 0, which is already the window's left edge, so there is
+   nothing for the sticky offset to correct on the first frame and everything for
+   it to hold afterwards. The paper and the presentation travel over it and away
+   to the left; the panel and the cyanotype accents on it stay exactly where the
+   page opened.
+
+   Sticky rather than a fixed element whose offset is written on scroll, and
+   rather than `position: fixed` at all. Fixed would be simpler until the push
+   past the end, where .deck__track takes an inline transform — a transformed
+   ancestor becomes the containing block for a fixed descendant, so `inset: 0`
+   would resolve against the fifteen-thousand-wide track and the accents would
+   jump the width of the deck for the length of the gesture.
+
+   It takes no space in the flex row. The negative margin cancels its own width,
+   so its outer size is zero: the paper still begins at track x 0, and
+   `max-content` on the track is what it always was. (The panel does then overhang
+   the paper rather than the other way round — which is the point — and its right
+   edge overhangs the track's only if a deck is under a screen wide, and both here
+   are twelve screens or more.)
+
+   It paints UNDER the paper and the slides because both of those are positioned
+   too and come after it in the source, which is why .deck__lead keeps its
+   `position: relative` and why .deck__stage was given one. */
+.deck__panel {
+  position: sticky;
+  left: 0;
+  flex: none;
+  width: 100vw;
+  margin-right: -100vw;
+  /* The accents are placed on the twelve columns of this panel, so they cannot
+     reach past it. This is here for the rounding: a square whose right edge
+     lands a fraction over 100vw would widen the one scroller on the page. */
+  overflow: hidden;
+  background: var(--color-charcoal);
+}
+
 /* The padding is the layout. The two vertical insets bound the space the
    presentation actually occupies, and `align-items: center` puts the slides in
    the middle of it:
 
-     TOP is the bar's height, because that is where the grey BEGINS. The panel
+     TOP is the bar's height, because that is where the grey BEGINS. The grey
        runs the full height of the window, but its top 37.594 is behind an
        opaque paper bar, so the grey you can see starts under the bar and not at
-       the panel's own edge.
+       its own edge.
      BOTTOM is the progress row's band, because that is where the slider
        begins. Below that line the space belongs to the control, not to the deck.
 
@@ -249,24 +297,30 @@ body {
    The two horizontal insets are deliberately different, and they are the deck's
    two rest positions:
 
-     LEFT is whatever lies between the panel's edge and the column-5 line, so
-       the panel begins on the bar's PROJECTS and the first slide still lands on
+     LEFT is whatever lies between the stage's edge and the column-5 line, so
+       the stage begins on the bar's PROJECTS and the first slide still lands on
        the grid. About 84; the design's flat 81 was only the arithmetic that
        produced the same pair.
      RIGHT is the row's own gap, so the end label is bracketed by an equal 40 on
        both sides — 40 off the last slide, 40 off the end of the page.
 
-   The panel's right edge is still the track's right edge, which is what keeps
-   the fixed progress row over dark for the whole of its life — and its LEFT
-   edge is what summons the row in the first place. project-deck.js measures
-   this element for that; see [data-stage] there. */
+   The stage's LEFT edge is what summons the progress row: project-deck.js
+   measures this element for that, and it is the same line the grey pins on. See
+   [data-stage] there, and .deck__panel above.
+
+   No background of its own — the grey is .deck__panel, and this is only the
+   layout that travels across it. `position: relative` with no offsets, though,
+   and that one IS load-bearing: the panel is sticky and therefore positioned, so
+   a stage left unpositioned would paint UNDERNEATH it and the deck would vanish
+   behind its own background. Positioned too, and later in the source, it paints
+   above — which is the layer the accents need as much as the slides do. */
 .deck__stage {
+  position: relative;
   display: flex;
   flex: none;
   align-items: center;
   gap: var(--slide-gap);
   padding: var(--nav-h) var(--slide-gap) var(--progress-band) var(--deck-inset);
-  background: var(--color-charcoal);
 }
 
 /* The slide box is 16:9 and so is every frame in the deck, so `contain` and
@@ -290,6 +344,71 @@ body {
   height: var(--slide-h);
   object-fit: contain;
 }
+
+/* --- the cyanotype accents ------------------------------------------------- */
+
+/* Squares of the cyanotype on the grey, showing between and behind the slides.
+   They are children of the panel, which never moves, so they hold their places
+   from the first frame to the last while the presentation sweeps over them — a
+   square is occluded and uncovered again as each gap between slides passes,
+   which is the whole of the effect. The lower one is under the paper until the
+   brief has gone, cut at its right edge exactly as the design's opening frame
+   draws it. src/project-deck.js writes the three custom properties below and
+   nothing else.
+
+   THE PLACEMENT IS THE PAGE'S GRID, twice over, and because the panel is one
+   screen wide and pinned at the margin, the panel's grid IS the page's.
+
+   Across: the margin plus a whole number of column steps. Twelve columns, so
+   twelve lines, and a square of N columns can start on any line up to 12 - N.
+   Below 768 the page's grid is four columns and these follow it there too; they
+   are on the grid the page has, not on a grid of their own.
+
+   Down: the same step again, as twelve rows. If the page were square, twelve
+   rows would be twelve columns turned ninety degrees — same margin, same gutter,
+   so the same --col-step, and one unit serves both axes. How many of the twelve
+   rows are reachable is a fact about the window's height rather than about the
+   grid — about five on a landscape window, since a square must also fit between
+   the page's margins.
+
+   The size is a column span, which is why these are the sizes they are: the
+   design's 340 and 220 are 3 and 2 columns with their gutters (342.5 and 221.67)
+   as near as a designer types them.
+
+   No z-index. They are in the flow of a panel that paints before the stage, so
+   the slides are already above them — see the note on `position: relative`
+   there. */
+.deck__accent {
+  --accent-size: calc(
+    var(--accent-span) * var(--col) + (var(--accent-span) - 1) *
+      var(--grid-gutter)
+  );
+
+  position: absolute;
+  top: calc(var(--grid-margin) + var(--accent-row) * var(--col-step));
+  left: calc(var(--grid-margin) + var(--accent-col) * var(--col-step));
+  width: var(--accent-size);
+  height: var(--accent-size);
+  background-position: center;
+  background-size: cover;
+}
+
+/* The two plates, both of them the design's own squares rather than anything
+   cropped out of the landing scan: the deep node 217:7395 and the pale node
+   217:7388, one subject in two grades — which is what they are named for. Neither
+   is the other lightened; see the note in scripts/build-images.mjs.
+
+   Both are square and both are shown square, so `cover` crops nothing; it is
+   here because the box is a grid quantity and the plate is a fixed 720, and the
+   box is what should give way if ever the two disagree. */
+.deck__accent--print {
+  background-image: url('/img/accent-print.webp');
+}
+
+.deck__accent--wash {
+  background-image: url('/img/accent-wash.webp');
+}
+
 
 /* --- the end of the deck --------------------------------------------------- */
 
@@ -332,7 +451,13 @@ body {
 }
 
 /* nowrap, because a flex item is free to break and "RE" over "START" is the
-   shape this would otherwise take when the row runs out of patience. */
+   shape this would otherwise take when the row runs out of patience.
+
+   The shadow is the counter's, for the counter's reason: the grey these stand on
+   is pinned and carries the accents, so at the end of the scroll these two
+   labels can come to rest over a cyanotype square, and 11px of white on the pale
+   plate is about 1.5:1. Invisible on charcoal, which is what is behind them
+   everywhere else. See .progress__count. */
 .deck__end-link {
   flex: none;
   white-space: nowrap;
@@ -346,6 +471,7 @@ body {
   text-transform: uppercase;
   text-align: left;
   color: var(--color-white);
+  text-shadow: 0 0 8rem color-mix(in srgb, var(--color-charcoal) 85%, transparent);
   cursor: pointer;
 }
 
@@ -386,18 +512,42 @@ body {
    BRIEF — title, facts, copy, source
    ========================================================================== */
 
-/* Placed rather than laid out: 222 is the design's own top and there is nothing
-   above it on the paper to derive it from. It is safe to pin because this page
-   cannot scroll — the brief is roughly 312 tall from 222, so it clears the
-   copyright band by a wide margin at any viewport the design targets. */
+/* Centred in the band between the bar and the copyright, which is the only
+   placement that survives a phone.
+
+   The design's own top is 222, and above 768 that is what this uses — see the
+   media query. But 222 is a number measured on a 932-tall artboard, and applying
+   it to a 664-tall phone spends 231 of 625 usable units — a third of the screen
+   — before a word is set. Everything then has to fit in what is left, and on a
+   page that CANNOT SCROLL what does not fit is not merely tight, it is
+   unreachable: the foot of the paragraph is simply cut off with no scrollbar to
+   recover it. Two of the copy revisions overflowed a real phone by 43 and 97
+   units that way, and neither was a copy problem.
+
+   So on narrow the brief is given the band instead of an offset: top and bottom
+   are the two bars, and the content centres between them. That is the same rule
+   the slides follow, for the same reason. */
 .brief {
   position: absolute;
   left: var(--grid-margin);
-  top: 222rem;
+  top: var(--nav-h);
+  bottom: 37.594rem;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 20rem;
   width: calc(3 * var(--col) + 2 * var(--grid-gutter));
+}
+
+/* The design's placement, restored where the design's numbers apply. `bottom`
+   has to be released with it, or the two together would stretch the box and
+   `justify-content` would centre the brief in the whole page. */
+@media (min-width: 768px) {
+  .brief {
+    top: 222rem;
+    bottom: auto;
+    justify-content: flex-start;
+  }
 }
 
 .brief__title {
@@ -532,11 +682,11 @@ body {
 
 /* Fixed, and outside the scroller entirely. The design draws this row inside the
    dark panel at the deck's own left inset, which is where it would be if it
-   travelled; it does not travel. It appears at the moment the dark panel's left
-   edge reaches the window's — when the presentation is the whole screen and
-   there is no paper left in view — and then holds that position for the rest of
-   the scroll. So its home is the viewport rather than the track, and a fixed
-   element cannot be a child of the thing it is meant to stay still against.
+   travelled; it does not travel. It appears at the moment the PAPER has left the
+   screen — when the presentation is the whole of it and the brief has been read
+   — and then holds that position for the rest of the scroll. So its home is the
+   viewport rather than the track, and a fixed element cannot be a child of the
+   thing it is meant to stay still against.
 
    left and right are the page margins, so the row measures 1430 at 1470: the
    design's own width, arrived at from the margins rather than typed in.
@@ -576,10 +726,22 @@ body {
 
 /* A fixed box and lining figures, so the slider's left edge does not step
    sideways when the counter goes from one digit to two. 40 is the design's, and
-   it holds [12/12] at 11px Inter with room to spare. */
+   it holds [12/12] at 11px Inter with room to spare.
+
+   The shadow is the one thing here the design does not draw, and it is the
+   accents that ask for it. Both this row and the grey it sits on are pinned to
+   the window, so an accent does not pass behind this label — it can come to REST
+   behind it, for the whole length of the deck, and 11px of white on the pale
+   plate is about 1.5:1. Invisible over charcoal, which is what is behind the
+   counter in the design and wherever the scatter has left the corner empty.
+
+   The hairline beside it is left alone. It crosses whatever the composition puts
+   in its way, but no more than three columns of its 1370 can be over an accent,
+   and a gauge is legible from the rest of its length. */
 .progress__count {
   flex: none;
   width: 40rem;
+  text-shadow: 0 0 8rem color-mix(in srgb, var(--color-charcoal) 85%, transparent);
   font-family: var(--font-secondary);
   font-size: 11rem;
   line-height: calc(13.75 / 11);

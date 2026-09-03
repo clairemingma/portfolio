@@ -345,16 +345,92 @@ to the viewport, rather than reading `scrollWidth`. `body` carries `overflow-x:
 hidden`, so anything running past the edge is clipped and reports zero overflow —
 which hid a real one when the mark's name lengthened.
 
+### The dark panel and its accents
+
+On the project pages the grey behind the slides is **one screen wide and it never
+moves**. It is a `position: sticky; left: 0` flex item at the _head_ of the
+track, so its flow position is track x 0 — already the window's left edge — and
+there is nothing for the sticky offset to correct on the first frame and
+everything for it to hold afterwards. The paper and the presentation travel over
+it and away to the left; the grey and the cyanotype squares on it stay exactly
+where the page opened.
+
+Sticky rather than `position: fixed`, and the reason is the push past the end:
+`.deck__track` takes an inline transform there, a transformed ancestor becomes the
+containing block for a fixed descendant, and `inset: 0` would then resolve against
+the fifteen-thousand-wide track — the accents would jump the width of the deck for
+the length of the gesture. It takes no space in the row either (a negative right
+margin cancels its own width), so the paper still begins at track x 0 and the
+scroll range is what it always was.
+
+Being first in the row is also what puts the two left-hand squares behind the
+brief at rest, to be uncovered as the paper leaves — the middle one cut at the
+paper's right edge, which is how Figma node 210:7196 draws it: that square is on
+the page's grid at 384 and the paper runs to 420, so a sixth of it is under the
+brief until the brief has gone. The progress row still appears at `scrollLeft ==
+--deck-lead`, which is now simply the moment the paper has left the screen.
+
+The accents are on the page's grid twice over, and both axes are derived rather
+than measured. Across, the margin plus a whole number of column steps — and
+because the panel is one screen sitting on the page's own margin, the panel's grid
+_is_ the page's. Down, the same step again as twelve _rows_, which is what twelve
+columns would be if the page were square: same margin, same gutter, so the same
+step. The design's **two** squares land on that lattice to within 2 units, and
+the snapping is inside its own tolerance rather than a licence — every figure in
+the design misses its line by one or two units in the same way:
+
+| Figma node       | x    | y   | size | lands on               | plate |
+| ---------------- | ---- | --- | ---- | ---------------------- | ----- |
+| 210:7196 image 6 | 384  | 504 | 220  | col 3 / row 4 / span 2 | wash  |
+| 210:7196 image 7 | 1110 | 22  | 340  | col 9 / row 0 / span 3 | print |
+
+The lines those land on are 382.5 and 1107.5 across, 503.33 and 20 down, and
+221.67 and 342.5 wide.
+
+A third square stood at the top left for a while — node 235:7439, x 0, y 81, 220
+square — and is out for now. Its x was the page's own left edge rather than a
+column line, which needed a bleed modifier, and its y was row 1 of a
+twenty-four-row grid, which needed the rows subdivided; both went out with it.
+
+Columns and spans are counted in twelfths and re-counted in the grid the page
+actually has, because each is a proportion of the measure rather than a number of
+columns: on a phone's four columns the pair comes out at column 1 and column 3, a
+single column wide each, instead of falling off a grid with no ninth column to put
+them on. Row indices are _not_ re-counted — a row is a column step turned
+vertical at every width, so it is already the same fraction of the way down the
+square page. The rows are subject to one rule — a square must show a
+fifth of itself clear of the slides _and_ out from under the bar. Where the row the
+design names cannot satisfy that, the square moves to the nearest row that can on
+the same side of the slides, since one square above the presentation and one
+below it is the composition; under about 620 of height neither side has a row for
+either of them and the panel is simply bare. A square is never cut by the foot of the
+window either — nothing here moves any more, so a crop would be permanent rather
+than passing.
+
+One departure from the design: the progress counter and the two end labels gain a
+text-shadow it has none of. The grey carries the squares and does not move, so
+white 11px type can come to rest on a pale cyanotype at about 1.5:1. It is
+invisible over charcoal, which is what is behind all three in the design.
+
+Every square is a **named** column and row. An earlier pass drew extra ones from a
+hash of their index and the hashing is gone with it: the panel is a single screen,
+so there is no length to scatter along and nothing a random position can be right
+about.
+
 ## Assets
 
 `assets/` holds the sources; `public/img/` and `public/video/` are generated from
 them by `scripts/build-images.mjs` and are disposable.
 
-| source                       | used for                                       |
-| ---------------------------- | ---------------------------------------------- |
-| `assets/hero-cyanotype.png`  | the landing plate, at 1600 and 1080 wide       |
-| `assets/projects/<slug>.png` | one per project, rendered at 2× its leaf box   |
-| `assets/projects/*.mp4`      | the SU26 Drop 2 reel, copied under its slug    |
+| source                               | used for                               |
+| ------------------------------------ | -------------------------------------- |
+| `assets/hero-cyanotype.png`          | the landing plate, at 1600 and 1080 wide |
+| `assets/accent-cyanotype-print.webp` | deck accent plate, at 720 square       |
+| `assets/accent-cyanotype-wash.webp`  | deck accent plate, at 720 square       |
+| `assets/accent-cyanotype-sprig.webp` | held, unbuilt — see note 5            |
+| `assets/accent-cyanotype-leaf.webp`  | held, unbuilt — see note 5            |
+| `assets/projects/<slug>.png`         | one per project, rendered at 2× its leaf box |
+| `assets/projects/*.mp4`              | the SU26 Drop 2 reel, copied under its slug |
 
 sharp does not touch video, so the mp4 leg of that build is a copy and a rename.
 It still runs through the script rather than being hand-placed in `public/`, so
@@ -410,6 +486,42 @@ Three notes on where those came from:
    fading in over it. Under it sits `#508db1`, the plate's own dominant register,
    so the white bar type is legible at 3.4:1 rather than the 1.7:1 the design's
    flat grey gave.
+
+5. **The deck accent plates are the design's own squares.** The project pages
+   compose two cyanotype squares on the grey behind the slides, and neither plate
+   is derived from the landing scan.
+
+   `print` is Figma node 217:7395 exported at 4× — 1360 of the 340 it is drawn
+   at. It is the same subject as the hero but not the same frame or the same
+   grade: Figma bakes a node's image-fill adjustment into what it exports, so the
+   export _is_ the colour the design shows, where covering a square with the hero
+   scan was a different crop of a differently graded plate. `wash` is the pale
+   second exposure, node 217:7388's own fill at its full 2446. That node's export
+   cannot be used the same way — it is clipped by the frame it sits in, so Figma
+   hands back 184×220 of a 220 square — but the raw fill needs no grade fitted to
+   stand in for it: against the export it comes back at k 0.97 per channel, which
+   is resampling error.
+
+   The two are not one photograph lightened. Fitting a per-channel gain and
+   offset from either to the other lands at r 0.75, so no CSS filter or white
+   veil over one stands in for the other. Both are committed as webp rather than
+   PNG, on the rule the deck sources follow: they are photographs, PNG stores
+   photographs losslessly, and git does not delta binaries — 607 KB of webp
+   against 5.1 MB of PNG is permanent history either way.
+
+   `sprig` and `leaf` (nodes 238:7576 and 217:7389, 1080 squares exported at 2×)
+   sit in `assets/` unbuilt — the plates the third accent was drawn in before it
+   was taken back out. They are paler than these two and are different _subjects_
+   rather than different grades, which is why they are named for what is in them
+   where the first two are named for their tone. Nothing draws them, so nothing
+   delivers them; add them to `ACCENTS` in `scripts/build-images.mjs` when
+   something does.
+
+   Both are delivered at 720 square, which is 2× the largest square the deck
+   draws (three columns and their gutters, 342.5 units), and the one- and
+   two-column squares are the same file scaled down. Placement is
+   `src/project-deck.js`; the geometry is `.deck__accent` in
+   `src/deck-page.css`.
 
 ### Substitutions to make
 
