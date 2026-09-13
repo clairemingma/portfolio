@@ -27,6 +27,7 @@
          and the page flashes unstyled. Here that flash would be an 18-image
          column several screens tall before the track exists to lay it sideways. -->
     <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="stylesheet" href="/src/project-brief.css" />
     <link rel="stylesheet" href="/src/deck-page.css" />
     <script type="module" src="/src/deck-page.js"></script>
   </head>
@@ -134,9 +135,25 @@
               between health and confidence.
             </p>
 
-            <!-- No source block. The deck template's is optional, and unlike
-                 Color Trends this project has no repository or notebook to
-                 point at. An empty pair of labels would be worse than none. -->
+            <!-- One destination where MFW Color Trends has two, and the label is the
+                 thing itself rather than a heading over it — the same 10pt line,
+                 once. This project has no repository or notebook to point at;
+                 what it has instead is the write-up.
+
+                 The href is LinkedIn's own shortener rather than the post's full
+                 URL. That is deliberate: the expanded one carries the share
+                 tracking LinkedIn appends when you copy a link out of it
+                 (utm_source, utm_medium, rcm), and none of that belongs in the
+                 markup. lnkd.in/p/gadTwJdc 301s to the post either way. -->
+            <div class="brief__source">
+              <a
+                class="brief__link"
+                href="https://lnkd.in/p/gadTwJdc"
+                target="_blank"
+                rel="noopener"
+                >Reflection</a
+              >
+            </div>
           </section>
 
           <!-- The site's footer row, reduced to what is ever visible here: the

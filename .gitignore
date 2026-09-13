@@ -11,15 +11,16 @@ public/img
 public/video
 
 # ---------------------------------------------------------------------------
-# Nothing is held back here any more. Both project pages ship, and both are
-# linked from the landing index, so both need their source frames in the
-# repository: Vercel builds from the checkout, and scripts/build-images.mjs
-# derives every slide plate from assets/. Excluded, the pages would still deploy
-# — neither projects/ directory is listed — but with nothing to build plates
-# from, so every slide would 404 behind a linked index row.
+# Nothing is held back here any more. All three project pages ship, and all
+# three are linked from the landing index, so all three need their source frames
+# in the repository: Vercel builds from the checkout, and
+# scripts/build-images.mjs derives every slide and plate frame from assets/.
+# Excluded, the pages would still deploy — no projects/ directory is listed — but
+# with nothing to build plates from, so every slide would 404 behind a linked
+# index row.
 #
 # To hold a project back again: list BOTH its projects/<slug>/ directory and its
-# assets/projects/<folder>/, and put the index row's href back to "#". The build
+# assets/projects/<slug>/, and put the index row's href back to "#". The build
 # tolerates the absence — vite.config.js only takes page inputs that exist, and
 # both build scripts skip what is not in the checkout — so the deploy quietly
 # builds everything else.

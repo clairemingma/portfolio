@@ -1,0 +1,188 @@
+/* ==========================================================================
+   TRENDING THIS WEEK — placements
+
+   Figma node 405:2201. The work was a weekly Instagram series, so what there is
+   to show is one plate and the account it ran on. A still project page:
+   src/still-page.css is the template and is loaded ahead of this. What is here
+   is the composition that hangs on the template's stage.
+
+   The composition is ONE 3:4 PLATE, cycling its frames, and nothing else. The
+   brief is in the column at the left, which the template places; nothing here
+   touches it.
+
+   IT USED TO BE THREE THINGS. A cyanotype square was tucked behind each of two
+   opposite corners — the small pale one at the top-left, the large deep one at
+   the bottom-right — on a charcoal stage. Both squares and the charcoal are gone
+   together; the reasoning is in still-page.css under THE ACCENTS, and what is
+   left here is the plate alone on paper. Everything the squares owned went with
+   them: their sizes, the three-eighths sliver each stood clear by, the padding
+   the group reserved for the overhang, and the term they took out of the width
+   cap.
+
+   WHAT CHANGED BEFORE THAT. This page used to be twelve columns of paper across
+   the whole window, with the plate in the MIDDLE at columns 5-8 and the copy
+   split around it — the head and two paragraphs at columns 1-3, the closing two
+   and REFLECTION at columns 10-12, one row lower. It is now the split every other
+   project page makes, and that takes the middle away: there is one side to put
+   copy on, so the two blocks are one column of prose, and the plate has the stage
+   to itself.
+
+   The stage is what is left of the window after the lead takes its 419.59, which
+   is not a whole number of columns and has no column lines on it to place
+   against. So the plate keeps the relationships the design actually states, and
+   the stage centres it:
+
+     plate box     3:4, the photograph's own ratio
+     plate width   four columns — 463.33 at the 1470 artboard
+
+   HEIGHT LEADS AND WIDTH FOLLOWS, which is the reverse of the old file and is
+   forced by the page having no scroll: height is the scarce dimension, and
+   artwork taller than the window on a page that cannot scroll is artwork that
+   cannot be seen. So the plate is capped against the stage and the width comes
+   off the ratio.
+   ========================================================================== */
+
+:root {
+  /* The stage, as a length. The template gives the lead --still-lead and the
+     stage takes the rest; the cap below needs it as a number because the plate
+     has to fit across as well as down. */
+  --stage-w: calc(100vw - var(--still-lead));
+
+  /* THE PLATE, capped three ways and the smallest wins:
+
+       1  the design's own box — four columns at 3:4, 617.8 at 1470
+       2  what the stage leaves DOWN: the window less the bar, less the air above
+          and below
+       3  what the stage leaves ACROSS: the plate inside the air
+
+     Neither of the last two binds at a real window shape — at the design's own
+     1470x835 the second allows 701.4 against the 617.8 the design draws, and the
+     third allows well over twice that. Both loosened when the squares went, the
+     second by the two gutters the print square used to hang past the plate's
+     bottom edge and the third by the two slivers; neither bound before and
+     neither binds now. They are here because a page that cannot scroll cannot
+     recover from artwork that overflows, and a cap that never fires costs
+     nothing. */
+  --plate-h: min(
+    calc((4 * var(--col) + 3 * var(--grid-gutter)) * 4 / 3),
+    calc(100dvh - var(--nav-h) - 2 * var(--still-air)),
+    calc((var(--stage-w) - 2 * var(--still-air)) * 4 / 3)
+  );
+  --plate-w: calc(var(--plate-h) * 3 / 4);
+}
+
+/* ==========================================================================
+   THE COMPOSITION
+   ========================================================================== */
+
+/* The group, which now holds one thing. Its padding used to BE the squares'
+   overhang — the plate was the content box and each edge a square hung past got
+   exactly as much padding as it hung, which both made the stage centre the whole
+   composition rather than the plate and let each square's own offset be zero.
+   With the squares gone there is no overhang to reserve, so the padding is gone
+   and the group's border box is the plate's.
+
+   It is kept as a wrapper rather than folded away: the stage centres one child
+   either way, and the markers the gallery build writes its frames between are
+   inside the plate, not here. position: relative is what the plate's frames are
+   absolute against, by way of .plate itself.
+
+   Below 768 it takes the whole measure, as everything on a narrow page does. */
+.post {
+  position: relative;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .post {
+    width: auto;
+  }
+}
+
+/* ==========================================================================
+   THE PLATE — the post, cycling
+   ========================================================================== */
+
+/* The carousel the project is, shown as the carousel it is: ten frames in one
+   box, one at a time, on a fixed beat. A gif in effect, but ten webp files rather
+   than an actual GIF — the format is 256 colours and these are photographs, so a
+   real gif of this would be either banded or several megabytes.
+
+   The box is a LINK, to the post itself. So the frames inside it are decoration
+   and the accessible name is on the first one alone; see the markup.
+
+   3:4 is the source's own ratio and the box's, so `cover` crops nothing. It is
+   there because the box is a derived length and the plate is a fixed export, and
+   the box is what should give way if the two ever disagree. */
+.plate {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  /* The frames are absolute, so the box has no content to be measured from and
+     a narrow page would collapse it. */
+  width: 100%;
+  background: var(--color-index-grey);
+}
+
+@media (min-width: 768px) {
+  .plate {
+    width: var(--plate-w);
+    height: var(--plate-h);
+    /* The box is set by the two lengths above, which already carry the ratio. */
+    aspect-ratio: auto;
+  }
+}
+
+/* Every frame is in the box at full size and all but one is hidden, which is the
+   same arrangement the landing page's project viewer uses (.viewer__plate) and
+   for the same reason: swapping one <img>'s src means the browser may not have
+   the next file decoded when the beat lands, and a blank frame in a ten-frame
+   loop reads as a broken image rather than as a cut.
+
+   visibility rather than opacity or display: it takes the frames out of the
+   accessibility tree and out of hit-testing without a transition to interrupt,
+   and unlike display:none it does not stop the browser decoding them up front,
+   which is the whole point of having them all here. */
+.plate__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  visibility: hidden;
+}
+
+.plate__frame.is-current {
+  visibility: visible;
+}
+
+/* ==========================================================================
+   THE ACCENTS — gone
+   ========================================================================== */
+
+/* Nodes 405:2238 and 405:2237 were drawn here: the wash square at the plate's
+   top-left, one grid step down from the plate's own top, and the print square at
+   the bottom-right, hanging two gutters below it. Both are off the page along
+   with the charcoal they sat on — see THE ACCENTS in still-page.css.
+
+   The design's nodes are named so the pairing survives the removal, because it
+   was worked out rather than guessed: the two exports have mean RGB 172,210,225
+   and 94,163,204, which are the built `wash` and `print` plates to a tenth of a
+   level. Anyone restoring these squares should take that mapping and not re-guess
+   it.
+
+   ========================================================================== */
+
+/* ==========================================================================
+   MOTION
+   ========================================================================== */
+
+/* There is no prefers-reduced-motion block here, and that is the point: the one
+   thing that moves on this page is the plate's cycle, and the cycle is a class
+   being moved by a timer rather than anything CSS is animating. So there is
+   nothing for a media query to turn off — hiding the change in CSS would leave
+   the interval running and the frames swapping underneath it. The preference is
+   honoured where it can actually be honoured, by not starting the timer, and it
+   is watched live so a change made while the page is open takes effect. See
+   src/plate-cycle.js. */

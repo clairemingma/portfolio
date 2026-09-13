@@ -62,6 +62,27 @@
   --grid-gutter: 12rem;
   --grid-margin: 16rem;
 
+  /* One column of the page grid, as a length, and the distance between two
+     column LINES. Every grid on this site is a `display: grid` and does not need
+     either — but the surfaces that lay things out arithmetically do, and there
+     are now two of them, so the derivation lives with the tokens it is derived
+     from rather than in one page's stylesheet.
+
+     Both are written against 100vw rather than in rem, so they stay the real
+     twelve columns of the real window at any width: --vr caps at 1px above 1440,
+     so the margins and gutters stop growing there and the columns take the rest.
+
+     --col-step is also the page's VERTICAL unit on the project pages, and that
+     is the design's own arithmetic rather than an assumption: things there sit on
+     twelve rows as well as twelve columns, and those rows are what the columns
+     would be if the page were SQUARE — same margin, same gutter, so the same
+     step. See src/still-page.css and .deck__accent. */
+  --col: calc(
+    (100vw - 2 * var(--grid-margin) - (var(--grid-columns) - 1) *
+          var(--grid-gutter)) / var(--grid-columns)
+  );
+  --col-step: calc(var(--col) + var(--grid-gutter));
+
   /* One curve and one duration for every eased state change on the page. Both
      are the reference's: it uses a very small set, all 250–450ms, and this is
      its symmetric ease-in-out — the one it eases the header's colour on.
@@ -808,9 +829,22 @@ p {
    No `margin: -1px`: that belongs to the older recipe where `clip` needed the box
    dragged off its own edge. clip-path does the hiding, and the negative margin
    only put the element at x -1, which is real overflow the narrow-page assertions
-   catch. Offsets are left auto so the box keeps its static position. */
+   catch.
+
+   PINNED TO 0,0 rather than left at its static position, and that is a fix rather
+   than a tidy. The copy-address status node is appended to the END of <body> (see
+   src/copy-address.js), so its static position is one pixel BELOW everything else
+   on the page — and an absolutely positioned box still counts toward the
+   scrollable overflow area even though nothing can see it. On a page that is
+   exactly one viewport tall that is the difference between no scrollbar and a
+   one-pixel scroll: the still project pages measured 901 against a 900 window,
+   with the whole of the extra pixel being this. Where it sits cannot matter
+   visually — clip-path has already taken it out of the picture — so the offsets
+   cost nothing and the page stops scrolling. */
 .u-sr-only {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 1px;
   height: 1px;
   padding: 0;

@@ -1,0 +1,165 @@
+/* ==========================================================================
+   BRIEF — title, facts, copy, source
+
+   The block every project page opens with: the project's name, the facts about
+   it in a label/value grid, the paragraph that says what the work was, and the
+   one or two places to read more.
+
+   It lived in deck-page.css until a project arrived that is not a deck — the
+   Trending This Week page is one still screen, not a presentation read sideways
+   — and the block is the same block on all of them. So it is here, on its own,
+   and each surface places it, absolutely and off the paper column it sits on:
+
+     `.deck__lead .brief`    deck-page.css
+     `.reel__lead .brief`    reel-page.css
+     `.still__lead .brief`   still-page.css
+
+   All three now do the same thing, which they did not always — the still pages
+   used to put this block in a cell of a twelve-column page grid, under
+   .brief--head and .brief--aside, and both of those modifiers are gone with that
+   layout. Nothing below positions anything.
+
+   Numbers are in design units like the rest of the site: 1 unit is 1px on the
+   artboard, and --vr resolves 1rem to it. styles.css is imported ahead of this
+   file, on every page that uses it.
+   ========================================================================== */
+
+/* Three columns wide, on the grid rather than measured: the design's 342 is
+   3 x 100.833 + 2 x 20 on the twelve-column grid, as near as a designer types
+   it. The gap is the design's own 20 between the title, the facts and the copy. */
+.brief {
+  display: flex;
+  flex-direction: column;
+  gap: 20rem;
+  width: calc(3 * var(--col) + 2 * var(--grid-gutter));
+}
+
+.brief__title {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: 21rem;
+  line-height: calc(23.1 / 21);
+  font-weight: 400;
+  color: var(--color-graphite);
+}
+
+/* Label on one column, value on two — so the facts grid is the full width of
+   the brief above it, columns 1 to 3, rather than the design's two.
+
+   The design gives the pair 222, which is columns 1 and 2, and that is right for
+   a value like "CSE 163" or a year. It is not right for a list: "Brand, Data,
+   Campaign, Research" broke over three lines in a single column and pushed every
+   row below it down. A value that has to wrap to be read is a value the grid is
+   too narrow for, so the grid widened rather than the copy being cut.
+
+   Explicit tracks rather than 1fr each, because the two are no longer equal: the
+   label keeps its single column and the value takes the two the label does not,
+   gutter included. The row gap is the design's 10; the column gap is the grid's
+   own, which is what keeps the value's left edge on the column-2 line. */
+.brief__facts {
+  display: grid;
+  grid-template-columns: var(--col) calc(2 * var(--col) + var(--grid-gutter));
+  gap: 10rem var(--grid-gutter);
+  width: calc(3 * var(--col) + 2 * var(--grid-gutter));
+}
+
+.brief__label {
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  text-transform: uppercase;
+  color: var(--color-system-grey);
+}
+
+.brief__value {
+  font-family: var(--font-primary);
+  font-size: 12rem;
+  line-height: calc(13.2 / 12);
+  color: var(--color-graphite);
+}
+
+/* .brief__prose, in the markup, has no rule of its own and needs none — it is
+   there so a brief whose copy runs to more than one paragraph spends the 20
+   above BETWEEN THE FACTS AND THE COPY and not between the paragraphs. The
+   designs set a column as one block in which every line is indented, not as
+   separate items with air between them, and `p { margin: 0 }` in styles.css
+   already makes that exactly nothing. Without the wrapper the brief's own gap
+   would fall between the paragraphs too.
+
+   It lives here rather than on either surface because it is the BRIEF's gap it
+   exists to redirect, and both surfaces have the same problem: it wraps the
+   still page's right-hand column of copy and the deck pages' two-paragraph
+   overview alike. */
+
+/* The indent is the design's, and it is large on purpose — it is the whole of
+   the paragraph's relationship to the two columns above it, which is why it is
+   121.335 and not a round number.
+   Every paragraph takes it, not only the first: where the copy runs to two the
+   design indents both, so the indent reads as the column's own left edge rather
+   than as the start of a piece of prose. */
+.brief__text {
+  font-family: var(--font-primary);
+  font-size: 16rem;
+  line-height: normal;
+  text-indent: 121.335rem;
+  color: var(--color-graphite);
+  text-wrap: pretty;
+}
+
+/* A link inside a paragraph, on the words rather than on an address. It is the
+   clause that says what the thing does, which is where the design draws it and
+   also the only link text that means anything read out of context — an earlier
+   pass had "See here" followed by the bracketed URL, and both are gone.
+
+   The underline is permanent, which is the one place this site draws one at
+   rest: everywhere else a link is a label in its own row or column and hover is
+   enough to find it, but a link set inside a paragraph of the same size and the
+   same colour is invisible until the pointer happens to cross it.
+
+   It is the FONT'S underline, not the site's 0.28em, and that is the one place
+   this file departs from the house rule on purpose. 0.28em is tuned for the
+   standalone labels it was written for — 10 and 11px uppercase Inter, one word in
+   its own cell, where the offset has empty space under it and reads as a
+   considered gap. Set on 16px serif prose it is about 4.5px below the baseline,
+   which clears the descenders entirely and leaves the rule floating nearer the
+   NEXT line than the words it belongs to. On a two-line link, as this one is,
+   the second line's rule sits almost against the third line's ascenders and the
+   whole thing reads as a stray horizontal rule ruled through the paragraph.
+
+   So this takes the design's own: from-font, which is the underline position and
+   thickness the typeface itself declares. skip-ink is off with it — the line
+   runs straight through the descenders in "giving" and "shoppers" rather than
+   breaking around them, which is what the design draws and what makes it read as
+   one continuous rule under a phrase instead of a dotted approximation of one.
+   Where the font carries no underline metrics, from-font falls back to the
+   browser's auto, which is still under the baseline rather than 4.5px below it. */
+.brief__inline {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: from-font;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+}
+
+/* Both lines are 10 and graphite, and the type is set on the container so they
+   cannot drift apart. That is the design: the pair is one label repeated, not a
+   grey heading over a darker link — which is what it briefly was here, when the
+   first line still wore .brief__label and came out at 11 in system grey. */
+.brief__source {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10rem;
+  font-family: var(--font-secondary);
+  font-size: 10rem;
+  line-height: normal;
+  text-transform: uppercase;
+  color: var(--color-graphite);
+}
+
+.brief__link:hover,
+.brief__link:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+}

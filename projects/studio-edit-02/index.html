@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Studio Edit 02 — Claire Ong</title>
+    <meta
+      name="description"
+      content="Studio Edit 02 — NikeSKIMS, 2026. Creator strategy for the SU26 drop. A project by Claire Ong."
+    />
+    <!-- The poster frame, which is what the clips show before a single video byte
+         arrives and what a reduced-motion reader sees instead of playback. It is
+         Figma's own first frame of the reel, already built for the landing page's
+         moving preview — see PROJECTS in scripts/build-images.mjs. -->
+    <link rel="preload" as="image" href="/img/projects/studio-edit-02-poster.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Same pair as the landing page: Inter is the design's label face and is
+         exact; Spectral stands in for WT Kormelink TRIAL until those woff2 files
+         land in public/fonts. See the @font-face block in styles.css. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=La+Belle+Aurore&family=Spectral:ital,wght@0,400;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Linked rather than imported by the module, for the same reason the other
+         project pages link theirs: an imported stylesheet is injected by
+         JavaScript in dev, so the browser paints the raw HTML first and the page
+         flashes unstyled. Here that flash would be the brief and two full-width
+         portrait videos in one column, before the split exists to put the copy
+         at the left and the clips on the stage. -->
+    <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="stylesheet" href="/src/project-brief.css" />
+    <link rel="stylesheet" href="/src/still-page.css" />
+    <link rel="stylesheet" href="/src/studio-edit-02.css" />
+    <script type="module" src="/src/still-page.js"></script>
+  </head>
+
+  <body>
+    <!-- ==================================================================
+         NAV — the landing page's bar, locked. is-over-paper is set here rather
+         than by a scroll frame because on this page it is true from the start
+         and stays true: the bar is a paper strip across the top of the window
+         and nothing on this page moves under it.
+         ================================================================== -->
+    <header class="nav nav--locked is-over-paper">
+      <a class="nav__mark" href="/">Claire M Ong</a>
+      <a class="nav__link nav__link--projects" href="/#projects"
+        ><span class="nav__link-word">Projects</span>,</a
+      >
+      <a class="nav__link nav__link--about" href="/#about"
+        ><span class="nav__link-word">About</span>,</a
+      >
+      <a
+        class="nav__link nav__link--linkedin"
+        href="https://www.linkedin.com/in/clairemong/"
+        target="_blank"
+        rel="me noopener"
+        ><span class="nav__link-word">LinkedIn</span></a
+      >
+      <button
+        class="nav__link nav__link--mail"
+        type="button"
+        data-copy="mclaireong@gmail.com"
+      >
+        <span class="nav__link-word" data-copy-label>mclaireong@gmail.com</span>
+      </button>
+    </header>
+
+    <!-- ==================================================================
+         THE SPLIT
+
+         The arrangement every project page makes: the brief at the left, the
+         work at the right — on one sheet of paper here rather than the dark
+         panel the decks and reels use. Neither side moves and there is
+         nothing to scroll to — both columns are exactly one screen tall, so the
+         page has no scrollbar rather than a hidden one.
+
+         What moves is inside the work. The two clips play silently on a loop,
+         which is the whole of this page's motion; see src/video-autoplay.js.
+         ================================================================== -->
+    <div class="still">
+      <!-- The lead. The brief is read once and stays where it is. -->
+      <div class="still__lead">
+        <section class="brief" aria-label="Project details">
+          <h1 class="brief__title">Studio Edit 02</h1>
+
+          <div class="brief__facts">
+            <span class="brief__label">[Client]</span>
+            <p class="brief__value">NikeSKIMS</p>
+
+            <span class="brief__label">[Role]</span>
+            <p class="brief__value">Brand Marketing Intern</p>
+
+            <span class="brief__label">[Type]</span>
+            <p class="brief__value">Creator Strategy</p>
+
+            <span class="brief__label">[Year]</span>
+            <p class="brief__value"><time datetime="2026">2026</time></p>
+          </div>
+
+          <!-- NO PARAGRAPH YET, and that is a gap rather than a decision.
+
+               The Figma frame draws one — it did before the mirror and it still
+               does — but the copy in it is still Confidence Underneath's, carried
+               over when the frame was duplicated: 7.7 million people with
+               diabetes, continuous glucose monitors, Dexcom x SKIMS. The frame
+               this revision came from is even still NAMED "Confidence Underneath
+               — Claire Ong". That is the wrong project's text, and setting it
+               under NikeSKIMS / Creator Strategy would be worse than leaving the
+               space empty, so the space is empty until the real copy is written.
+
+               The block is styled and placed for it: drop a .brief__prose holding
+               .brief__text paragraphs in between the facts and the source line
+               below, and it lands where the design has it — the 20 the brief
+               keeps between its children is the design's own. There is room for
+               it and then some: the brief is about 250 tall as it stands, in a
+               band of 760, and the spacer above it gives way before anything
+               else does. See `.still__lead .brief` in src/still-page.css. -->
+
+          <!-- One destination, and the label is the thing itself rather than a
+               heading over it — the same 10pt line the other project pages
+               carry.
+
+               The href is LinkedIn's own shortener rather than the post's full
+               URL, for the reason given on the other two: the expanded one
+               carries the share tracking LinkedIn appends when you copy a link
+               out of it (utm_source, utm_medium, rcm), and none of that belongs
+               in the markup. lnkd.in/p/e_4xBsrW 301s to the post either way. -->
+          <div class="brief__source">
+            <a
+              class="brief__link"
+              href="https://lnkd.in/p/e_4xBsrW"
+              target="_blank"
+              rel="noopener"
+              >Reflection</a
+            >
+          </div>
+        </section>
+
+        <!-- The site's footer row, reduced to what is ever visible here: the
+             work covers everything right of this column, so the five-column grid
+             the other pages use would be four hidden cells and one line.
+             The pair below 768 is not decoration — the bar cannot hold the mark,
+             two words and a 20-character address on four columns, so it drops
+             them, and this is the only other place they appear. -->
+        <footer class="still__foot">
+          <p class="still__foot-rule">&copy; 2026 Claire Ong</p>
+          <a
+            class="still__foot-link"
+            href="https://www.linkedin.com/in/clairemong/"
+            target="_blank"
+            rel="me noopener"
+            >LinkedIn</a
+          >
+          <button
+            class="still__foot-link"
+            type="button"
+            data-copy="mclaireong@gmail.com"
+          >
+            <span data-copy-label>mclaireong@gmail.com</span>
+          </button>
+        </footer>
+      </div>
+
+      <!-- ================= THE WORK =================
+           The stage, with the composition centred on it: two portrait clips side
+           by side, one gutter apart and one grid step out of line. A cyanotype
+           square used to straddle the leading clip's outer edge, on charcoal;
+           both are gone — see THE ACCENTS in src/still-page.css.
+
+           The composition is a GROUP rather than two things placed on the stage,
+           because its relationship is internal — the stagger is between the two
+           clips. So the group holds its own shape and the stage only has to
+           centre it. See src/studio-edit-02.css.
+
+           The clips are GENERATED between the markers: run `npm run images` to
+           deliver the sources from assets/, then `npm run gallery` to write the
+           elements in here. Everything outside the markers is hand-written and
+           is not touched.
+
+           The slots are the design's, and slot 1 is the LEADING clip — the upper
+           one — which is also the one whose first frame is the landing page's
+           poster, so the file order and the design's numbering agree.
+
+           A slot whose source is not in the checkout is simply not written: the
+           page renders with whichever clips exist rather than with an empty box
+           where the missing one goes. That is the same rule the decks follow —
+           see the note on absent sources in scripts/build-images.mjs.
+
+           muted and playsinline are ATTRIBUTES here and not something the
+           module sets, because this is the only place they count: every browser
+           gates autoplay on the element being muted at the moment it decides,
+           which is before any script runs. A video muted by script is a video
+           that has already been refused. See src/video-autoplay.js. -->
+      <main class="still__stage">
+        <div class="clips">
+          <!-- clips:start -->
+          <video
+            class="clip clip--1"
+            data-autoplay
+            src="/video/studio-edit-02.mp4"
+            poster="/img/projects/studio-edit-02-poster.webp"
+            aria-label="Studio Edit 02 — a NikeSKIMS mat sequence, playing silently on a loop."
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="auto"
+          ></video>
+          <video
+            class="clip clip--2"
+            data-autoplay
+            src="/video/studio-edit-02-b.mp4"
+            poster="/img/projects/studio-edit-02-b-poster.webp"
+            aria-label="Studio Edit 02 — a NikeSKIMS reformer sequence, playing silently on a loop."
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="auto"
+          ></video>
+          <!-- clips:end -->
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

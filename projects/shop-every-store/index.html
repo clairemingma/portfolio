@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shop Every Store — Claire Ong</title>
+    <meta
+      name="description"
+      content="Shop Every Store — Phia, 2026. A marketplace page on phia.com: search, filters, sort and a product grid across hundreds of retailers. A project by Claire Ong."
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="/img/projects/shop-every-store/1.webp"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Same pair as the landing page: Inter is the design's label face and is
+         exact; Spectral stands in for WT Kormelink TRIAL until those woff2 files
+         land in public/fonts. See the @font-face block in styles.css. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=La+Belle+Aurore&family=Spectral:ital,wght@0,400;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Linked rather than imported by the module, for the same reason the other
+         project pages link theirs: an imported stylesheet is injected by
+         JavaScript in dev, so the browser paints the raw HTML first and the page
+         flashes unstyled. Here that flash would be two full-width mockups in a
+         column with the brief above them.
+
+         No stylesheet of its own. Eight Immortals needed none either — the reel
+         template is the whole layout, and what differs between two reels is the
+         size of their frames, which travels on the elements as --shot-h. -->
+    <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="stylesheet" href="/src/project-brief.css" />
+    <link rel="stylesheet" href="/src/reel-page.css" />
+    <script type="module" src="/src/reel-page.js"></script>
+  </head>
+
+  <body>
+    <!-- ==================================================================
+         NAV — the landing page's bar, locked. is-over-paper is set here rather
+         than by a scroll frame because on this page it is true from the start
+         and stays true: the bar sits over the paper panel, which does not move.
+         ================================================================== -->
+    <header class="nav nav--locked is-over-paper">
+      <a class="nav__mark" href="/">Claire M Ong</a>
+      <a class="nav__link nav__link--projects" href="/#projects"
+        ><span class="nav__link-word">Projects</span>,</a
+      >
+      <a class="nav__link nav__link--about" href="/#about"
+        ><span class="nav__link-word">About</span>,</a
+      >
+      <a
+        class="nav__link nav__link--linkedin"
+        href="https://www.linkedin.com/in/clairemong/"
+        target="_blank"
+        rel="me noopener"
+        ><span class="nav__link-word">LinkedIn</span></a
+      >
+      <button
+        class="nav__link nav__link--mail"
+        type="button"
+        data-copy="mclaireong@gmail.com"
+      >
+        <span class="nav__link-word" data-copy-label>mclaireong@gmail.com</span>
+      </button>
+    </header>
+
+    <!-- ==================================================================
+         THE REEL
+
+         The second page in this format, and the same two columns: the brief on
+         paper at the left stays where it is, and the work passes up the right
+         one frame to a screen, each snapping to the middle of the window.
+
+         No scroller of its own and no script. The document is the scroller —
+         which is what lets the left column stick against it — and the snapping
+         is a pair of declarations in src/reel-page.css.
+         ================================================================== -->
+    <main class="reel">
+      <!-- The paper, and it does not move. One screen tall and stuck to the top
+           of the window, so the brief is read once and stays readable for the
+           whole way down. -->
+      <div class="reel__lead">
+        <section class="brief" aria-label="Project details">
+          <h1 class="brief__title">Shop Every Store</h1>
+
+          <div class="brief__facts">
+            <span class="brief__label">[Client]</span>
+            <p class="brief__value">Phia</p>
+
+            <span class="brief__label">[Role]</span>
+            <p class="brief__value">Product Marketing Intern</p>
+
+            <span class="brief__label">[Type]</span>
+            <p class="brief__value">Product Design</p>
+
+            <span class="brief__label">[Year]</span>
+            <p class="brief__value"><time datetime="2026">2026</time></p>
+          </div>
+
+          <!-- Two paragraphs, so they are wrapped: .brief__prose carries no rule
+               of its own and is here to take the brief's 20 as ONE child, which
+               is what keeps the air between the facts and the copy and out from
+               between the paragraphs.
+
+               THE FIRST PARAGRAPH IS SHORT OF WHERE IT WAS GOING. The design's
+               own text ends mid-clause — "…In one click, Phia " — with the
+               sentence unwritten and a trailing space where the rest should be.
+               Its two complete sentences are set here and the dangling clause is
+               not, because a portfolio page that stops mid-sentence reads as
+               broken rather than as unfinished. Put the clause back the moment it
+               has an ending; nothing else here changes. -->
+          <div class="brief__prose">
+            <p class="brief__text">
+              Shopping is fragmented. Phia is the end to end shopping discovery
+              platform.
+            </p>
+            <p class="brief__text">
+              I designed and shipped Shop, a dedicated marketplace page on
+              phia.com where users can browse product inventory through a
+              familiar catalog experience: search, filters, sort, and a product
+              grid. This page help users discover products before they land on
+              an individual Phia product page.
+            </p>
+          </div>
+
+          <!-- One destination, and the label is the thing itself rather than a
+               heading over it — the same 10pt line the other project pages
+               carry. The work IS a page on phia.com, so the honest place to send
+               someone is that page.
+
+               The address is the design's own rather than a guess: the browser
+               mockup in the first frame has phia.com/shop in its address bar,
+               and the paragraph above names the same site. -->
+          <div class="brief__source">
+            <a
+              class="brief__link"
+              href="https://phia.com/shop"
+              target="_blank"
+              rel="noopener"
+              >Shop</a
+            >
+          </div>
+        </section>
+
+        <!-- The site's footer row, reduced to what is ever visible here: the
+             work covers everything right of the paper, so the five-column grid
+             the other pages use would be four hidden cells and one line.
+             The pair below 768 is not decoration — the bar cannot hold the mark,
+             two words and a 20-character address on four columns, so it drops
+             them, and this is the only other place they appear. -->
+        <footer class="reel__foot">
+          <p class="reel__foot-rule">&copy; 2026 Claire Ong</p>
+          <a
+            class="reel__foot-link"
+            href="https://www.linkedin.com/in/clairemong/"
+            target="_blank"
+            rel="me noopener"
+            >LinkedIn</a
+          >
+          <button
+            class="reel__foot-link"
+            type="button"
+            data-copy="mclaireong@gmail.com"
+          >
+            <span data-copy-label>mclaireong@gmail.com</span>
+          </button>
+        </footer>
+      </div>
+
+      <!-- ================= THE WORK =================
+           One frame to a screen, each centred and each a snap stop. GENERATED
+           between the markers: run `npm run images` to build the frames from
+           assets/, then `npm run gallery` to write them in here. Everything
+           outside the markers is hand-written and is not touched.
+
+           Both frames are DEVICE MOCKUPS rather than photographs — the desktop
+           marketplace page and the same page on a phone — and their sources are
+           the one part of this pipeline that is not automatic: they come from
+           Figma's own 2x export rather than from a photograph, so re-exporting
+           them is a manual step if the mockups change.
+
+           The phone is its export whole; the browser is CUT TO ITS WINDOW. Only
+           the top half of that export is browser — the rest is drop shadow and
+           empty background — and a frame is capped at the height of the window
+           here, so delivered whole it spent half a screen on shadow and drew the
+           mockup at half the size the design gives it. The crop is an explicit
+           rect in the build, at exactly 2x the design's box, so what lands below
+           is full-resolution and unresampled. See REELS in
+           scripts/build-images.mjs. -->
+      <div class="reel__shots">
+        <!-- shots:start -->
+        <div class="reel__screen">
+          <a
+            class="reel__link"
+            href="https://phia.com/shop"
+            target="_blank"
+            rel="noopener"
+            aria-label="Shop, on phia.com"
+          >
+            <img
+              class="reel__shot"
+              style="--shot-h: 587"
+              src="/img/projects/shop-every-store/1.webp"
+              alt="Shop Every Store — frame 1 of 2."
+              fetchpriority="high"
+              decoding="async"
+            />
+          </a>
+        </div>
+        <div class="reel__screen">
+          <a
+            class="reel__link"
+            href="https://phia.com/shop"
+            target="_blank"
+            rel="noopener"
+            aria-label="Shop, on phia.com"
+          >
+            <img
+              class="reel__shot"
+              style="--shot-h: 707"
+              src="/img/projects/shop-every-store/2.webp"
+              alt="Shop Every Store — frame 2 of 2."
+              loading="lazy"
+              decoding="async"
+            />
+          </a>
+        </div>
+        <!-- shots:end -->
+      </div>
+    </main>
+  </body>
+</html>

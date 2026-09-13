@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trending This Week — Claire Ong</title>
+    <meta
+      name="description"
+      content="Trending This Week — Phia, 2025. A weekly trending-products series built out of the shopper data, and the account it ran on. A project by Claire Ong."
+    />
+    <!-- The first frame of the plate, which is the one the markup shows and the
+         only one the page needs before the cycle starts. Written by
+         scripts/build-gallery.mjs from what the image build emitted. -->
+    <link rel="preload" as="image" href="/img/projects/trending-this-week/1.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Same pair as the landing page: Inter is the design's label face and is
+         exact; Spectral stands in for WT Kormelink TRIAL until those woff2 files
+         land in public/fonts. See the @font-face block in styles.css. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=La+Belle+Aurore&family=Spectral:ital,wght@0,400;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Linked rather than imported by the module, for the same reason the other
+         project pages link theirs: an imported stylesheet is injected by
+         JavaScript in dev, so the browser paints the raw HTML first and the page
+         flashes unstyled. Here that flash would be the brief followed by ten
+         full-width photographs in a column, before the split exists to put the
+         copy at the left and the box exists to stack the frames into one. -->
+    <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="stylesheet" href="/src/project-brief.css" />
+    <link rel="stylesheet" href="/src/still-page.css" />
+    <link rel="stylesheet" href="/src/trending-this-week.css" />
+    <script type="module" src="/src/still-page.js"></script>
+  </head>
+
+  <body>
+    <!-- ==================================================================
+         NAV — the landing page's bar, locked. is-over-paper is set here rather
+         than by a scroll frame because on this page it is true from the start
+         and stays true: the bar is a paper strip across the top of the window
+         and nothing on this page moves under it.
+         ================================================================== -->
+    <header class="nav nav--locked is-over-paper">
+      <a class="nav__mark" href="/">Claire M Ong</a>
+      <a class="nav__link nav__link--projects" href="/#projects"
+        ><span class="nav__link-word">Projects</span>,</a
+      >
+      <a class="nav__link nav__link--about" href="/#about"
+        ><span class="nav__link-word">About</span>,</a
+      >
+      <a
+        class="nav__link nav__link--linkedin"
+        href="https://www.linkedin.com/in/clairemong/"
+        target="_blank"
+        rel="me noopener"
+        ><span class="nav__link-word">LinkedIn</span></a
+      >
+      <button
+        class="nav__link nav__link--mail"
+        type="button"
+        data-copy="mclaireong@gmail.com"
+      >
+        <span class="nav__link-word" data-copy-label>mclaireong@gmail.com</span>
+      </button>
+    </header>
+
+    <!-- ==================================================================
+         THE SPLIT
+
+         The arrangement every project page makes: the brief at the left, the
+         work at the right — on one sheet of paper here rather than the dark
+         panel the decks and reels use. Neither side moves and there is
+         nothing to scroll to — both columns are exactly one screen tall, so the
+         page has no scrollbar rather than a hidden one.
+
+         What moves is inside the work. The plate cycles its ten frames on a
+         fixed beat, which is the whole of this page's motion; see
+         src/plate-cycle.js.
+         ================================================================== -->
+    <div class="still">
+      <!-- The lead. The brief is read once and stays where it is. -->
+      <div class="still__lead">
+        <!-- THE COPY IS ONE COLUMN NOW. It used to be two blocks on opposite
+             sides of the plate — the title, the facts and the opening paragraphs
+             at the left of a full-width page, the closing two and REFLECTION at
+             the far right, a row lower. That split was a property of the old
+             layout: the plate was in the MIDDLE of the page, so there were two
+             sides to put copy on. There is one side now, and the two blocks are
+             simply the same column of prose they always set to, run together in
+             reading order.
+
+             It is a long brief for a 420 column — about 700 units of copy in a
+             band of 760 — which is why the template lets the 222 offset give way
+             rather than holding it and pushing the last paragraph under the
+             footer. See `.still__lead .brief` in src/still-page.css. -->
+        <section class="brief" aria-label="Project details">
+          <h1 class="brief__title">Trending This Week</h1>
+
+          <div class="brief__facts">
+            <span class="brief__label">[Client]</span>
+            <p class="brief__value">Phia</p>
+
+            <span class="brief__label">[Role]</span>
+            <p class="brief__value">Product Marketing Intern</p>
+
+            <span class="brief__label">[Type]</span>
+            <p class="brief__value">Social &amp; Content / Data</p>
+
+            <span class="brief__label">[Year]</span>
+            <p class="brief__value"><time datetime="2025">2025</time></p>
+          </div>
+
+          <!-- .brief__prose so the brief's own 20 falls between the facts and the
+               block of prose and NOT between the paragraphs: the design sets a
+               column as one block in which every line is indented, not as
+               separate items with air between them. All four paragraphs are in
+               the one wrapper for that reason — the join between what used to be
+               the two blocks should not read as a break. -->
+          <div class="brief__prose">
+            <p class="brief__text">
+              Shopping is inherently social. People want to know what everyone
+              else is buying, and Phia was sitting on hundreds of thousands of
+              weekly data points, unused.
+            </p>
+            <p class="brief__text">
+              I began querying our shopper data to see what was actually there.
+              Which products were being viewed, which brands, how that shifted
+              week to week. Then I kept pulling the thread: did top products
+              differ by city, was the fastest-growing item the same as the
+              most-viewed one, what was the top product within a single brand or
+              category.
+            </p>
+            <!-- The link is on the clause that says what the thing does, which
+                 is where the design draws it. It was "See here" followed by the
+                 bracketed address, and both are gone: an address set in the same
+                 serif at the same size is a thing to be typed out rather than
+                 followed, and "see here" is a name that tells anyone listing this
+                 page's links nothing. .brief__inline is the one link on this site
+                 underlined at rest — see the note on it. -->
+            <p class="brief__text">
+              The top trending products and brands post has run weekly since and
+              continues today, roughly 60 posts to date. It became the seed of a
+              larger product.
+              <a
+                class="brief__inline"
+                href="https://phia-partnerships.vercel.app/"
+                target="_blank"
+                rel="noopener"
+                >We used it to start giving brands real insight into their
+                shoppers,</a
+              >
+              like what else the people who shop you also shop.
+            </p>
+            <p class="brief__text">
+              Alongside the trending series I ran the account more broadly. Over
+              three months, I created 27 posts, carousels, and reels, pushing
+              follower growth up 33.8%, about 35,000 new followers, with 6.6
+              million plus in total reach. The top single piece hit over a
+              million views, 16,000 interactions, and 2,000 saves, roughly 14
+              times what typical content on the account was pulling.
+            </p>
+          </div>
+
+          <!-- One destination, and the label is the thing itself rather than a
+               heading over it — the same 10pt line the other project pages
+               carry.
+
+               The href is LinkedIn's own shortener rather than the post's full
+               URL, for the reason given on Confidence Underneath's: the expanded
+               one carries the share tracking LinkedIn appends when you copy a
+               link out of it (utm_source, utm_medium, rcm), and none of that
+               belongs in the markup. lnkd.in/p/e2cQfRww 301s to the post either
+               way. -->
+          <div class="brief__source">
+            <a
+              class="brief__link"
+              href="https://lnkd.in/p/e2cQfRww"
+              target="_blank"
+              rel="noopener"
+              >Reflection</a
+            >
+          </div>
+        </section>
+
+        <!-- The site's footer row, reduced to what is ever visible here: the
+             work covers everything right of this column, so the five-column grid
+             the other pages use would be four hidden cells and one line.
+             The pair below 768 is not decoration — the bar cannot hold the mark,
+             two words and a 20-character address on four columns, so it drops
+             them, and this is the only other place they appear. -->
+        <footer class="still__foot">
+          <p class="still__foot-rule">&copy; 2026 Claire Ong</p>
+          <a
+            class="still__foot-link"
+            href="https://www.linkedin.com/in/clairemong/"
+            target="_blank"
+            rel="me noopener"
+            >LinkedIn</a
+          >
+          <button
+            class="still__foot-link"
+            type="button"
+            data-copy="mclaireong@gmail.com"
+          >
+            <span data-copy-label>mclaireong@gmail.com</span>
+          </button>
+        </footer>
+      </div>
+
+      <!-- ================= THE WORK =================
+           The stage, with the post cycling in its box, centred on it. A cyanotype
+           square used to peek out from behind each of two opposite corners, on
+           charcoal; both are gone — see THE ACCENTS in src/still-page.css.
+
+           The plate is still wrapped in a GROUP, which is what the stage centres.
+           It reserved the squares' overhang when there were squares; it is now a
+           plain box around the plate. See src/trending-this-week.css.
+
+           The frames are GENERATED between the markers. Do not hand-edit: run
+           `npm run images` to build them from assets/, then `npm run gallery`
+           to write them in here. Everything outside the markers is hand-written
+           and is not touched.
+
+           The set runs 1..10 and comes from two places: 2..10 are the carousel
+           folder, and 1 is the cover, which was already in assets/ under the
+           slug because it is this project's preview plate on the landing page
+           too. The build names it rather than the folder holding a second copy
+           of it — see PLATES in scripts/build-images.mjs.
+
+           The accessible name is the FIRST frame's alt, and every other frame is
+           empty-alt and aria-hidden. That is the one arrangement that survives
+           the cycle: the name of this link must not depend on which of ten
+           photographs happens to be showing when someone reaches it. -->
+      <main class="still__stage">
+        <div class="post">
+          <a
+            class="plate"
+            data-plate-cycle
+            href="https://www.instagram.com/p/DSqNxT-km0C/?img_index=1"
+            target="_blank"
+            rel="noopener"
+          >
+            <!-- frames:start -->
+            <img
+              class="plate__frame is-current"
+              data-frame
+              src="/img/projects/trending-this-week/1.webp"
+              alt="The 4 fastest rising trends in fashion — the post on Instagram."
+              fetchpriority="high"
+              decoding="async"
+            />
+            <img
+              class="plate__frame"
+              data-frame
+              src="/img/projects/trending-this-week/2.webp"
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+            />
+            <img
+              class="plate__frame"
+              data-frame
+              src="/img/projects/trending-this-week/3.webp"
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+            />
+            <img
+              class="plate__frame"
+              data-frame
+              src="/img/projects/trending-this-week/4.webp"
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+            />
+            <img
+              class="plate__frame"
+              data-frame
+              src="/img/projects/trending-this-week/5.webp"
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+            />
+            <img
+              class="plate__frame"
+              data-frame
+              src="/img/projects/trending-this-week/6.webp"
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+            />
+            <img
+              class="plate__frame"
+              data-frame
+              src="/img/projects/trending-this-week/7.webp"
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+            />
+            <img
+              class="plate__frame"
+              data-frame
+              src="/img/projects/trending-this-week/8.webp"
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+            />
+            <img
+              class="plate__frame"
+              data-frame
+              src="/img/projects/trending-this-week/9.webp"
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+            />
+            <img
+              class="plate__frame"
+              data-frame
+              src="/img/projects/trending-this-week/10.webp"
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+            />
+            <!-- frames:end -->
+          </a>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

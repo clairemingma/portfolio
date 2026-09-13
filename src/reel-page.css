@@ -1,0 +1,386 @@
+/* ==========================================================================
+   REEL PROJECT PAGE — the template
+
+   Figma node 417:2418. A third kind of project page, after the decks and the
+   still ones, and it is the first that reads DOWNWARD:
+
+     the brief sits still on paper at the left
+     the frames pass up the right, one to a screen, each snapped to the middle
+
+   THE AXIS TURNED, and that is what this file is. Eight Immortals was built as a
+   deck three revisions ago — one horizontal track, the brief travelling off the
+   left edge with it, a progress row underneath. The design now scrolls the work
+   vertically past a brief that stays put, so almost nothing of deck-page.css
+   applies: there is no track, no wheel to redirect, no progress to report and no
+   end to push past. What survives is the shape of the opening frame, which is why
+   the paper is still 419.586 wide and the brief still starts on the 222 line.
+
+   Load order is styles.css, project-brief.css, then this.
+
+   NOTHING HERE IS SCRIPTED. The snapping is CSS, the panel stays put with
+   `position: sticky`, and the only JavaScript the page loads is the address
+   button in the bar — src/reel-page.js is that and nothing else.
+
+   Numbers are in design units like the rest of the site: 1 unit is 1px on the
+   artboard, and --vr resolves 1rem to it.
+   ========================================================================== */
+
+:root {
+  /* Paper to the left of the work, and its right edge is where the word PROJECTS
+     starts in the bar — the same alignment the deck pages make, and the reason
+     the design's panel is 420 rather than a round number.
+
+     The deck has project-deck.js measure that word and publish --projects-left,
+     because the bar sets PROJECTS flush right in column 4 and its left edge is
+     therefore a TEXT measurement. This page runs no such module, so it takes the
+     arithmetic the deck uses as its own fallback: the column-5 line less the
+     gutter and the design's width for the word. That comes to 419.59 against the
+     design's 420, and it only drifts if the label's face changes metrics — which
+     it will not, since the bar's labels are Inter and Inter is exact. */
+  --reel-lead: calc(var(--grid-margin) + 4 * var(--col-step) - 83.742rem);
+
+  /* Air between a frame and the edges of its screen. It has one job and it is not
+     decoration: it is what guarantees a frame is SHORTER THAN THE WINDOW, which
+     is what keeps its neighbours off the screen when it is centred. See the cap
+     on .reel__shot. */
+  --shot-air: 40rem;
+}
+
+/* The page scrolls, and it snaps. `mandatory` rather than `proximity` because
+   every screen here is a frame and there is nothing between them to rest on —
+   proximity would leave the reel able to stop halfway, showing the bottom of one
+   picture and the top of the next, which is the one arrangement this design is
+   built to prevent.
+
+   On the ROOT and not on a nested scroller, because the document itself is the
+   scroller: the left panel is sticky against it, and a scroller of its own would
+   have taken that away.
+
+   NO SCROLLBAR. The design draws none, and a native bar down the right edge of a
+   page whose whole right side is artwork reads as a seam in the picture rather
+   than as a control. The deck pages hide theirs for the same reason.
+
+   It is a real trade and not a free one: the bar is the only thing on screen that
+   says how far down this page goes, and it is also a thing you can drag. What is
+   left is every other way of moving — wheel, trackpad, touch, arrow keys, Page
+   Up/Down, Home/End, and the space bar — none of which the rule touches, and the
+   snap means all of them land in the same places. The deck pages can afford this
+   more cheaply because they draw their own indicator; a reel of two or three
+   frames is short enough that there is little to indicate.
+
+   Two declarations, because the two engines spell it differently and neither
+   understands the other's. */
+html {
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+/* Charcoal, and it is the page rather than a panel. On a deck the grey is one
+   screen wide and sticks while the track travels over it; here the work simply
+   sits on it all the way down, so it is the background and there is nothing to
+   pin. */
+body {
+  background: var(--color-charcoal);
+}
+
+/* The bar does not travel on this page — there is no print to rest on — so it
+   wears .nav--locked exactly as the other project pages do. Repeated here rather
+   than shared because it is one declaration and deck-page.css is not loaded. */
+.nav--locked {
+  transform: none;
+}
+
+/* ==========================================================================
+   THE PAGE
+   ========================================================================== */
+
+/* Two columns: the paper that stays and the frames that move. A flex row on the
+   document's own flow, so the right column's height is what the page scrolls
+   through and the left column can stick against it.
+
+   align-items: flex-start is what makes the sticky work. The default `stretch`
+   would give the lead the full height of the row — every screen of it — and an
+   element as tall as its scroll container has nothing to stick to. */
+.reel {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* ==========================================================================
+   THE LEAD — the paper that stays put
+   ========================================================================== */
+
+/* One screen tall, stuck to the top of the window, and it never moves again.
+   That is the design's instruction in the plainest terms available: the brief is
+   read once and stays readable while the work goes past it.
+
+   `top: 0` and not the bar's height: the panel runs UNDER the locked bar, which
+   is paper-coloured and over paper here, so the two are continuous and the seam
+   is invisible. The brief's own 222 already clears the bar by a wide margin.
+
+   flex: none, or the row would let this column be squeezed by the frames beside
+   it — which are wider than their column and are meant to be. */
+.reel__lead {
+  position: sticky;
+  top: 0;
+  flex: none;
+  width: var(--reel-lead);
+  height: 100dvh;
+  background: var(--color-paper);
+}
+
+/* The design's own 222, which is the line the deck pages start their brief on
+   too — so a reader arriving from either kind of project page finds the title in
+   the same place.
+
+   Absolute rather than in the flow, because the footer below is anchored to the
+   bottom of the same panel and the space between them is not a gap, it is
+   whatever the window leaves. */
+.reel__lead .brief {
+  position: absolute;
+  left: var(--grid-margin);
+  top: 222rem;
+}
+
+/* Below 768 the two columns stack — see the media query at the foot of this file
+   — and 222 of offset on a phone spends a third of the screen before a word is
+   set. The band between the bars instead, with the content centred in it, which
+   is the same trade the deck pages make down there and for the same reason. */
+@media (max-width: 767px) {
+  .reel__lead .brief {
+    position: static;
+    justify-content: center;
+    min-height: 100dvh;
+    /* The two bars, top and bottom, and the margin at the sides — the offsets the
+       absolute placement above carries, restated as padding because down here the
+       brief is in the flow.
+
+       The BOTTOM one is not optional. The footer is absolute at the foot of this
+       panel, and the panel's height is the brief's: without the padding a brief
+       whose copy outgrows the screen — which this one does at a phone's measure —
+       grows under the copyright line instead of above it. */
+    padding: var(--nav-h) var(--grid-margin) 37.594rem;
+  }
+}
+
+/* ==========================================================================
+   THE FOOT
+   ========================================================================== */
+
+/* Not the site's .foot, and not the deck's either — though it is the deck's
+   arrangement: the copyright line alone in the same 10 / 17.594 / 10 band the
+   real footer keeps, so it lands on the same baseline as the footer on every
+   other page. LinkedIn and the address are in the bar from 768 up and appear
+   here only below it, where the bar has four columns and cannot hold them.
+
+   Anchored to the BOTTOM of the sticky panel, so it sits on the floor of the
+   window and stays there — the design draws it at 797.406, which is exactly one
+   footer band up from an 835-tall screen. */
+.reel__foot {
+  position: absolute;
+  left: var(--grid-margin);
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--grid-gutter);
+  height: 37.594rem;
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  color: var(--color-system-grey);
+}
+
+.reel__foot-rule {
+  margin: 0;
+}
+
+/* The pair the bar drops below 768. Graphite rather than system grey, because
+   they are links and the line beside them is not. */
+.reel__foot-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-graphite);
+  cursor: pointer;
+}
+
+.reel__foot-link:hover,
+.reel__foot-link:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+}
+
+@media (min-width: 768px) {
+  .reel__foot-link {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   THE SHOTS — one frame to a screen
+   ========================================================================== */
+
+/* The column of work. It takes the rest of the row, and its height is the sum of
+   its screens, which is what the document scrolls through. */
+.reel__shots {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ONE SCREEN PER FRAME, and the frame centred in it. This is the whole of the
+   design's "you should not be able to see the other two", and it holds by
+   arithmetic rather than by tuning:
+
+   with each screen exactly one viewport tall and the frame centred in it, the
+   NEXT frame's centre is one whole viewport below this one's. Its top edge is
+   therefore (100dvh - its own height / 2) below the centre of the screen, while
+   the bottom of the window is only 50dvh below it. So the next frame is off the
+   screen for as long as its height is less than the window — and the cap on
+   .reel__shot below is what makes that true at every window size rather than
+   only at the one the design was drawn at.
+
+   scroll-snap-align: center on the SCREEN rather than on the picture: the screen
+   is a viewport tall, so centring it centres what is centred inside it, and the
+   snap position stays the same whichever frame is in it and however tall that
+   frame turns out to be.
+
+   scroll-snap-stop: always so a fast flick cannot skip one. A reel of three is
+   short enough that a skipped frame is a third of the work missed. */
+.reel__screen {
+  display: grid;
+  place-items: center;
+  height: 100dvh;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+/* The frame itself, at the size the design draws it — 553 for the product shots
+   and 660 for the dieline, carried on the element as --shot-h in design units,
+   the same way the landing page's previews carry their own leaf box.
+
+   HEIGHT LEADS AND WIDTH FOLLOWS, for the reason the deck's slides do: height is
+   the scarce dimension here, and a frame that does not fit its screen is a frame
+   whose neighbours show. The cap is the design's height or what the window
+   leaves once the bar and the air above and below are taken off it, whichever is
+   smaller — and on the design's own 835 nothing binds, so 553 and 660 are what
+   render.
+
+   width: auto against a max-height is what keeps the ratio: the delivered file
+   already has its box's shape, because scripts/build-images.mjs cut it to that
+   box, so the picture's own aspect does the work and nothing here has to state
+   it. The max-width is the second cap, and it is the one that binds on a narrow
+   window rather than a short one.
+
+   No object-fit anywhere. There is nothing to fit — the element is the picture's
+   own shape at the size it is allowed to be. */
+.reel__shot {
+  display: block;
+  width: auto;
+  height: auto;
+  max-height: min(
+    calc(var(--shot-h) * 1rem),
+    calc(100dvh - var(--nav-h) - 2 * var(--shot-air))
+  );
+  max-width: calc(100% - 2 * var(--shot-air));
+}
+
+/* THE FRAME AS A LINK, on the reels whose work is a live place. Shop Every Store
+   is pictures of a page on phia.com, so the pictures go there; Eight Immortals is
+   a dieline and two photographs of a physical box, so its frames are bare <img>
+   and this rule never applies to them. Which reels get one is declared in
+   scripts/build-gallery.mjs, not here.
+     THE WIDTH CAP MOVES UP TO THE ANCHOR, and that is not tidying. The cap above
+   is a PERCENTAGE, and a percentage resolves against the containing block — which
+   for a bare frame is the screen's grid area and has a definite width. Wrapped,
+   the containing block becomes the anchor, and the anchor is a shrink-to-fit grid
+   item whose width comes from the picture inside it: the picture would be sized
+   from the anchor while the anchor was being sized from the picture. So the
+   anchor takes the cap against the grid area, and the picture below it takes 100%
+   of whatever the anchor resolved to.
+     grid rather than block, so the picture stays centred even in the case where
+   the anchor comes out wider than it — the frames here are capped by HEIGHT at
+   most window sizes, and a shrink-to-fit width around a height-capped replaced
+   element is the one measurement engines have historically disagreed about. It
+   costs nothing when they agree, and it is the difference between centred and
+   left-aligned when they do not. */
+.reel__link {
+  display: grid;
+  place-items: center;
+  max-width: calc(100% - 2 * var(--shot-air));
+}
+
+.reel__link .reel__shot {
+  max-width: 100%;
+}
+
+/* Keyboard only. There is no hover state and that is deliberate — the picture is
+   the affordance, the cursor already says it is a link, and a border or a lift on
+   a mockup of a website reads as part of the mockup. But a link you can tab to
+   has to show where the focus is, and the ring is drawn OUTSIDE the frame so it
+   never sits over the artwork. */
+.reel__link:focus-visible {
+  outline: 2px solid var(--color-paper);
+  outline-offset: 6rem;
+}
+
+/* ==========================================================================
+   NARROW
+   ========================================================================== */
+
+/* Below 768 the row becomes a column: the brief takes a screen of its own and
+   the frames follow it down, still one to a screen and still snapped. The paper
+   stops being sticky because there is nothing beside it to stay next to — a
+   panel stuck to the top of a one-column page would sit on top of the work.
+
+   The air comes off to the gutter down here. 40 either side of a 375 screen is a
+   fifth of the width spent on margin, and these frames are wide pictures. */
+@media (max-width: 767px) {
+  .reel {
+    flex-direction: column;
+  }
+
+  /* relative, NOT static. The panel stops sticking down here — there is nothing
+     beside it to stay next to — but it must go on being a containing block, or
+     .reel__foot's `bottom: 0` resolves against the viewport instead and the
+     copyright line detaches from the paper it belongs to and rides the bottom of
+     the window over the photographs.
+
+     `start` rather than `center` for the snap: this screen is the only one whose
+     content can be TALLER than the window — the brief is a title, a facts grid,
+     two paragraphs and a link at a phone's measure — and centring something
+     taller than the viewport strands both of its ends out of reach. Aligning the
+     top means a long brief simply scrolls, which is what it should do. */
+  .reel__lead {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 100dvh;
+    scroll-snap-align: start;
+  }
+
+  .reel__shots {
+    width: 100%;
+  }
+
+  :root {
+    --shot-air: var(--grid-gutter);
+  }
+}
+
+/* ==========================================================================
+   MOTION
+   ========================================================================== */
+
+/* Snapping is not animation — the browser decides where a scroll ENDS, it does
+   not move anything on its own — so there is nothing here for reduced motion to
+   turn off, and turning snapping off would take away the design rather than its
+   decoration. What the preference does reach is the smooth scrolling styles.css
+   sets globally, which is already handled there. */

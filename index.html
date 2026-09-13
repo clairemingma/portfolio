@@ -150,11 +150,33 @@
             <!-- Seeded current: one project is always showing, and the design's
                resting state is the top one. project-viewer.js reads this rather
                than deciding for itself. -->
-            <!-- A row's href is live only where the page behind it ships. Two
-                 do — Confidence Underneath and Ten Years of Color — and both
-                 carry a real address. The other five rest on "#" because they
-                 have no page yet, and a row pointing at a page that is not in
-                 the deploy is a dead link rather than a promise. -->
+            <!-- A row's href is live only where the page behind it ships. Six
+                 of the seven do now — every one but Glowwie, which has no page
+                 yet and so rests on "#": a row pointing at a page that is not in
+                 the deploy is a dead link rather than a promise.
+
+                 EVERY SLUG IS ITS TITLE, kebab-cased, and that is the rule now:
+                 the row's words and the URL say the same thing. Three of them
+                 used not to — trend-authority under "Trending This Week",
+                 su26-drop-2 under "Studio Edit 02" and tea-boxes under what the
+                 design has since named "Eight Immortals" — and all three were
+                 renamed rather than left, because a slug is a public address and
+                 an address that disagrees with the page it opens is a small lie
+                 that anyone reading the link sees.
+
+                 A slug is not only the URL, so renaming one is not only this
+                 line. It is also the page's directory under projects/, its
+                 stylesheet in src/, its landing plate in assets/projects/, its
+                 delivered frames and clips under public/, its entries in
+                 PROJECT_PAGES and in the image and gallery builds, and the
+                 data-project/data-plate pair that ties this row to the plate
+                 below. All of them moved together; grep before adding another. -->
+            <!-- Studio Edit 02's page carries no description paragraph yet: the
+                 copy in Figma is still Confidence Underneath's, carried over when
+                 the frame was duplicated. Everything else is there — the two
+                 clips, the facts, the REFLECTION write-up — and the row is live,
+                 because a page missing one paragraph is a page, and one that
+                 cannot be reached is not. Add the paragraph when it is written. -->
             <li
               class="index__row is-current"
               data-project="confidence-underneath"
@@ -168,7 +190,7 @@
               </a>
             </li>
             <li class="index__row" data-project="shop-every-store">
-              <a class="index__link" href="#">
+              <a class="index__link" href="/projects/shop-every-store/">
                 <span class="index__year">[2026]</span>
                 <span class="index__caption">
                   <span class="index__client">[Phia]</span>
@@ -176,39 +198,42 @@
                 </span>
               </a>
             </li>
-            <li class="index__row" data-project="su26-drop-2">
-              <a class="index__link" href="#">
+            <li class="index__row" data-project="studio-edit-02">
+              <a class="index__link" href="/projects/studio-edit-02/">
                 <span class="index__year">[2026]</span>
                 <span class="index__caption">
-                  <span class="index__client">[NikeSkims]</span>
-                  <span class="index__title">SU26 Drop 2</span>
+                  <span class="index__client">[NikeSKIMS]</span>
+                  <span class="index__title">Studio Edit 02</span>
                 </span>
               </a>
             </li>
-            <li class="index__row" data-project="trend-authority">
-              <a class="index__link" href="#">
+            <li class="index__row" data-project="trending-this-week">
+              <a class="index__link" href="/projects/trending-this-week/">
                 <span class="index__year">[2025]</span>
                 <span class="index__caption">
                   <span class="index__client">[Phia]</span>
-                  <span class="index__title">Trend Authority</span>
+                  <span class="index__title">Trending This Week</span>
                 </span>
               </a>
             </li>
-            <li class="index__row" data-project="ten-years-of-color">
-              <a class="index__link" href="/projects/ten-years-of-color/">
+            <li class="index__row" data-project="mfw-color-trends">
+              <a class="index__link" href="/projects/mfw-color-trends/">
                 <span class="index__year">[2025]</span>
                 <span class="index__caption">
                   <span class="index__client">[University]</span>
-                  <span class="index__title">Ten Years of Color</span>
+                  <span class="index__title">MFW Color Trends</span>
                 </span>
               </a>
             </li>
-            <li class="index__row" data-project="tea-boxes">
-              <a class="index__link" href="#">
+            <!-- Was "Tea Boxes" under the slug tea-boxes until the design named
+                 it. See Slugs are titles in the README — the same move
+                 trend-authority and su26-drop-2 made. -->
+            <li class="index__row" data-project="eight-immortals">
+              <a class="index__link" href="/projects/eight-immortals/">
                 <span class="index__year">[2024]</span>
                 <span class="index__caption">
                   <span class="index__client">[Shoukang]</span>
-                  <span class="index__title">Tea Boxes</span>
+                  <span class="index__title">Eight Immortals</span>
                 </span>
               </a>
             </li>
@@ -250,10 +275,10 @@
                  the same is-active class that shows it. -->
             <video
               class="viewer__plate"
-              data-plate="su26-drop-2"
+              data-plate="studio-edit-02"
               style="--pv-w: 341; --pv-h: 606"
-              src="/video/su26-drop-2.mp4"
-              poster="/img/projects/su26-drop-2.webp"
+              src="/video/studio-edit-02.mp4"
+              poster="/img/projects/studio-edit-02.webp"
               muted
               loop
               playsinline
@@ -263,23 +288,23 @@
             ></video>
             <img
               class="viewer__plate"
-              data-plate="trend-authority"
+              data-plate="trending-this-week"
               style="--pv-w: 455; --pv-h: 606"
-              data-src="/img/projects/trend-authority.webp"
+              data-src="/img/projects/trending-this-week.webp"
               alt=""
             />
             <img
               class="viewer__plate"
-              data-plate="ten-years-of-color"
+              data-plate="mfw-color-trends"
               style="--pv-w: 744; --pv-h: 419"
-              data-src="/img/projects/ten-years-of-color.webp"
+              data-src="/img/projects/mfw-color-trends.webp"
               alt=""
             />
             <img
               class="viewer__plate"
-              data-plate="tea-boxes"
-              style="--pv-w: 744; --pv-h: 529"
-              data-src="/img/projects/tea-boxes.webp"
+              data-plate="eight-immortals"
+              style="--pv-w: 744; --pv-h: 499"
+              data-src="/img/projects/eight-immortals.webp"
               alt=""
             />
             <img

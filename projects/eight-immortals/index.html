@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Eight Immortals — Claire Ong</title>
+    <meta
+      name="description"
+      content="Eight Immortals — Shoukang, 2024. Package design for a six-blend herbal tea line, carrying Chinese mythology to a mainstream audience. A project by Claire Ong."
+    />
+    <link rel="preload" as="image" href="/img/projects/eight-immortals/1.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Same pair as the landing page: Inter is the design's label face and is
+         exact; Spectral stands in for WT Kormelink TRIAL until those woff2 files
+         land in public/fonts. The italic is loaded here and not on the deck pages
+         because this is the one brief that sets a book title in it — see the
+         <cite> below. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=La+Belle+Aurore&family=Spectral:ital,wght@0,400;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Linked rather than imported by the module, for the same reason the other
+         project pages link theirs: an imported stylesheet is injected by
+         JavaScript in dev, so the browser paints the raw HTML first and the page
+         flashes unstyled. Here that flash would be three full-width photographs
+         in a column with the brief above them. -->
+    <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="stylesheet" href="/src/project-brief.css" />
+    <link rel="stylesheet" href="/src/reel-page.css" />
+    <script type="module" src="/src/reel-page.js"></script>
+  </head>
+
+  <body>
+    <!-- ==================================================================
+         NAV — the landing page's bar, locked. is-over-paper is set here rather
+         than by a scroll frame because on this page it is true from the start
+         and stays true: the bar sits over the paper panel, which does not move.
+         ================================================================== -->
+    <header class="nav nav--locked is-over-paper">
+      <a class="nav__mark" href="/">Claire M Ong</a>
+      <a class="nav__link nav__link--projects" href="/#projects"
+        ><span class="nav__link-word">Projects</span>,</a
+      >
+      <a class="nav__link nav__link--about" href="/#about"
+        ><span class="nav__link-word">About</span>,</a
+      >
+      <a
+        class="nav__link nav__link--linkedin"
+        href="https://www.linkedin.com/in/clairemong/"
+        target="_blank"
+        rel="me noopener"
+        ><span class="nav__link-word">LinkedIn</span></a
+      >
+      <button
+        class="nav__link nav__link--mail"
+        type="button"
+        data-copy="mclaireong@gmail.com"
+      >
+        <span class="nav__link-word" data-copy-label>mclaireong@gmail.com</span>
+      </button>
+    </header>
+
+    <!-- ==================================================================
+         THE REEL
+
+         Two columns, and the page scrolls DOWN them: the brief on paper at the
+         left stays where it is, and the work passes up the right one frame to a
+         screen, each snapping to the middle of the window.
+
+         No scroller of its own and no script. The document is the scroller —
+         which is what lets the left column stick against it — and the snapping
+         is a pair of declarations in src/reel-page.css.
+         ================================================================== -->
+    <main class="reel">
+      <!-- The paper, and it does not move. One screen tall and stuck to the top
+           of the window, so the brief is read once and stays readable for the
+           whole way down. -->
+      <div class="reel__lead">
+        <section class="brief" aria-label="Project details">
+          <h1 class="brief__title">Eight Immortals</h1>
+
+          <div class="brief__facts">
+            <span class="brief__label">[Client]</span>
+            <p class="brief__value">Shoukang</p>
+
+            <span class="brief__label">[Role]</span>
+            <p class="brief__value">Product Marketing Intern</p>
+
+            <span class="brief__label">[Type]</span>
+            <p class="brief__value">Package Design</p>
+
+            <span class="brief__label">[Year]</span>
+            <p class="brief__value"><time datetime="2024">2024</time></p>
+          </div>
+
+          <!-- Two paragraphs where the deck pages have one, so they are wrapped:
+               .brief__prose carries no rule of its own and is here to take the
+               brief's 20 as ONE child, which is what keeps the air between the
+               facts and the copy and out from between the paragraphs. The design
+               sets this as one block in which every line is indented, not as two
+               items with a gap. -->
+          <div class="brief__prose">
+            <p class="brief__text">
+              In Chinese mythology, the Eight Immortals are symbolic guardians of
+              health and well-being, believed to have passed down the knowledge
+              of healing herbs and methods that grounds traditional Chinese
+              medicine. I used their story as a vehicle for carrying ancient
+              practice to a modern, mainstream audience for Shoukang’s herbal tea
+              line.
+            </p>
+            <!-- <cite>, not an <em> or a span set in italic. It is the title of a
+                 work, which is the one thing <cite> is for, and it comes out
+                 italic on its own — the serif's italic face is declared in
+                 styles.css and the Spectral standing in for it is loaded with its
+                 italic in the <head> above. Nothing here sets font-style. -->
+            <p class="brief__text">
+              I designed tea boxes and sachets for six blends. Each box carries
+              an Immortal’s symbol paired with a quote from
+              <cite>The Yellow Emperor’s Classic of Medicine</cite>, so each
+              blend speaks to a different kind of healing, held together by one
+              visual hand. This design tells a story of health, healing, and the
+              transmission of ancient knowledge, inviting the audience to
+              participate in ritual and ancient practice.
+            </p>
+          </div>
+
+          <!-- One destination, and the label is the thing itself rather than a
+               heading over it — the same 10pt line the other project pages
+               carry. Where they point at a write-up, this points at the shelf:
+               the work is packaging, so the honest place to send someone is the
+               product it wraps.
+
+               The collection rather than the storefront. /collections/herbal-tea-bags
+               is the line this project IS — six blends in boxes and sachets —
+               and shoukanghealth.com alone would land on a homepage that may not
+               be showing any of it. -->
+          <div class="brief__source">
+            <a
+              class="brief__link"
+              href="https://shoukanghealth.com/collections/herbal-tea-bags"
+              target="_blank"
+              rel="noopener"
+              >Shop</a
+            >
+          </div>
+        </section>
+
+        <!-- The site's footer row, reduced to what is ever visible here: the
+             work covers everything right of the paper, so the five-column grid
+             the other pages use would be four hidden cells and one line.
+             The pair below 768 is not decoration — the bar cannot hold the mark,
+             two words and a 20-character address on four columns, so it drops
+             them, and this is the only other place they appear. -->
+        <footer class="reel__foot">
+          <p class="reel__foot-rule">&copy; 2026 Claire Ong</p>
+          <a
+            class="reel__foot-link"
+            href="https://www.linkedin.com/in/clairemong/"
+            target="_blank"
+            rel="me noopener"
+            >LinkedIn</a
+          >
+          <button
+            class="reel__foot-link"
+            type="button"
+            data-copy="mclaireong@gmail.com"
+          >
+            <span data-copy-label>mclaireong@gmail.com</span>
+          </button>
+        </footer>
+      </div>
+
+      <!-- ================= THE WORK =================
+           One frame to a screen, each centred and each a snap stop. The screens
+           are hand-written and the pictures inside them are GENERATED between the
+           markers: run `npm run images` to build the frames from assets/, then
+           `npm run gallery` to write them in here. Everything outside the markers
+           is hand-written and is not touched.
+
+           Each <img> carries a --shot-h, the height in design units the design
+           draws that frame at — 553 for the two product shots and 660 for the
+           dieline, which is a flat covered in small print and needs the size to
+           be read. The build writes it from the same number it cut the file to,
+           so the two cannot drift. -->
+      <div class="reel__shots">
+        <!-- shots:start -->
+        <div class="reel__screen">
+          <img
+            class="reel__shot"
+            style="--shot-h: 553"
+            src="/img/projects/eight-immortals/1.webp"
+            alt="Eight Immortals — frame 1 of 3."
+            fetchpriority="high"
+            decoding="async"
+          />
+        </div>
+        <div class="reel__screen">
+          <img
+            class="reel__shot"
+            style="--shot-h: 660"
+            src="/img/projects/eight-immortals/2.webp"
+            alt="Eight Immortals — frame 2 of 3."
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div class="reel__screen">
+          <img
+            class="reel__shot"
+            style="--shot-h: 551"
+            src="/img/projects/eight-immortals/3.webp"
+            alt="Eight Immortals — frame 3 of 3."
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <!-- shots:end -->
+      </div>
+    </main>
+  </body>
+</html>

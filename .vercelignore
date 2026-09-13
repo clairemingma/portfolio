@@ -8,6 +8,6 @@ dist
 scripts/.manifests
 scripts/.verify
 
-# Nothing else is held back: both project pages ship and both are linked from
-# the landing index. Mirrors .gitignore; see the note there for how to hold one
-# back again.
+# Nothing else is held back: all three project pages ship and all three are
+# linked from the landing index. Mirrors .gitignore; see the note there for how
+# to hold one back again.

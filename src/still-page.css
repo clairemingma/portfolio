@@ -1,0 +1,328 @@
+/* ==========================================================================
+   STILL PROJECT PAGE — the template
+
+   Two of the project pages are decks, a presentation read sideways, and two are
+   reels, read downward. The other two are STILL: ONE SCREEN, no scroll axis at
+   all, the work shown beside the brief and moving on its own.
+
+     src/trending-this-week.css   Trending This Week   (node 405:2201)
+     src/studio-edit-02.css       Studio Edit 02       (node 345:1790)
+
+   Load order is styles.css, project-brief.css, this, then the page's own.
+
+   THE PAGE IS THE SPLIT EVERY OTHER PROJECT PAGE MAKES: the brief on the left,
+   the work on the right. That is the deck pages' arrangement (.deck__lead against
+   .deck__panel) and the reel pages' (.reel__lead against .reel__shots), and it is
+   now these two as well — so all six project pages open on the same composition
+   and the eye lands in the same place whichever one it arrives at.
+
+   WHAT IT DOES NOT SHARE WITH THEM IS THE DARK. The decks and reels set their
+   work on charcoal; these two are PAPER THROUGHOUT, lead and stage alike, so the
+   split is an arrangement rather than a colour change and the only edge on the
+   page is the artwork's own. The accents went with it — see the note where they
+   used to be, at the foot of this file.
+
+   IT REPLACES A FULL-WIDTH GRID. These two used to be twelve columns of paper
+   across the whole window, with the artwork placed in cells and the copy around
+   it — Trending This Week split its prose into two blocks on opposite sides of
+   its plate. Nothing of that survives except the blocks themselves: the copy is
+   one column at the left now, and the artwork is centred in what is left.
+
+   WHAT MAKES THEM STILL rather than reels is what the right-hand side holds. A
+   reel's is a column of frames a viewport apart, so the document scrolls. This is
+   ONE STAGE exactly one viewport tall, so there is nothing to scroll to and the
+   page has no scrollbar — not hidden, absent. What moves is inside the artwork:
+   Studio Edit 02's clips play, Trending This Week's plate cycles its frames. The
+   page is still and the picture is not.
+
+   Each page's own placements stay in its own stylesheet, because unlike the
+   decks the still pages are not the same layout twice — one is a pair of portrait
+   clips, the other a single 3:4 plate. What is here is the split they share.
+
+   THE LEAD IS RESTATED HERE rather than shared with deck-page.css or
+   reel-page.css. That follows the precedent reel-page.css already set when it
+   needed the same column: the three templates are never loaded together, a
+   shared file would be a fourth stylesheet on every project page to save forty
+   lines, and each surface's copy can then answer to its own page. What must not
+   drift is the WIDTH, and it does not — all three derive it the same way, from
+   the column-5 line less the gutter and the design's width for the word
+   PROJECTS.
+
+   Numbers are in design units like the rest of the site: 1 unit is 1px on the
+   artboard, and --vr resolves 1rem to it.
+
+   Written mobile-first. Below 768 the split becomes a column — the paper takes a
+   screen, the work follows underneath — and the page scrolls, which is the same
+   trade the deck and reel pages make down there.
+   ========================================================================== */
+
+:root {
+  /* Paper to the left of the work, and its right edge is where the word PROJECTS
+     starts in the bar. Identical to --reel-lead, and derived rather than copied
+     as a number: the column-5 line less the gutter and the design's 83.742 for
+     the word. That comes to 419.59 against the design's 420, and it only drifts
+     if the bar's labels change metrics — which they will not, since they are
+     Inter and Inter is exact. */
+  --still-lead: calc(var(--grid-margin) + 4 * var(--col-step) - 83.742rem);
+
+  /* Air between the artwork and the edges of the stage. Same 40 the reels keep
+     around a frame, and the same job: it is what guarantees the work is shorter
+     than the window, so a page that cannot scroll never has anything below the
+     fold. Each page caps its artwork against it. */
+  --still-air: 40rem;
+
+  /* The band the footer sits in, which is also the floor the stage's artwork is
+     measured against. Named because three rules below need it and it is the
+     site's footer band rather than a number this page chose. */
+  --still-foot-h: 37.594rem;
+}
+
+/* The bar does not travel on these pages — there is no print to rest on — so it
+   wears .nav--locked exactly as the deck and reel pages do. Repeated here rather
+   than shared because it is one declaration and neither of those files is
+   loaded. */
+.nav--locked {
+  transform: none;
+}
+
+/* Paper, and it is the page rather than a panel — the same arrangement the reels
+   make with their charcoal. Both columns are paper here, so the body is what
+   shows wherever neither of them reaches: below the stage on a narrow window,
+   and under the bounce at either end of the scroll. */
+body {
+  background: var(--color-paper);
+}
+
+/* ==========================================================================
+   THE PAGE
+   ========================================================================== */
+
+/* Two columns: the paper and the stage. Both are exactly one viewport tall, so
+   their row is one viewport tall and the document has nothing to scroll — which
+   is the whole of "this page is still", stated once and not enforced anywhere
+   else. No overflow:hidden and no scrollbar rule: there is no overflow to hide.
+
+   Below 768 this is a plain block and the two children stack in source order. */
+@media (min-width: 768px) {
+  .still {
+    display: flex;
+  }
+}
+
+/* ==========================================================================
+   THE LEAD — the brief's column
+   ========================================================================== */
+
+/* One screen tall, and the containing block for both the brief and the foot.
+   flex: none, or the row would let this column be squeezed by artwork that is
+   wider than the stage can hold.
+
+   It states no background of its own: the body is paper and so is the stage, so
+   a fill here would be the same paper painted a third time. */
+.still__lead {
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .still__lead {
+    flex: none;
+    width: var(--still-lead);
+    height: 100dvh;
+  }
+}
+
+/* THE BRIEF SITS ON THE DESIGN'S 222 LINE WHEN THERE IS ROOM AND SLIDES UP TO
+   THE BAR WHEN THERE IS NOT, and that is one declaration rather than a script.
+
+   222 is the line the deck and reel pages start their brief on, so it is the
+   line this one wants too. But these two pages carry more copy than a reel does
+   — Trending This Week's four paragraphs come to about 700 units in a
+   three-column measure — and a page that cannot scroll has nowhere to put what
+   does not fit: copy pushed past the footer band would simply be gone.
+
+   So the box is the whole band between the bar and the footer, and the design's
+   offset is a SHRINKABLE SPACER at the top of it (see ::before). When the copy
+   is short the spacer stands at its full height and the title lands on 222, as
+   on every other project page. When the copy is long the spacer gives way,
+   exactly as far as it has to and no further, and the title rises toward the
+   bar. Nothing else in the brief moves: the title, the facts and the paragraphs
+   are all content-sized, so their automatic minimum floors them and the spacer
+   is the only thing with any give.
+
+   Absolute rather than in the flow, because the foot below is anchored to the
+   bottom of the same panel and the space between them is not a gap — it is
+   whatever the window leaves.
+
+   THE BOTTOM IS THE FOOTER BAND PLUS A GUTTER, not the band alone. With the band
+   alone a brief long enough to use the whole box ends exactly on the band's top
+   edge, and the copyright line is centred in that band — so REFLECTION and the
+   line below it come within about ten units of touching, which reads as the copy
+   having run out of page rather than as the end of it. The gutter is the site's
+   own unit and costs nothing where there is room: the spacer above absorbs it,
+   and the title stays on 222. */
+.still__lead .brief {
+  position: absolute;
+  left: var(--grid-margin);
+  top: var(--nav-h);
+  bottom: calc(var(--still-foot-h) + var(--grid-gutter));
+}
+
+/* The design's offset, as a spacer that can be taken back. Its basis is the 222
+   line less the bar it is measured from and less the 20 the brief keeps between
+   its own children — so the title's top edge lands on 222 exactly when nothing
+   shrinks. flex-shrink is 1 and flex-grow is 0: it gives way under pressure and
+   never takes space it was not given. */
+.still__lead .brief::before {
+  content: '';
+  flex: 0 1 calc(222rem - var(--nav-h) - 20rem);
+}
+
+/* Below 768 the two columns stack and the brief is in the flow: the band between
+   the bars with the content centred in it, which is the same trade the deck and
+   reel pages make down there. The spacer has no job here — the offset it carries
+   is a twelve-column number — so it is taken out rather than left to add 164 to
+   the top of a phone screen. */
+@media (max-width: 767px) {
+  .still__lead .brief {
+    position: static;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: var(--nav-h) var(--grid-margin) var(--still-foot-h);
+  }
+
+  .still__lead .brief::before {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   THE FOOT
+   ========================================================================== */
+
+/* Not the site's .foot — the same reduced row the reels carry, and for the same
+   reason: the stage covers everything right of the paper, so the five-column
+   grid the other pages use would be four hidden cells and one line. The pair
+   below 768 is not decoration; the bar cannot hold the mark, two words and a
+   20-character address on four columns, so it drops them and this is the only
+   other place they appear.
+
+   Anchored to the bottom of the panel, so it sits on the floor of the window and
+   lands on the same baseline as the footer on every other page. */
+.still__foot {
+  position: absolute;
+  left: var(--grid-margin);
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--grid-gutter);
+  height: var(--still-foot-h);
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  color: var(--color-system-grey);
+}
+
+.still__foot-rule {
+  margin: 0;
+}
+
+/* The pair the bar drops below 768. Graphite rather than system grey, because
+   they are links and the line beside them is not. */
+.still__foot-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-graphite);
+  cursor: pointer;
+}
+
+.still__foot-link:hover,
+.still__foot-link:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+}
+
+@media (min-width: 768px) {
+  .still__foot-link {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   THE STAGE — the work
+   ========================================================================== */
+
+/* The rest of the row, one screen tall, with the page's composition centred in
+   it. Centred rather than placed on a grid: the stage is what is left of the
+   window after the lead takes its 419.59, so it is not a whole number of
+   columns and there are no column lines on it to place against. What each page
+   has instead is a composition with its own internal relationships — two clips a
+   gutter apart and one step out of line, a plate cycling its frames — and those
+   are kept intact and hung in the middle.
+
+   Paper, and it is the same paper the lead is: the two columns no longer differ
+   in colour, so the composition floats on the sheet and what marks the work off
+   from the copy is the air around it rather than a line down the middle.
+
+   position: relative is kept although nothing on either page anchors to the
+   stage today. It costs nothing and it is what a page would need to place
+   anything against the stage rather than against its composition.
+
+   min-width: 0, or a composition wider than its share would push the lead
+   column narrower than its stated width instead of being capped itself. */
+.still__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: var(--color-paper);
+}
+
+@media (min-width: 768px) {
+  .still__stage {
+    flex: 1;
+    min-width: 0;
+    height: 100dvh;
+  }
+}
+
+/* Below 768 the stage follows the paper down the page at the full measure, with
+   the margin as its padding and the gutter as its air. 40 either side of a 375
+   screen is a fifth of the width spent on nothing. */
+@media (max-width: 767px) {
+  .still__stage {
+    padding: var(--grid-gutter) var(--grid-margin);
+  }
+
+  :root {
+    --still-air: var(--grid-gutter);
+  }
+}
+
+/* ==========================================================================
+   THE ACCENTS — gone
+   ========================================================================== */
+
+/* There was a .still__accent here: a cyanotype square peeking out from behind
+   the artwork, one on Studio Edit 02 and two on Trending This Week, drawn from
+   the same /img/accent-print.webp and /img/accent-wash.webp plates the deck
+   pages use. Both squares and the dark they sat on are off these two pages now.
+
+   They went TOGETHER and not one after the other, because they were one
+   decision. The squares were the piece of colour that made the dark panel read
+   as a composition rather than as an unlit half of the window; on paper they are
+   colour against a white sheet with nothing to hold them, and the plates are
+   graded for the dark besides — the print plate carries a one-pixel dark rim
+   that only disappears on charcoal. See the note on the two grades in
+   scripts/build-images.mjs.
+
+   Nothing is left to turn off: the rules, the markup and the placements in both
+   page stylesheets are removed, not hidden. The plates themselves stay in the
+   build — the four deck and reel pages still draw them, so `npm run images`
+   keeps emitting both.
+
+   This note is here so the next reader of the deck pages' accents knows the
+   still pages' absence is deliberate rather than an omission. */

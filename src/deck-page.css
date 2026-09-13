@@ -2,7 +2,7 @@
    DECK PAGE
 
    Every project on this site: a presentation, read sideways. Drawn from Figma
-   node 162:6820, which is the Color Trends page, but nothing below is that
+   node 162:6820, which is the MFW Color Trends page, but nothing below is that
    project's — this is the template both project pages are built on, and a third
    would want it unchanged.
 
@@ -51,24 +51,13 @@
   --progress-row: 40rem;
   --progress-band: calc(37.594rem + var(--progress-row));
 
-  /* One column of the page grid, as a length. The grid is used arithmetically
-     here rather than as a `display: grid` — the track is a horizontal flow, so
-     there is no grid container for anything on it to be a child of, and the
-     columns still have to be honoured. */
-  --col: calc(
-    (100vw - 2 * var(--grid-margin) - (var(--grid-columns) - 1) *
-          var(--grid-gutter)) / var(--grid-columns)
-  );
-
-  /* One step of the grid: a column and the gutter after it, which is the
-     distance between two column LINES. Every offset on this page that is "on the
-     grid" is the margin plus some whole number of these.
-
-     It is also the page's vertical unit, and that is not an assumption — it is
-     the design's. The accents below sit on twelve rows as well as twelve
-     columns, and those rows are what the columns would be if the page were
-     SQUARE: same margin, same gutter, so the same step. See .deck__accent. */
-  --col-step: calc(var(--col) + var(--grid-gutter));
+  /* --col and --col-step — one column as a length, and the distance between two
+     column lines — live in styles.css alongside the --grid-* tokens they are
+     derived from. The grid is used arithmetically here rather than as a
+     `display: grid`: the track is a horizontal flow, so there is no grid
+     container for anything on it to be a child of, and the columns still have to
+     be honoured. --col-step is this page's vertical unit too; the note on why
+     that is the design's arithmetic and not an assumption is with the token. */
 
   /* The column-5 line, where the first slide's left edge sits. */
   --col5: calc(var(--grid-margin) + 4 * var(--col-step));
@@ -97,6 +86,15 @@
   /* The slide box. Height leads and width follows, because height is the scarce
      dimension: the page cannot scroll vertically, so a slide that does not fit
      is a slide with a piece missing.
+
+     16:9 is written here as a constant rather than as a per-deck variable, and
+     that is a deliberate walk-back. Both decks are 3840x2160 exports throughout,
+     so both are 16:9, and a parameter with one value is a claim that something
+     varies when nothing does. Eight Immortals briefly needed 3:2 and is no longer
+     a deck — it is a vertical reel with its own stylesheet, and its frames are
+     sized one at a time. If a third deck ever arrives at another aspect, the two
+     numbers to lift back out are this ratio and the 465 below, and `ratio` in
+     scripts/build-images.mjs has to move with them.
 
      The cap is the design's 465, or what the band between the bar and the slider
      leaves once a 40 clearance is taken off it, whichever is smaller. Only the
@@ -450,6 +448,25 @@ body {
   justify-items: start;
 }
 
+/* A ONE-SLIDE DECK DRAWS NO END. There is nothing to restart and nothing to have
+   scrolled past, and the pair would otherwise sit in the opening frame right
+   beside the only slide — offering to take you back to a beginning you have not
+   left. It is also what makes the track narrower than the window, so the deck
+   does not scroll at all and the progress row never arrives, which is the page
+   the design draws.
+
+   :only-of-type among the stage's children, which are the slides plus this: with
+   one <img> it matches, with two it cannot. So the block comes back BY ITSELF
+   the moment a second slide is written in, rather than waiting for someone to
+   remember. Eight Immortals is one slide today and is getting five more.
+
+   The matching guard is in project-deck.js — `display: none` leaves [data-next]
+   in the document, and a hidden end is still an end the push gesture would hand
+   over to. */
+.deck__stage:has(> [data-slide]:only-of-type) .deck__end {
+  display: none;
+}
+
 /* nowrap, because a flex item is free to break and "RE" over "START" is the
    shape this would otherwise take when the row runs out of patience.
 
@@ -509,7 +526,11 @@ body {
 }
 
 /* ==========================================================================
-   BRIEF — title, facts, copy, source
+   BRIEF — where the deck puts it
+
+   The block itself is src/project-brief.css, which every project page links: it
+   is the same title, facts, copy and source on all of them. What is deck-
+   specific is where it hangs, and that is the whole of what is left here.
    ========================================================================== */
 
 /* Centred in the band between the bar and the copyright, which is the only
@@ -526,107 +547,28 @@ body {
 
    So on narrow the brief is given the band instead of an offset: top and bottom
    are the two bars, and the content centres between them. That is the same rule
-   the slides follow, for the same reason. */
-.brief {
+   the slides follow, for the same reason.
+
+   Scoped to the paper it hangs off rather than written on .brief at large, so
+   the still page's copy of the same block is not dragged out of its grid cell by
+   a stylesheet it does not even load. */
+.deck__lead .brief {
   position: absolute;
   left: var(--grid-margin);
   top: var(--nav-h);
   bottom: 37.594rem;
-  display: flex;
-  flex-direction: column;
   justify-content: center;
-  gap: 20rem;
-  width: calc(3 * var(--col) + 2 * var(--grid-gutter));
 }
 
 /* The design's placement, restored where the design's numbers apply. `bottom`
    has to be released with it, or the two together would stretch the box and
    `justify-content` would centre the brief in the whole page. */
 @media (min-width: 768px) {
-  .brief {
+  .deck__lead .brief {
     top: 222rem;
     bottom: auto;
     justify-content: flex-start;
   }
-}
-
-.brief__title {
-  margin: 0;
-  font-family: var(--font-primary);
-  font-size: 21rem;
-  line-height: calc(23.1 / 21);
-  font-weight: 400;
-  color: var(--color-graphite);
-}
-
-/* Label on one column, value on two — so the facts grid is the full width of
-   the brief above it, columns 1 to 3, rather than the design's two.
-
-   The design gives the pair 222, which is columns 1 and 2, and that is right for
-   a value like "CSE 163" or a year. It is not right for a list: "Brand, Data,
-   Campaign, Research" broke over three lines in a single column and pushed every
-   row below it down. A value that has to wrap to be read is a value the grid is
-   too narrow for, so the grid widened rather than the copy being cut.
-
-   Explicit tracks rather than 1fr each, because the two are no longer equal: the
-   label keeps its single column and the value takes the two the label does not,
-   gutter included. The row gap is the design's 10; the column gap is the grid's
-   own, which is what keeps the value's left edge on the column-2 line. */
-.brief__facts {
-  display: grid;
-  grid-template-columns: var(--col) calc(2 * var(--col) + var(--grid-gutter));
-  gap: 10rem var(--grid-gutter);
-  width: calc(3 * var(--col) + 2 * var(--grid-gutter));
-}
-
-.brief__label {
-  font-family: var(--font-secondary);
-  font-size: 11rem;
-  line-height: calc(13.75 / 11);
-  text-transform: uppercase;
-  color: var(--color-system-grey);
-}
-
-.brief__value {
-  font-family: var(--font-primary);
-  font-size: 12rem;
-  line-height: calc(13.2 / 12);
-  color: var(--color-graphite);
-}
-
-/* The indent is the design's, and it is large on purpose — it is the whole of
-   the paragraph's relationship to the two columns above it, which is why it is
-   121.335 and not a round number. */
-.brief__text {
-  font-family: var(--font-primary);
-  font-size: 16rem;
-  line-height: normal;
-  text-indent: 121.335rem;
-  color: var(--color-graphite);
-  text-wrap: pretty;
-}
-
-/* Both lines are 10 and graphite, and the type is set on the container so they
-   cannot drift apart. That is the design: the pair is one label repeated, not a
-   grey heading over a darker link — which is what it briefly was here, when the
-   first line still wore .brief__label and came out at 11 in system grey. */
-.brief__source {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10rem;
-  font-family: var(--font-secondary);
-  font-size: 10rem;
-  line-height: normal;
-  text-transform: uppercase;
-  color: var(--color-graphite);
-}
-
-.brief__link:hover,
-.brief__link:focus-visible {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.28em;
 }
 
 /* ==========================================================================

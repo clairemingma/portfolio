@@ -243,7 +243,16 @@ Each plate keeps the leaf box its own Figma variant was drawn at, carried on the
 element as `--pv-w` / `--pv-h` in design units, so no preview is stretched to a
 shared frame. `scripts/build-images.mjs` renders each one at exactly 2× that box.
 
-One plate moves. **SU26 Drop 2** is a `<video>` rather than an `<img>`, wearing the
+**Eight Immortals is the one exception**, at 744 × 499 where its variant is still
+drawn at 744 × 529. Its preview was changed to the frame the project page opens
+on — the newer of the two shots, cup at one edge and box at the other — and that
+photograph is 1.4907 where the variant's is 1.406. The build's `cover` would have
+taken 6% off the sides of exactly the picture that has something at both of them,
+so the box follows the photograph. Only the height moved: the **width is the
+design's 744**, so the plate still sits in the row at the width every other
+preview uses. When the variant is redrawn the two agree again.
+
+One plate moves. **Studio Edit 02** is a `<video>` rather than an `<img>`, wearing the
 same class and the same `--pv-w` / `--pv-h`, so the cut works on it unchanged. Its
 poster is the still already built for that slug — the same clip's first frame —
 which is what keeps the swap a cut instead of a stall: the plate is painted before
@@ -417,6 +426,563 @@ hash of their index and the hashing is gone with it: the panel is a single scree
 so there is no length to scatter along and nothing a random position can be right
 about.
 
+### Slugs are titles
+
+**Every project's slug is its title, kebab-cased.** The row's words and the URL
+say the same thing, and that is a rule rather than a coincidence — a slug is a
+public address, and one that disagrees with the page it opens is a small lie that
+anyone reading the link can see.
+
+Three of them used not to. `trend-authority` sat under "Trending This Week",
+`su26-drop-2` under "Studio Edit 02" and `tea-boxes` under "Tea Boxes" — all
+three because the slug was set from the landing index before the design named the
+project. All three were renamed rather than left:
+
+| was               | is                   |
+| ----------------- | -------------------- |
+| `trend-authority` | `trending-this-week` |
+| `su26-drop-2`     | `studio-edit-02`     |
+| `tea-boxes`       | `eight-immortals`    |
+
+The third is the one where the **row's own words** moved too, and it is the
+clearest case for the rule: the index said "Tea Boxes", which is what the work
+is made of, and the design says "Eight Immortals", which is what it is about.
+Renaming the slug without retitling the row would have left the address telling
+the truth and the link text not.
+
+A slug is not only the URL, so renaming one is not a one-line change. Each of
+these moved in eight places at once, and the list is the checklist for the next
+one:
+
+1. `projects/<slug>/` — the page's directory, and so its address
+2. `src/<slug>.css` — its placements, for the still pages that have their own
+3. `assets/projects/<slug>/` — its whole source folder: `preview.png`, the
+   `slides/` or `frames/` sequence, and any clip or poster beside them
+4. `public/img/projects/<slug>/` and `public/img/projects/<slug>.webp` — generated,
+   so they follow from the source names above
+5. `public/video/<slug>*.mp4` — generated, same
+6. `PROJECT_PAGES` in `vite.config.js`, or the page is served in dev and silently
+   missing from the build
+7. `PROJECTS`, `PAGES`, `PLATES` and `VIDEOS` in `scripts/build-images.mjs`, and
+   `PAGES`/`PLATES`/`CLIPS` in `scripts/build-gallery.mjs`
+8. `data-project` on the index row and `data-plate` on its viewer plate — the pair
+   that ties a row to the artwork that lights when you hover it. These are matched
+   by string, so a half-done rename shows up as a row whose hover does nothing
+   rather than as an error.
+
+**The source folders under `assets/projects/` are slugs too, and this reversed an
+earlier decision.** They used to be named as the work arrived — `4 fastest rising
+trends`, `Dexcom x SKIMS Confidence Underneath`, `Movement in motion 🖤 @skims …`
+— on the reasoning that the arrival name is real provenance and nothing derives a
+path from it, since `scripts/build-images.mjs` names every directory explicitly.
+
+That held, but it made the build script a lookup table between a caption and a
+slug, and it meant a source file could not be traced to the page it feeds without
+opening that script. Provenance is better kept in prose that can say what it
+means — the Figma node IDs and the Instagram captions are recorded in the notes
+below and in the script — than in a filename that has to be read by a person
+every time. So the folders follow the slug now, one per project:
+
+```
+assets/projects/<slug>/preview.png    the landing page's preview plate
+assets/projects/<slug>/slides/        a deck's slides, numbered
+assets/projects/<slug>/frames/        a reel's or a plate's frames, numbered
+assets/projects/studio-edit-02/clip-1.mp4, clip-2.mp4, poster-2.png
+```
+
+The numbered sequence has to be in a subfolder rather than loose in the slug
+folder: `listFrames()` takes a whole directory, filters by extension and sorts by
+`parseInt`, so a `preview.png` beside `1.webp` would be swept in as a frame whose
+number is `NaN`. `slides` and `frames` are the site's own two words — a deck has
+slides, a reel and a plate have frames — and nothing reads the name, so the
+distinction costs only accuracy.
+### Eight Immortals — the reel
+
+Package design for Shoukang's six-blend herbal tea line, and the site's **third
+kind of project page**. Figma node `417:2418`. It is neither a deck nor a still
+page: it reads **downward**, with the brief sitting still on paper at the left
+and the work passing up the right, one frame to a screen, each snapped to the
+middle of the window.
+
+| what              | where                     |
+| ----------------- | ------------------------- |
+| the lead's width  | 419.586 — the column-5 line less the gutter and the word PROJECTS, the same edge the decks keep |
+| the brief's top   | 222, the same line the decks start theirs on |
+| frame 1, 3        | 825 × 553 and 821 × 551 — the product shots |
+| frame 2           | 946 × 660 — the dieline |
+
+**The axis turned, and that is the whole story of this page.** It was built as a
+deck three revisions ago — one horizontal track, the brief travelling off the left
+edge with it, a progress row underneath, a hand-over at the end. Almost none of
+that survives a vertical reel: there is no track, no wheel to redirect, no
+progress to report and no end to push past. So `src/reel-page.css` is its own
+template rather than a modifier on `deck-page.css`, and what carries over is the
+shape of the opening frame — the paper's width and the brief's line.
+
+**Nothing here is scripted.** The snapping is `scroll-snap-type: y mandatory` on
+the root, the panel stays put with `position: sticky`, and `src/reel-page.js`
+mounts the address button in the bar and nothing else.
+
+**No scrollbar.** The design draws none, and a native bar down the right edge of a
+page whose whole right side is artwork reads as a seam in the picture rather than
+as a control — the deck pages hide theirs for the same reason. It is a real trade
+and not a free one: the bar is the only thing on screen that says how far down the
+page goes, and it is also a thing you can drag. What is left is every other way of
+moving — wheel, trackpad, touch, arrow keys, Page Up/Down, Home/End, the space bar
+— none of which the rule touches, and the snap means all of them land in the same
+places. The deck pages can afford it more cheaply because they draw their own
+indicator; a reel of two or three frames is short enough that there is little to
+indicate. The deck's whole module —
+wheel redirection, progress arithmetic, the push gesture — is gone from this page
+along with the axis it served.
+
+**"When one is centred you cannot see the other two"** is the design's
+instruction, and it holds by arithmetic rather than by tuning. Each frame gets a
+screen exactly one viewport tall and is centred in it, so the next frame's centre
+is one whole viewport below this one's, and its top edge is therefore
+`100dvh − its own height / 2` below the centre of the screen — while the bottom of
+the window is only `50dvh` below it. The neighbour is off screen for as long as
+its height is less than the window, and the cap on `.reel__shot` is what makes
+that true at every window size:
+
+```
+max-height: min(var(--shot-h) * 1rem, 100dvh − nav − 2 × 40)
+```
+
+The cap subtracts the bar as well as the air, which buys a second property for
+free: a frame can never slide under the locked nav, however short the window.
+Measured at a 1470 × 835 viewport, exactly **one** frame is on screen at each of
+the three snap positions, and all three render at the design's own sizes.
+
+**The width follows the height, and nothing states the ratio.** `width: auto`
+against a `max-height` keeps the picture's own aspect, and the delivered file
+already has its box's shape — so the markup only ever carries a height. That is
+`--shot-h`, an inline custom property on each `<img>`, the same way the landing
+page's previews carry their own leaf box.
+
+**The boxes are per frame**, which is the one place a reel differs from a deck in
+the build. A deck delivers every slide into one box because every slide is the
+same shape and the same size on the page; a reel's frames are separate pieces of
+artwork, and the design gives each the size it needs to be read at — the dieline
+is drawn half again as large as the product shots, because it is a flat covered in
+small print and they are photographs of a box. `REELS` in
+`scripts/build-images.mjs` holds those boxes, keyed by the source's stem, and
+writes them into `scripts/.manifests/<slug>.reel.json` alongside the frame names;
+`scripts/build-gallery.mjs` reads that and writes both the `<img>` and the screen
+around it. The height therefore lives in exactly one place and sizes both the
+delivered file and the element.
+
+The reel build **crops** where the deck contains, and that is deliberate. On a
+deck the box is the slide's own shape, so contain and cover are the same operation
+and contain is the safer word. Here the box is the shape the design draws the
+frame at, which is not always the photograph's: the six-box collection is a 4:3
+source shown in a 1.49 box. Its top and bottom five per cent are empty
+background, so the crop loses nothing and lets the boxes read larger — and baking
+it once at build time is better than an `object-fit` rule the page has to carry
+for one frame out of three.
+
+**One departure from the frame.** The design centres each picture in a band with
+37.594 above and 77.594 below — the deck's own insets, the second of which was
+the progress row. There is no progress row on a reel, so the frames are centred
+in the **window**, which is what "centred" means and what `scroll-snap-align:
+center` gives for free. It puts frame 1 at 141 where the design draws 121.
+
+**And one walk-back.** Making this page a deck had parameterised the slide box in
+`deck-page.css` as `--slide-ratio` / `--slide-h-design`, so a 3:2 deck could
+restate them. With the page no longer a deck, both decks are 16:9 again and a
+parameter with one value is a claim that something varies when nothing does — so
+the ratio went back to a constant and `src/eight-immortals.css` was deleted. The
+two decks render pixel-identically either way; that was checked rather than
+assumed.
+
+**SHOP points at the shelf**, where the other pages' source lines point at a
+write-up, a notebook or a repository. The work is packaging, so the honest place
+to send someone is the product it wraps — and it is the *collection*,
+`/collections/herbal-tea-bags`, rather than `shoukanghealth.com`: the collection
+is the line this project is, six blends in boxes and sachets, where the storefront
+may not be showing any of it.
+
+The brief also carries the site's first `<cite>` — *The Yellow Emperor's Classic
+of Medicine*, a book title, which is the one thing `<cite>` is for. It comes out
+italic on its own: the serif's italic face is declared in `styles.css` and the
+Spectral standing in for it is loaded with its italic in this page's `<head>`.
+Nothing sets `font-style`.
+
+Two paragraphs where the deck pages have one, so they are wrapped in
+`.brief__prose` — a ruleless element that takes the brief's own 20 as one child,
+keeping the air between the facts and the copy and out from between the
+paragraphs. It used to be `.page__prose` and live with the still page; it is the
+**brief's** gap it redirects and every surface has the same problem, so it moved
+to `project-brief.css` and the still page's two uses moved with it.
+
+**Below 768** the two columns become one: the brief takes a screen of its own and
+the frames follow it down, still one to a screen and still snapped. Three things
+change with the axis, and each is a bug that was found rather than a preference.
+The lead stays `position: relative` rather than going `static`, or the footer's
+`bottom: 0` resolves against the viewport and the copyright line detaches from its
+paper to ride the bottom of the window over the photographs. Its snap alignment
+becomes `start`, because this is the only screen whose content can be taller than
+the window and centring something taller than the viewport strands both its ends.
+And the brief takes the absolute placement's offsets back as padding — including
+a bottom one, without which a brief that outgrows the screen grows *under* the
+copyright line instead of above it.
+
+### Shop Every Store — the second reel
+
+A marketplace page on phia.com, and the second page in the reel format. Figma
+node `437:2637`. It adds no stylesheet and no template: `src/reel-page.css` is the
+whole layout, and what differs between two reels is the size of their frames,
+which travels on the elements as `--shot-h`. Two frames rather than three — the
+desktop page at 825 × 587 and the same page on a phone at 309 × 671, both
+rendering at exactly those sizes and one to a screen.
+
+**Its two sources are the one part of the pipeline that is not automatic.** Every
+other image on the site is built from a photograph in `assets/`; these two are
+Figma's own 2x exports of a browser and a phone mockup, dropped in by hand. That
+is not a preference — the MCP screenshot of a node comes back at the size the node
+is *drawn* and will not render larger, so the first pass shipped 1x sources and
+said so in the build's scale column. Re-exporting by hand is what gets 2x, and it
+is a manual step if the mockups change.
+
+**Both are used whole**, and that is a deliberate reversal. An earlier pass
+cropped each to the box the design draws — 825 × 587 and 309 × 671 — which meant
+taking a few pixels of bezel off the phone and dropping the browser's shadow
+altogether. The files now go through uncut, so each frame's `--shot-h` is the
+export's own height rather than the design's, and the delivered file is
+dimensionally identical to the source: the box is stated as the source's own
+half-size to the half unit (1081.5 × 1122.5 and 346 × 707) so the scale lands on
+exactly 2 and `cover` becomes the identity.
+
+**The cost lands on the browser, and it is worth knowing.** Its canvas is 45% drop
+shadow below the window, so fitting the whole file into one screen renders the
+window about a third narrower than the Figma frame shows it — 527 against 825 at
+an 835-tall viewport, with the shadow tail filling the space beneath. The phone
+pays almost nothing: 94% of its canvas is device, so whole and cropped differ by
+a few pixels of bezel. Trimming only the fully transparent margin would recover
+the browser's size without touching the artwork, if that trade is ever wanted.
+
+**The first paragraph is short of where it was going.** The design's own text ends
+mid-clause — *"…In one click, Phia "* — with the sentence unwritten and a trailing
+space where the rest should be. Its two complete sentences are set on the page and
+the dangling clause is not: a portfolio page that stops mid-sentence reads as
+broken rather than as unfinished. Put the clause back the moment it has an ending.
+
+The SHOP line points at `phia.com/shop`, which is the design's own address rather
+than a guess — it is what the browser mockup in the first frame has in its address
+bar, and the paragraph names the same site.
+
+### The still project pages
+
+Two of the five project pages are still, two are decks and one is the reel above.
+A **still** page is
+one screen with no scroll axis of its own, the work shown as one or two pieces of
+artwork beside the brief.
+
+`src/still-page.css` is what they share — the split, the brief's column and its
+footer, the stage — and each page's own placements are in its own stylesheet,
+because unlike the decks the still pages are not the same layout twice:
+
+> **These two pages are paper throughout and carry no accents.** Both the
+> charcoal stage and the cyanotype squares came off them together, because they
+> were one decision: the squares were the colour that made a dark half-window
+> read as a composition, and on a white sheet there is nothing for them to hold.
+> The plates themselves stay in the build — the deck pages still draw them — and
+> the design's node-to-plate pairings are recorded in each page's stylesheet
+> under `THE ACCENTS — gone`, so a restore does not have to re-derive them. Much
+> of the detail below describes the layout as the design drew it, on twelve
+> full-width columns with the accents in place; it is kept as provenance. The
+> code is the current reading.
+
+| page                    | node       | directory                  | placements                |
+| ----------------------- | ---------- | -------------------------- | ------------------------- |
+| **Trending This Week**  | `405:2201` | `projects/trending-this-week/` | `src/trending-this-week.css` |
+| **Studio Edit 02**      | `345:1790` | `projects/studio-edit-02/`     | `src/studio-edit-02.css`     |
+
+One module entry serves both, `src/still-page.js`. Every mount in it looks for
+its own hook and returns immediately if the page has none — Trending This Week
+has a cycling plate and no video, Studio Edit 02 has clips and no plate — so the
+cost of sharing is one `querySelector` per page for the thing it does not have,
+and a third still page needs no new entry file and cannot forget to mount the
+address.
+
+#### Trending This Week
+
+The work was a weekly Instagram series, so what there is to show is one plate and
+the account it ran on. Drawn at 1470 × 835.
+
+Its layout is **twelve columns and twelve rows, and a row is a column tall** —
+the rows are what the columns would be if the page were square: same 20 margin,
+same 20 gutter, measured down the page instead of across it. So the module is a
+square, and `--col-step` is the one unit both axes are counted in. That is the
+same lattice the deck accents sit on (see above), used here for the whole layout
+rather than for two decorations.
+
+The plate is in the **middle** and the copy is **split around it** — the head and
+the opening two paragraphs down the left, the closing two and REFLECTION down the
+right, with a cyanotype square tucked behind each of the plate's outer corners:
+
+| block | design x, y | lands on                                     | resolves to    |
+| ----- | ----------- | -------------------------------------------- | -------------- |
+| head  | 22, 242     | cols 1-3, row 3                              | 20, 261.7      |
+| wash  | 420, 261    | 2 cols square, row 3, ⅜ of itself clear of the plate's **left** edge | 420.2, 261.7 |
+| plate | 503, 141    | cols 5-8, row 2                              | 503.3, 140.8   |
+| print | 749, 456    | 3 cols square, ⅜ clear of the plate's **right** edge, hanging two gutters below its bottom | 752.6, 456.1 |
+| tail  | 1109, 389   | cols 10-12, row 4                            | 1107.5, 382.5  |
+
+**The columns are the composition.** The plate takes four in the centre and the
+two blocks of copy take three each at the outer edges. Column 4 and column 9 are
+the air between the copy and the work, one on each side, and the design's 22, 503
+and 1109 are the column-1, column-5 and column-10 lines to within two units.
+
+**The copy is split, not reflowed.** It was one six-column block on the right —
+a head with two columns of prose side by side beneath it, at columns 7–9 and
+10–12. Those two columns are now the two sides of the page, and each keeps the
+brief's own three-column measure, so nothing about how the paragraphs set has
+changed; only where they are. The block that held them is gone, and so is the
+two-track grid inside it: the left side is a title, its facts and its prose in one
+column, which is exactly what `.brief` is on the deck pages, and the right side is
+a bare `.page__copy`.
+
+**The two rows are a step apart**, 261.7 and 382.5, and that stagger is the
+design's: the right-hand column starts one row below the left so the page reads as
+two descending steps around the plate rather than as a pair of matched columns
+with a picture wedged between them.
+
+The plate's **height** is the one thing deliberately *not* on the lattice: it is
+the photograph's 3:4 ratio, so four columns at 463.333 wide is 617.78 tall, where
+the design drew 462 × 616. Neither accent's **left** is on it either — both are
+measured off the plate, see below.
+
+Rows 1–3 are declared as **fixed** tracks and the rest are **automatic**, and
+this is the page where choosing which is not obvious, because it has copy on
+*two* row lines instead of one. A fixed track ignores what is in it, which is what
+lets the plate be 617 tall in a 100-unit row without dragging row 3 down the page.
+Row 3 has to be fixed as well, and that part is this page's own: the head is in
+row 3 and the tail is in row 4, so a row 3 that grew with its copy would carry row
+4 down with it — the right-hand column's line would be set by how the *left*
+column happened to wrap. The two are side by side and three columns apart; neither
+should move the other. So row 3 keeps its line and row 4 is the one that gives way.
+
+What that costs is worth stating plainly: long copy on the **left** overflows row
+3 rather than growing the page. The slack is real — the left block runs to about
+620 against the footer band's 797, nine or ten lines of give — and the `min-height`
+below holds the footer under the plate whatever the copy does. Copy on the right
+still grows the page, because row 4 is automatic.
+
+Because the plate outruns the grid's own content — the copy ends well above the
+plate's 758.6 — `.page` carries a `min-height` of the plate's bottom edge, written
+as the derivation so the footer clears the photograph at every width rather than
+only at 1470. At the design's own aspect the page is exactly one screen: footer
+bottom on 835, nothing to scroll.
+
+**The accents — two of them now**, nodes `405:2238` and `405:2237`, on opposite
+corners of the plate: the small pale one at its top-left, the large deep one at
+its bottom-right. Which plate each carries was not a judgement call. The design's
+two exports have mean RGB 172,210,225 and 94,163,204, which are the `wash` and
+`print` files this site already builds, to a tenth of a level. So the page adds no
+asset; it names two, and `/img/accent-wash.webp` and `/img/accent-print.webp` were
+already built at 720 square.
+
+Naming them is also what makes them **visible**, and that is a fix rather than a
+flourish: the markup here carried a bare `.page__accent` with no plate modifier,
+and `.page__accent` sets no `background-image` of its own, so the one square this
+page was supposed to have was an empty box painting nothing. It had been that way
+since the still-page template split the plates into `--print` and `--wash`.
+
+Neither **left** is a column line and neither should be. Both are measured off
+the plate, because that is what the relationship is, and both show **three
+eighths of themselves clear** of it — a wider sliver than the fifth the deck
+pages leave, and the design says so twice: 83 of 221.7 on the left and 126.5 of
+342.5 on the right, which are 0.374 and 0.369. One of those is a nudge; two that
+agree to half a percent are a rule. Three eighths puts them at 420.2 and 752.6
+against the design's 420 and 749.
+
+The wash square's **top** is the same row-3 line the head starts on, so the square
+and the title begin together — which is also one grid step below the plate's own
+top, the two readings being the same arithmetic on a plate that sits on row 2.
+
+The print square's **vertical is measured off the plate's bottom edge**: it hangs
+two gutters below it. Not off the footer band, though at the design's own 835-tall
+window the two are within a unit of each other — 798.6 against 797.4 — and the
+band looks like the anchor. It is not, and the difference shows on a tall window:
+the plate is held by a row line at the top of the page and the band is held by the
+bottom, so a square tied to the band would drift away from the plate as the window
+grew and end up floating in the empty paper above the footer. Tied to the plate,
+the pair holds its shape at every height, which is the whole point of a square
+that peeks out from behind something. Two gutters is also the tighter reading of
+the design: 798.6 against its 798.5, where the band is a unit out.
+
+Both are absolutely positioned for the same reason `.deck__accent` is, and first
+in the source so they paint under the plate with no `z-index` involved.
+
+Below 768 both are gone. The plate takes the whole measure down there, so a square
+placed three eighths clear of it would be three eighths off the edge of the page,
+and one tucked fully behind it would be invisible. The deck pages re-count their
+squares' columns for narrow because they have a screen of dark to place them on;
+this page has neither the room nor the ground.
+
+The plate is a **cycle**: ten frames of the carousel in one box, cut from one to
+the next every 1.4s, so it reads as the post moving. `src/plate-cycle.js`. A gif
+in effect and not one in fact — GIF is 256 colours and these are photographs. All
+ten frames are in the markup with their own `src` and all but one is hidden with
+`visibility`, which is the arrangement the landing page's project viewer uses and
+for the same reason: swapping one `<img>`'s `src` would gamble on the next file
+being decoded when the beat lands, and a blank frame in a ten-frame loop reads as
+a broken image rather than as a cut. The box is a link to the post, so the
+accessible name is on the first frame alone and the other nine are empty-alt and
+`aria-hidden` — the name of that link must not depend on which photograph happens
+to be showing. `prefers-reduced-motion` holds frame 1, and the cycle stops in a
+background tab rather than being throttled into a lurch.
+
+**The inline link.** The partner view is linked from the clause that says what it
+does — *"We used it to start giving brands real insight into their shoppers,"* —
+which is where the design now draws it. An earlier pass had the design's older
+arrangement, `See here` followed by the URL in brackets, and both are gone: an
+address set in the same serif at the same size is a thing to be typed out rather
+than followed, and "see here" is a name that tells anyone listing this page's
+links nothing. `.brief__inline` is the one link on this site underlined at rest,
+because a link set inside a paragraph of the same size and colour is invisible
+until the pointer crosses it.
+
+It is also the one place the site's `0.28em` underline offset is *not* used, and
+that is deliberate rather than an oversight. 0.28em was tuned for the standalone
+labels it was written for — 10 and 11px uppercase Inter, one word in its own
+cell, where the offset has empty space beneath it and reads as a considered gap.
+On 16px serif prose it is about 4.5px below the baseline: it clears the
+descenders entirely and leaves the rule floating nearer the *next* line than the
+words it belongs to, and on a link that wraps to two lines, as this one does, the
+first line's rule sits almost against the second line's ascenders. So this takes
+the design's own `from-font` for both position and thickness, with
+`text-decoration-skip-ink: none` so the line runs through the descenders in
+"giving" and "shoppers" as one continuous rule rather than breaking around them —
+which is what the design draws.
+
+One departure from the design remains: the plate, which the design draws as a
+flat image, is the cycle and the link.
+
+This page was `trend-authority` until the design named it. See **Slugs are
+titles** below.
+
+#### Studio Edit 02
+
+Creator strategy for the NikeSKIMS SU26 drop, and the work is the reel — so the
+page is **two portrait clips, side by side and staggered**, with a cyanotype
+square tucked behind the leading one and the brief off to the **left**. Drawn at
+1470 × 835, node `345:1790`. Positions below are artboard coordinates; the offsets
+in the rules are 20 less, because the sheet carries the margin as padding.
+
+| block  | design x, y | lands on                                    | resolves to     |
+| ------ | ----------- | ------------------------------------------- | --------------- |
+| brief  | 20, 245     | cols 1-3, row 3                             | 20, 261.7       |
+| accent | 626, 138    | 2 cols square, row 2, centred on clip 1's left edge | 634.2, 140.8 |
+| clip 1 | 750, 76     | cols 7-9, one grid step above clip 2        | 745, 67.6       |
+| clip 2 | 1111, 183   | cols 10-12, bottom on the footer band       | 1107.5, 188.4   |
+
+**The revision that put the copy on the left was a mirror and nothing more.** The
+pair of clips used to sit flush left at columns 1-6 with the brief at columns
+9-11; now the pair is flush right at columns 7-12 and the brief takes columns 1-3,
+which is where every deck page starts theirs — so all five project pages open on
+the same column-1 line. Every relationship *inside* the composition survived it:
+the clips are still adjacent with one gutter between them, the stagger is still
+one grid step, and the accent still straddles the leading clip's **outer** edge —
+the one facing away from the other clip, which the mirror moved from its right to
+its left. What changed is which columns are empty: 4-6, between the copy and the
+work, where before it was column 12 alone at the far right. The markup was
+reordered to match, brief ahead of the clips, so the DOM reads in the order the
+page does — and so the narrow layout, which is those blocks stacked, opens on the
+project's name rather than on two silent videos of someone it has not introduced.
+
+**The columns are exact.** Both clips are three columns, adjacent, with one
+gutter between them — 725…1067.5 and 1087.5…1430 of the measure — and the pair
+now ends *on* the right margin, where the design's 1111 + 342 overhangs it by
+three. The design's 20, 750 and 1111 are the column-1, column-7 and column-10
+lines to within five units.
+
+**The vertical is anchored to the footer band**, and that is the design's own
+arithmetic rather than a shortcut. A clip is three columns at 9:16, so 608.9
+tall, and the band between the bar and the footer is 759.8 — there is no pair of
+row lines 120.833 apart that fits a 609-tall clip *twice* in 759.8, because the
+second would run off the bottom of the screen. What the design does instead is
+put the lower clip's bottom **on** the footer band's top edge and lift the other
+by exactly **one grid step**. The pass before the mirror gave 188.4 and 67.6
+against its 189 and 67 — a match to six tenths of a unit, tighter than anything
+else in that frame, so it is the rule and not a coincidence. The mirrored frame
+redraws the same pair at 183 and 76, a looser hand, and the rule is what the page
+keeps: the band and the clip height have not moved, and nothing else in 759.8
+fits. The twelve rows are still what the stagger is measured in. In CSS it is two
+`bottom` values, `0` and `var(--col-step)`: `bottom: 0` of the sheet *is* the top
+of the footer band, since `.foot` is the next thing in the flex column.
+
+Because the clips hang off the bottom, the sheet's height is what decides where
+their tops land, so `.page` carries a `min-height` of the bar, the margin, the
+step and a clip — 787.4. At the design's own 835-tall window the sheet is 797.4,
+so nothing binds and the upper clip sits at 67.6 where the design drew it; on a
+shorter window the sheet holds 787.4 and the page scrolls rather than sliding the
+artwork under the bar.
+
+**The brief is again the one figure the design had not snapped**: it sits at 245,
+where the row-3 line is 261.7. Row 3 is nonetheless the line it was reaching for,
+and the block's own height says so — it is 415 tall with its paragraph in, and 415
+started on row 3 ends 120.7 above the footer band, which is one grid step. The
+design's own 245 leaves 137.4 there, and 137.4 is no number this grid has. Same
+hand as the pass before, drawn short of the line it wanted.
+
+**The accent** is node `377:1971` and the `wash` plate — the pale second
+exposure, whose fill matches the built plate exactly (mean RGB 172,210,225 for
+both, against `print`'s 94,163,204). Two columns square, where Trending This
+Week's is three, and **centred** on the upper clip's left edge rather than showing
+a fifth of itself clear: the column-7 line less half the square is 614.2 of the
+measure, against the design's 606. That is a different rule from the deck pages'
+fifth-clear, and deliberately — there a square hides behind a wall of slides with
+one edge exposed; here it is the one piece of colour between the copy and the
+work, and centring is what gives it the same weight on both sides of the edge it
+sits on. It is written off the same `--clip-1-left` the clip is, so the
+half-and-half holds at every width.
+
+**The clips autoplay, silently, on a loop, with no controls.** `autoplay`,
+`muted`, `loop` and `playsinline` are all **attributes in the markup**, because
+that is the only place they count: every browser gates autoplay on the element
+being muted at the moment it decides, which is before any script runs, so a video
+muted by script is a video that has already been refused — and without
+`playsinline`, iOS takes the clip fullscreen instead of playing it in place.
+`preload="auto"`, against the site's usual restraint, because these play on
+arrival and there is no later moment at which to fetch them; the landing page's
+one moving preview is `preload="none"` precisely because it waits for a hover
+that may never come. No `controls`: they are artwork on a page, not media someone
+came to watch.
+
+`src/video-autoplay.js` handles only what the markup cannot express — a refused
+`play()` promise (caught and dropped, so a declined autoplay is not an unhandled
+rejection in an otherwise working page), a hidden tab (paused, since two
+720 × 1280 loops decoding for nobody is heat), and `prefers-reduced-motion`. That
+last one needs more than a pause: `autoplay` is a standing instruction the
+browser acts on whenever the element has buffered enough, so the attribute is
+taken *off* the element and only then paused. The honest cost is that the module
+is a deferred script, so on a reduced-motion machine a clip may show a frame or
+two of movement before it stops — the alternative, leaving `autoplay` out of the
+markup entirely, would trade that for a page whose artwork never moves without
+JavaScript, and on a page whose subject *is* the motion that is the worse bargain.
+
+**The two clips are two different takes**, and that is worth stating because the
+Figma layer names suggest otherwise: both are called *Movement in motion 🖤 …*
+with Figma's ` 1`/` 2` duplicate suffix, which normally means one asset placed
+twice. It is not. Frames sampled across the reel in `assets/` show thirty-six
+seconds of one continuous mat sequence — grey wall, black mat, dumbbells — with
+nothing resembling the design's lower block, which is shot on a reformer in front
+of sheer curtains. Two files, and the second arrived under its own Instagram
+caption; `VIDEOS` names both.
+
+**The paragraph is still missing and the page ships around it.** The Figma frame
+draws one, but the copy in it is Confidence Underneath's, carried over when the
+frame was duplicated — 7.7 million people with diabetes, continuous glucose
+monitors, Dexcom x SKIMS. That is the wrong project's text, and setting it under
+NikeSKIMS / Creator Strategy would be worse than an empty space, so the space is
+empty; the block is styled and placed for it, between the facts and the source
+line, and row 4 grows to hold whatever it comes to.
+
+Everything else is there, REFLECTION included, and the row is live: a page
+missing one paragraph is still a page, and one that cannot be reached is not.
+
 ## Assets
 
 `assets/` holds the sources; `public/img/` and `public/video/` are generated from
@@ -427,10 +993,11 @@ them by `scripts/build-images.mjs` and are disposable.
 | `assets/hero-cyanotype.png`          | the landing plate, at 1600 and 1080 wide |
 | `assets/accent-cyanotype-print.webp` | deck accent plate, at 720 square       |
 | `assets/accent-cyanotype-wash.webp`  | deck accent plate, at 720 square       |
-| `assets/accent-cyanotype-sprig.webp` | held, unbuilt — see note 5            |
-| `assets/accent-cyanotype-leaf.webp`  | held, unbuilt — see note 5            |
-| `assets/projects/<slug>.png`         | one per project, rendered at 2× its leaf box |
-| `assets/projects/*.mp4`              | the SU26 Drop 2 reel, copied under its slug |
+| `assets/projects/<slug>/preview.png` | one per project, rendered at 2× its leaf box — and, where the project has them, also the plate's cover frame and slot 1's clip poster |
+| `assets/projects/<slug>/slides/`     | one folder of slides per deck page, delivered whole into a 16:9 box |
+| `assets/projects/<slug>/frames/`     | a reel's frames, each into its own box — and the Trending This Week plate's, see note 6 |
+| `assets/projects/studio-edit-02/clip-<slot>.mp4` | the clips, copied under their delivered stems — see note 7 |
+| `assets/projects/studio-edit-02/poster-2.png` | slot 2's poster, which slot 1's cannot stand in for — see note 7 |
 
 sharp does not touch video, so the mp4 leg of that build is a copy and a rename.
 It still runs through the script rather than being hand-placed in `public/`, so
@@ -446,7 +1013,7 @@ Three notes on where those came from:
    Figma's export offered.
 2. **Two previews are not plain image fills.** `shop-every-store` is a composed
    browser mockup in Figma, so it is committed as a flattened 2× export of that
-   frame rather than reassembled in HTML. `su26-drop-2` is a _video_ fill, and the
+   frame rather than reassembled in HTML. `studio-edit-02` is a _video_ fill, and the
    reel now plays: the mp4 is committed alongside the PNG, which stays because it
    is Figma's poster frame and is still the plate's `poster`. At 720×1280 the clip
    is a hair over the 682×1212 that slot wants at 2×, and 9:16 against the slot's
@@ -510,18 +1077,96 @@ Three notes on where those came from:
    against 5.1 MB of PNG is permanent history either way.
 
    `sprig` and `leaf` (nodes 238:7576 and 217:7389, 1080 squares exported at 2×)
-   sit in `assets/` unbuilt — the plates the third accent was drawn in before it
-   was taken back out. They are paler than these two and are different _subjects_
-   rather than different grades, which is why they are named for what is in them
-   where the first two are named for their tone. Nothing draws them, so nothing
-   delivers them; add them to `ACCENTS` in `scripts/build-images.mjs` when
-   something does.
+   used to sit in `assets/` unbuilt — the plates the third accent was drawn in
+   before it was taken back out. **They are out of the checkout now**, on the
+   grounds that a source nothing has ever built is not a source, it is a file.
+   Re-export from those nodes if a third accent is ever wanted, and add them to
+   `ACCENTS` in `scripts/build-images.mjs`: they are paler than these two and are
+   different _subjects_ rather than different grades, which is why they were named
+   for what is in them where the first two are named for their tone, and it is
+   also why neither of the two that remain stands in for them.
 
    Both are delivered at 720 square, which is 2× the largest square the deck
    draws (three columns and their gutters, 342.5 units), and the one- and
    two-column squares are the same file scaled down. Placement is
    `src/project-deck.js`; the geometry is `.deck__accent` in
-   `src/deck-page.css`.
+   `src/deck-page.css`. **The deck pages are the only ones that draw them now** —
+   the still pages carried one apiece and no longer do; see the note at the head
+   of *The still project pages*.
+
+   **A one-pixel inset comes off every side in the build**, and it is a fix. The
+   print plate carries a dark rim baked into its left and right edge columns by
+   Figma's export — one pixel each, mean brightness 42.5 and 44.7 against 125.0
+   and 154.0 for the columns beside them; rows are clean and the wash plate has
+   no rim at all. It went unnoticed for as long as these were drawn only on the
+   dark panel, where a dark hairline on charcoal is nothing. A still page briefly
+   drew `print` on **paper**, and there it read as a black line ruled down the
+   edge of the photograph — which is part of why those accents are gone, and why
+   the inset stays: it is cheap, and it is the only reason the plates could ever
+   be set on anything but charcoal. Downscaling does not remove it, it blends it: 720 came out
+   with a 82,126,138 edge column against its neighbour's 152,197,211. Inset
+   rather than sharp's `trim()`, which decides what a border is by colour
+   similarity and would be a guess re-made per source; one pixel off all four
+   sides is deterministic, costs the wash plate one clean pixel of 2446, and
+   moves the delivered scale by 0.15%.
+
+7. **The clips are copies, and `VIDEOS` is a list of slots.** sharp does not
+   touch video, so every entry is a copy and a rename; the point is only that the
+   delivered file keeps coming from `assets/` under the name the markup asks for
+   instead of being a hand-placed orphan in `public/`. Each entry carries a
+   `slot`, because a page showing more than one clip gives each its own placement
+   — on Studio Edit 02, slot 1 is the upper block at columns 7-9 and slot 2 the
+   lower at columns 10-12 — and a `name`, the delivered stem. Slot 1's stem is
+   `studio-edit-02`, which is also what the landing page's moving preview points at,
+   so the reel is delivered once and used twice.
+
+   An entry used to be able to carry `start` as well, a fraction of the clip's
+   own duration written out as `data-start` and seeked to on `loadedmetadata`, so
+   two slots showing the *same* reel could be held at different moments instead of
+   running in lockstep. **It is gone**, across all three files it spanned. No
+   entry ever set it, so no `data-start` was ever written and the seek always
+   returned on its first line — and the case it was built for is one this project
+   has ruled out rather than not reached yet: Studio Edit 02's two slots are two
+   different takes, which is stated a few lines above in the same file. Rebuild it
+   if a page ever does show one reel twice.
+
+   A slot whose source is not in the checkout is skipped and reported, exactly as
+   an absent deck is, and `scripts/.manifests/<slug>.clips.json` then lists only
+   the slots that resolved. `npm run gallery` writes one `<video>` per resolved
+   slot between `<!-- clips:start -->` and `<!-- clips:end -->`.
+
+   There is still no ffmpeg in this project, so there is no smaller rung and no
+   generated poster: the 3.5 MB reel is delivered whole, and each slot's `poster`
+   is a still already in `assets/`. Slot 1's is the project's own `preview.png` —
+   Figma's first frame of that reel, which the landing preview is built from too,
+   so it is named rather than copied to a `poster-1.png` beside it. Slot 2's is
+   `poster-2.png`, captured from that clip's frame 0 through a headless browser,
+   because the two takes are in different rooms and slot 1's still cannot stand
+   for it.
+
+6. **The plate's cover comes from somewhere else.** The Trending This Week
+   carousel is ten slides and `frames/` holds nine of them, `2..10`. Slide 1 is
+   the cover, and it is this project's own
+   `assets/projects/trending-this-week/preview.png`, because the carousel's cover
+   and the landing page's preview plate are the same photograph — same
+   1080 × 1440 file, doing two jobs. So `PLATES` in `scripts/build-images.mjs`
+   *names* it rather than `frames/` holding a 1.2 MB `1.png` beside the rest:
+   sources live in the repository so Vercel can build from them, git does not
+   delta binaries, and the duplicate would be permanent history. It is emitted as
+   `1.webp` and listed first, which is both the carousel's order and the design's
+   — the plate opens on the cover.
+
+   The frames are delivered into a **four-column 3:4 box at 2×** (927 × 1236),
+   `fit: 'cover'` at q82 — 476 KB for all ten. Deck slides `contain` instead,
+   because a slide is a whole page and cropping it would take words off it; a
+   plate is a photograph shown in a box of its own ratio, so `cover` crops
+   nothing here.
+
+   `npm run images` writes the frame list to `scripts/.manifests/`, and
+   `npm run gallery` splices it into the page between `<!-- frames:start -->` and
+   `<!-- frames:end -->` — the same generate-between-markers arrangement the
+   decks' `slides` block uses, for the same reason: ten hand-kept `<img>` tags is
+   how a page ends up pointing at a file that has been renamed.
 
 ### Substitutions to make
 

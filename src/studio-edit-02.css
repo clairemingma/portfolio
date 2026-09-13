@@ -1,0 +1,181 @@
+/* ==========================================================================
+   STUDIO EDIT 02 — placements
+
+   Figma node 345:1790. A still project page: src/still-page.css is the template
+   and is loaded ahead of this. What is here is the composition that hangs on the
+   template's stage.
+
+   The composition is TWO PORTRAIT CLIPS, side by side and staggered. The brief is
+   in the column at the left, which the template places; nothing here touches it.
+
+   A CYANOTYPE SQUARE USED TO SIT BEHIND THE LEADING CLIP, centred on its outer
+   edge, on a charcoal stage. The square and the charcoal are gone together; the
+   reasoning is in still-page.css under THE ACCENTS. What went with it here is its
+   size and its one re-derived offset — nothing else in the composition was ever
+   measured against it, so the clips are placed exactly as they were.
+
+   WHAT CHANGED BEFORE THAT, AND WHY THE NUMBERS BELOW ARE RATIOS RATHER THAN GRID
+   LINES.
+   This page used to be twelve columns of paper across the whole window, with the
+   clips placed in cells at columns 7-12 and their vertical anchored to the footer
+   band. It is now the split every other project page makes, so the work no longer
+   sits on the page grid at all — the stage is what is left of the window after
+   the paper takes its 419.59, which is not a whole number of columns and has no
+   column lines on it to place against.
+
+   So the composition keeps its INTERNAL relationships, which are the ones the
+   design actually states, and the stage centres the result:
+
+     clip box        9:16, the source's own ratio (720x1280)
+     clip width      three columns — 342.5 at the 1470 artboard
+     the gap         one gutter between the two clips
+     the stagger     one grid step, clip 1 above clip 2
+
+   Every one of those survives the move unchanged. What does not survive is the
+   pair of absolute anchors the old layout used — the footer band underneath and
+   the row-2 line above — because neither exists on the stage. Their one
+   consequence was the square's vertical, and the square is gone.
+
+   HEIGHT LEADS AND WIDTH FOLLOWS, which is the reverse of the old file and is
+   forced by the page having no scroll: height is the scarce dimension, and
+   artwork taller than the window on a page that cannot scroll is artwork that
+   cannot be seen. So the clip is capped against the stage and the width comes off
+   the ratio.
+   ========================================================================== */
+
+:root {
+  /* The stagger, and it is the design's own: one grid step between the two
+     clips' top edges. Named because the group's height is the clip plus this and
+     the cap below has to take it off before it divides. */
+  --clip-step: var(--col-step);
+
+  /* The stage, as a length. The template gives the lead --still-lead and the
+     stage takes the rest; the cap below needs it as a number because the group
+     has to fit across as well as down. */
+  --stage-w: calc(100vw - var(--still-lead));
+
+  /* THE CLIP, capped three ways and the smallest wins:
+
+       1  the design's own box — three columns at 9:16, 608.9 at 1470
+       2  what the stage leaves DOWN: the window less the bar, less the air above
+          and below, less the stagger the group carries on top of one clip
+       3  what the stage leaves ACROSS: two clips and a gutter inside the air
+
+     At the design's own 1470x835 the second binds by a little — 717.4 of room
+     against the 729.7 the full-size group wants — so the clips render at 596.6
+     rather than 608.9, two per cent under. On anything taller than about 850 the
+     design's own box is what renders. The third has never bound at a real window
+     shape; it is there because a page that cannot scroll cannot recover from
+     artwork that overflows, and a cap that never fires costs nothing. */
+  --clip-h: min(
+    calc((3 * var(--col) + 2 * var(--grid-gutter)) * 16 / 9),
+    calc(
+      100dvh - var(--nav-h) - 2 * var(--still-air) - var(--clip-step)
+    ),
+    calc(
+      (var(--stage-w) - 2 * var(--still-air) - var(--grid-gutter)) / 2 * 16 / 9
+    )
+  );
+  --clip-w: calc(var(--clip-h) * 9 / 16);
+}
+
+/* ==========================================================================
+   THE COMPOSITION
+   ========================================================================== */
+
+/* Below 768 the group is a plain column: the clips stack at the full measure in
+   the order the markup has them, so the narrow page shows the leading clip
+   first. Above it the group becomes the design's row. */
+.clips {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--grid-gutter);
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  /* The row, and its height is one clip plus the stagger — which is what makes
+     the stage's `place-items: center` centre the COMPOSITION rather than the
+     taller of two things in it. align-items: flex-start puts every clip on the
+     group's top edge, and clip 2 takes itself off it. */
+  .clips {
+    flex-direction: row;
+    align-items: flex-start;
+    width: auto;
+    height: calc(var(--clip-h) + var(--clip-step));
+  }
+}
+
+/* ==========================================================================
+   THE CLIPS
+   ========================================================================== */
+
+/* Both are the same box, and 9:16 is the source's own ratio — so `cover` crops
+   nothing and is here only because the width is a derived length and the file is
+   a fixed 720x1280. The grey behind is what shows in the instant before the
+   poster paints. */
+.clip {
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  object-fit: cover;
+  background: var(--color-index-grey);
+}
+
+@media (min-width: 768px) {
+  .clip {
+    width: var(--clip-w);
+    height: var(--clip-h);
+    /* The box is set by the two lengths above, which already carry the ratio. */
+    aspect-ratio: auto;
+  }
+
+  /* The lower clip, dropped to the foot of the group — which is the whole of the
+     stagger, stated once and on the clip that takes it. The design anchored this
+     edge to the footer band; the band is on the other side of the page now, so
+     what is kept is the relationship between the two clips, which is the thing
+     the design was actually drawing. */
+  .clip--2 {
+    align-self: flex-end;
+  }
+}
+
+/* The lower clip paints over the upper one where they meet, which is what the
+   design draws: clip 2 is last in the source and both are in the same group, so
+   source order is the stack and there is nothing to declare. They do not actually
+   overlap — the gutter between them is real at every width — but they will not be
+   trusted to stay apart, and the order the design draws is the order the markup
+   has. */
+
+/* ==========================================================================
+   THE ACCENT — gone
+   ========================================================================== */
+
+/* The design's own square, node 377:1971, carried the `wash` plate and sat two
+   columns across, CENTRED on the leading clip's outer edge — half in and half
+   out, which was this page's own rule rather than the deck pages'. It is off the
+   page along with the charcoal it sat on; see THE ACCENTS in still-page.css.
+
+   The node and the plate are named so the pairing survives the removal, because
+   it was worked out rather than guessed: the square's fill matches the built
+   `wash` file exactly, mean RGB 172,210,225 for both against `print`'s
+   94,163,204. Anyone restoring it should take that and the centring, and should
+   know the vertical was never the design's own number — 73.2 down from the clip's
+   top was a row line on a page grid that no longer exists, and it was kept here
+   as the proportion 0.12 of the clip's height instead.
+
+   ========================================================================== */
+
+/* ==========================================================================
+   MOTION
+   ========================================================================== */
+
+/* The clips autoplay, and on a page with no scroll they are the only thing that
+   moves — which makes them the whole of what a reduced-motion reader is asking to
+   be spared. CSS cannot do it: a paused <video> is a JS call, not a declaration.
+   So the preference is honoured in src/video-autoplay.js by not starting them —
+   the poster frame is what shows, and each clip has its own, because the two
+   takes are in different rooms. It is watched live, so a change made while the
+   page is open takes effect. Same arrangement as the plate cycle on Trending This
+   Week, for the same reason. */

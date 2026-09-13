@@ -631,6 +631,18 @@ export function mountProjectDeck() {
   function push(step) {
     if (!next || !track || handing) return;
 
+    // A deck that FITS THE WINDOW has no end to push past, and without this it
+    // would be the easiest page on the site to leave by accident: `atEnd` below
+    // compares against a scroll range of zero, so it is true on the first frame,
+    // and a single downward flick would arm the hand-over and navigate away
+    // before anything had been read. `span` is measured in measure() and is zero
+    // or less exactly when the whole track is on screen — the same guard the
+    // progress fill already takes.
+    //
+    // It is reachable today: Eight Immortals is one slide, and its track is
+    // narrower than a desktop window.
+    if (span <= 0) return;
+
     const now = performance.now();
     const fresh = now - lastWheel > GESTURE;
     lastWheel = now;

@@ -900,7 +900,7 @@ const onScroll = await (async () => {
   // a one-viewport paper, so there is no room to scroll down two rows, and a
   // scrollBy that goes nowhere would make this pass vacuously.
   const spot = await evaluate(`(() => {
-    const row = document.querySelector('[data-project="trend-authority"]');
+    const row = document.querySelector('[data-project="trending-this-week"]');
     const b = row.getBoundingClientRect();
     // Left of the plate, so the hit-test lands on the row and not on an image.
     return { x: 120, y: Math.round(b.top + b.height / 2), rowH: +b.height.toFixed(1) };
@@ -954,12 +954,12 @@ await evaluate(`new Promise(r => {
   scrollTo({top: Math.round(scrollY + v.top + v.height / 2 - innerHeight / 2), behavior: 'instant'});
   requestAnimationFrame(() => requestAnimationFrame(r));
 })`);
-await evaluate(`document.querySelector('[data-project="su26-drop-2"]')
+await evaluate(`document.querySelector('[data-project="studio-edit-02"]')
   .dispatchEvent(new PointerEvent('pointerenter', {bubbles:true, pointerType:'mouse'}))`);
 // One frame is enough now that the swap is a cut, but shoot a little later than
 // that so the screenshot would still catch a transition if one came back.
 await sleep(300);
-await shoot('08-hover-su26');
+await shoot('08-hover-studio-edit-02');
 
 // ---- narrow viewport -----------------------------------------------------
 await call('Emulation.setDeviceMetricsOverride', {
