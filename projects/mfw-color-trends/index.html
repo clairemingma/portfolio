@@ -8,6 +8,9 @@
       name="description"
       content="MFW Color Trends — CSE 163, 2025. A decade of Milan Fashion Week runway colour, read with computer vision. A project by Claire Ong."
     />
+    <!-- The first slide, which is the one the markup lights and the only one
+         above the fold of the rail. Written by scripts/build-gallery.mjs from
+         what the image build emitted. -->
     <link
       rel="preload"
       as="image"
@@ -22,23 +25,27 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=La+Belle+Aurore&family=Spectral:ital,wght@0,400;1,400&display=swap"
       rel="stylesheet"
     />
-    <!-- Linked rather than imported by the module, for the same reason the
-         project page links its two: an imported stylesheet is injected by
+    <!-- Linked rather than imported by the module, for the same reason the other
+         project pages link theirs: an imported stylesheet is injected by
          JavaScript in dev, so the browser paints the raw HTML first and the page
-         flashes unstyled. Here that flash would be a 12-image column several
-         screens tall before the track exists to lay it sideways. -->
+         flashes unstyled. Here that flash would be the brief and twelve
+         full-width slides in one column, before the lead exists to centre the
+         copy and the rail exists to lay the slides in a row. -->
     <link rel="stylesheet" href="/src/styles.css" />
     <link rel="stylesheet" href="/src/project-brief.css" />
-    <link rel="stylesheet" href="/src/deck-page.css" />
-    <script type="module" src="/src/deck-page.js"></script>
+    <link rel="stylesheet" href="/src/rail-page.css" />
+    <script type="module" src="/src/rail-page.js"></script>
   </head>
 
   <body>
     <!-- ==================================================================
-         NAV — the landing page's bar, locked, exactly as the project page
-         carries it. is-over-paper is set here rather than by a scroll frame
-         because on this page it is true from the start, and it stays true:
-         the bar is the one thing that does not travel with the track.
+         NAV — the landing page's bar, locked.
+
+         is-over-paper is set here rather than by a scroll frame because it is
+         true from the first frame and stays true: the bar is a paper strip
+         across the top of the window, and that strip is opaque, so the charcoal
+         passes UNDER it rather than changing it. The class is what gives the bar
+         both the paper ground and the graphite type.
          ================================================================== -->
     <header class="nav nav--locked is-over-paper">
       <a class="nav__mark" href="/">Claire M Ong</a>
@@ -65,290 +72,262 @@
     </header>
 
     <!-- ==================================================================
-         THE TRACK
+         THE LEAD — paper, and the brief centred on it
 
-         The page's only scroller, and it runs sideways. tabindex makes it
-         focusable so the deck can be read from the keyboard; the label says
-         what the focus ring has landed on, since the element itself is just
-         the viewport. src/project-deck.js redirects the wheel onto it.
+         The second rail page, and it is the same template as Confidence
+         Underneath rather than a copy of it: src/rail-page.css and
+         src/rail-page.js are shared, and nothing on this page is placed by hand.
+         See the head of src/rail-page.css.
+
+         This page used to be the sideways deck — brief on paper at the left,
+         slides on a charcoal panel at the right, both on one screen, the wheel
+         redirected onto the track. It reads downward first and sideways second
+         now, which is what hands the presentation the whole window.
          ================================================================== -->
-    <main
-      class="deck"
-      data-deck
-      tabindex="0"
-      aria-label="MFW Color Trends — presentation, scrolls horizontally"
-    >
-      <div class="deck__track" data-track>
-        <!-- The dark panel, and the only thing on this page that never moves. It
-             is one screen wide and sticks at the window's left edge from the
-             first frame — the paper and the presentation travel over it and off
-             to the left, and the grey and its cyanotype accents do not travel at
-             all.
+    <section class="lead">
+      <section class="brief" aria-label="Project details">
+        <h1 class="brief__title">MFW Color Trends</h1>
 
-             Being first in the row is what puts it there: its flow position is
-             track x 0, which is already the window's left edge, so `left: 0` has
-             nothing to correct until the scroll starts and then holds it. It is
-             also what cuts the lower accent at the paper's right edge in the
-             opening frame, which is how the design draws it — the square is on
-             the page's grid at 384 and the paper runs to 420, so a sixth of it
-             is under the brief until the brief has gone.
+        <!-- [Class] where Confidence Underneath carries [Client], because this
+             one is coursework and saying "client" of a class would be a small
+             lie about what it was. The year stays here where that page drops
+             it: there is no award line to carry the date. -->
+        <div class="brief__facts">
+          <span class="brief__label">[Class]</span>
+          <p class="brief__value">CSE 163</p>
 
-             It takes no space in the row — see the negative margin in
-             deck-page.css — so the paper still starts at track x 0 and the track
-             is no wider for it. Empty and aria-hidden: it is a surface, and
-             everything on it is decoration. -->
-        <div class="deck__panel" data-panel aria-hidden="true"></div>
+          <span class="brief__label">[Type]</span>
+          <p class="brief__value">Data Programming</p>
 
-        <!-- The paper the deck starts beside. It travels with the track rather
-             than staying put, which is the design's arrangement: by the time
-             the presentation is under the progress row the brief is off the
-             left edge, having been read. -->
-        <div class="deck__lead">
-          <section class="brief" data-margin aria-label="Project details">
-            <h1 class="brief__title">MFW Color Trends</h1>
-
-            <div class="brief__facts">
-              <span class="brief__label">[Class]</span>
-              <p class="brief__value">CSE 163</p>
-
-              <span class="brief__label">[Type]</span>
-              <p class="brief__value">Data Programming</p>
-
-              <span class="brief__label">[Year]</span>
-              <p class="brief__value"><time datetime="2025">2025</time></p>
-            </div>
-
-            <p class="brief__text">
-              As seasons change, so do our clothes, but data never goes out of
-              style. I analyzed a decade of Milan Fashion Week runway colors
-              using computer vision, uncovering seasonal patterns and dominant
-              shades to explore trend forecasting.
-            </p>
-
-            <!-- Two destinations, not a heading and a link. The design draws
-                 them as two lines of the same 10pt label, which is exactly what
-                 they are: the analysis is the notebook rendered out with its
-                 charts and tables, and the repository is the code and data
-                 underneath it. "Source Code" named neither — it read as a
-                 heading over the Github line, and it was the wrong word for
-                 something you go and READ. -->
-            <div class="brief__source">
-              <a
-                class="brief__link"
-                href="https://nbviewer.org/github/clairemingma/fashion-color-trends/blob/main/fashion-color-trends.ipynb"
-                target="_blank"
-                rel="noopener"
-                >Analysis</a
-              >
-              <a
-                class="brief__link"
-                href="https://github.com/clairemingma/fashion-color-trends"
-                target="_blank"
-                rel="noopener"
-                >Github</a
-              >
-            </div>
-          </section>
-
-          <!-- The site's footer row, reduced to what is ever visible here: the
-               deck panel covers everything right of the paper from the opening
-               frame onward, so the five-column grid the other pages use would
-               be four hidden cells and one line.
-               The pair below 768 is not decoration — the bar cannot hold the
-               mark, two words and a 20-character address on four columns, so it
-               drops them, and this is the only other place they appear. -->
-          <footer class="deck__foot">
-            <p class="deck__foot-rule">&copy; 2026 Claire Ong</p>
-            <a
-              class="deck__foot-link"
-              href="https://www.linkedin.com/in/clairemong/"
-              target="_blank"
-              rel="me noopener"
-              >LinkedIn</a
-            >
-            <button
-              class="deck__foot-link"
-              type="button"
-              data-copy="mclaireong@gmail.com"
-            >
-              <span data-copy-label>mclaireong@gmail.com</span>
-            </button>
-          </footer>
+          <span class="brief__label">[Year]</span>
+          <p class="brief__value"><time datetime="2025">2025</time></p>
         </div>
 
-        <!-- ================= THE DECK =================
-             GENERATED between the markers. Do not hand-edit: run
-             `npm run images` to build the frames from assets/, then
-             `npm run gallery` to write them in here. Everything outside the
-             markers is hand-written and is not touched.
-
-             Unlike the project page's stage, every slide is laid out — the deck
-             IS the layout — so each carries a real src and the browser defers
-             the ones off the right edge itself. -->
-        <div class="deck__stage" data-stage>
-        <!-- slides:start -->
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/mfw-color-trends/1.webp"
-          alt="MFW Color Trends — slide 1 of 12."
-          fetchpriority="high"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/mfw-color-trends/2.webp"
-          alt="MFW Color Trends — slide 2 of 12."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/mfw-color-trends/3.webp"
-          alt="MFW Color Trends — slide 3 of 12."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/mfw-color-trends/4.webp"
-          alt="MFW Color Trends — slide 4 of 12."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/mfw-color-trends/5.webp"
-          alt="MFW Color Trends — slide 5 of 12."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/mfw-color-trends/6.webp"
-          alt="MFW Color Trends — slide 6 of 12."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/mfw-color-trends/7.webp"
-          alt="MFW Color Trends — slide 7 of 12."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/mfw-color-trends/8.webp"
-          alt="MFW Color Trends — slide 8 of 12."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/mfw-color-trends/9.webp"
-          alt="MFW Color Trends — slide 9 of 12."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/mfw-color-trends/10.webp"
-          alt="MFW Color Trends — slide 10 of 12."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/mfw-color-trends/11.webp"
-          alt="MFW Color Trends — slide 11 of 12."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/mfw-color-trends/12.webp"
-          alt="MFW Color Trends — slide 12 of 12."
-          loading="lazy"
-          decoding="async"
-        />
-        <!-- slides:end -->
-
-          <!-- The two ways out, at the end of the deck — the last item on the
-               row, where a thirteenth slide would stand. Outside the markers, so
-               the gallery build never touches it.
-
-               RESTART is an action on this page and so a button; NEXT goes
-               somewhere and so is a link. They are styled alike because to a
-               reader they are one pair, but they are not the same kind of thing
-               and the markup should not pretend otherwise.
-
-               NEXT points at the landing page's project index. It is the only
-               honest destination today: this is the fifth of seven projects
-               there, and the sixth has no page yet — the one other page that
-               exists, Confidence Underneath, is held out of the repository. -->
-          <div class="deck__end">
-            <button class="deck__end-link" type="button" data-restart>
-              Restart
-            </button>
-            <!-- Says what to do, and still does it when clicked — which is the
-                 only way through on a touch screen, where there is no wheel to
-                 keep scrolling with.
-
-                 The accessible name is left as the visible words rather than
-                 being overridden to something tidier like "Next project":
-                 anything driving this page by voice says what it can see, and a
-                 name that does not contain the label is a name that cannot be
-                 spoken.
-
-                 The empty span is the gauge: project-deck.js grows it into an
-                 underline as a push past the last slide accumulates, and the
-                 page hands over when it is full. Inside the link on purpose —
-                 the thing that fills is the thing that is about to happen. -->
-            <a class="deck__end-link" href="/#projects" data-next
-              >Keep scrolling for next<span
-                class="deck__push"
-                data-push
-                aria-hidden="true"
-              ></span
-            ></a>
-          </div>
+        <div class="brief__prose">
+          <p class="brief__text">
+            As seasons change, so do our clothes, but data never goes out of
+            style. I analyzed a decade of Milan Fashion Week runway colors using
+            computer vision, uncovering seasonal patterns and dominant shades to
+            explore trend forecasting.
+          </p>
         </div>
-      </div>
-    </main>
+
+        <!-- Two destinations, not a heading and a link. They are two lines of
+             the same 10pt label because that is exactly what they are: the
+             analysis is the notebook rendered out with its charts and tables,
+             and the repository is the code and data underneath it. "Source
+             Code" named neither — it read as a heading over the Github line,
+             and it was the wrong word for something you go and READ.
+
+             Centred as a pair rather than flush left, which is this page's own
+             need: see .lead .brief__source in src/rail-page.css. -->
+        <div class="brief__source">
+          <a
+            class="brief__link"
+            href="https://nbviewer.org/github/clairemingma/fashion-color-trends/blob/main/fashion-color-trends.ipynb"
+            target="_blank"
+            rel="noopener"
+            >Analysis</a
+          >
+          <a
+            class="brief__link"
+            href="https://github.com/clairemingma/fashion-color-trends"
+            target="_blank"
+            rel="noopener"
+            >Github</a
+          >
+        </div>
+      </section>
+    </section>
 
     <!-- ==================================================================
-         PROGRESS
+         THE RAIL — charcoal, and the presentation on it
 
-         Outside the scroller, because it does not scroll. It is hidden until
-         the first slide's left edge reaches the page margin and then holds
-         that position to the end of the deck — so its frame of reference is
-         the viewport, not the track. See the .progress rule in deck-page.css.
+         The section is a TALL SPACER and the pin inside it is one window tall.
+         src/project-rail.js measures how far the track has to move, writes the
+         scroll the rail costs onto the section as its extra height, and
+         translates the track as that scroll is given up. So the pin stands still
+         against the window while the slides pass sideways, and when they are
+         spent the pin releases and the page carries on down to the footer.
 
-         The counter's seed is written by scripts/build-gallery.mjs and is
-         what shows if the module never runs.
+         WITHOUT THAT MODULE THIS IS STILL A PAGE: .rail__pin is an ordinary
+         overflow-x box in the base stylesheet, so the row can be swiped,
+         dragged and tabbed through.
+
+         The slides are GENERATED between the markers: run `npm run images` to
+         build them from assets/, then `npm run gallery` to write the elements in
+         here. Everything outside the markers is hand-written.
          ================================================================== -->
-    <div class="progress" data-progress>
-      <p class="progress__count" data-count aria-live="polite">[1/12]</p>
-      <!-- A plain div here on purpose. project-deck.js promotes it to a real
-           slider on mount — role, tab stop, values — because without the module
-           it cannot be dragged, and a page that announces a slider it cannot
-           move is worse than one that announces nothing. -->
-      <div class="progress__slider" data-scrub>
-        <div class="progress__track"></div>
-        <div class="progress__fill" data-fill></div>
+    <section class="rail" data-rail>
+      <div class="rail__pin" data-pin>
+        <div class="rail__track" data-track>
+          <!-- slides:start -->
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/mfw-color-trends/1.webp"
+            alt="MFW Color Trends — slide 1 of 12."
+            fetchpriority="high"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/mfw-color-trends/2.webp"
+            alt="MFW Color Trends — slide 2 of 12."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/mfw-color-trends/3.webp"
+            alt="MFW Color Trends — slide 3 of 12."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/mfw-color-trends/4.webp"
+            alt="MFW Color Trends — slide 4 of 12."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/mfw-color-trends/5.webp"
+            alt="MFW Color Trends — slide 5 of 12."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/mfw-color-trends/6.webp"
+            alt="MFW Color Trends — slide 6 of 12."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/mfw-color-trends/7.webp"
+            alt="MFW Color Trends — slide 7 of 12."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/mfw-color-trends/8.webp"
+            alt="MFW Color Trends — slide 8 of 12."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/mfw-color-trends/9.webp"
+            alt="MFW Color Trends — slide 9 of 12."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/mfw-color-trends/10.webp"
+            alt="MFW Color Trends — slide 10 of 12."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/mfw-color-trends/11.webp"
+            alt="MFW Color Trends — slide 11 of 12."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/mfw-color-trends/12.webp"
+            alt="MFW Color Trends — slide 12 of 12."
+            loading="lazy"
+            decoding="async"
+          />
+          <!-- slides:end -->
+        </div>
+
+        <!-- ==================================================================
+             PROGRESS
+
+             Inside the pin, which is the whole of what the pin buys this row: it
+             is on screen exactly while the presentation is, and off it the rest
+             of the time, with no state to drive and nothing to fade.
+
+             The counter's seed is written by scripts/build-gallery.mjs and is
+             what shows if the module never runs.
+             ================================================================== -->
+        <div class="progress" data-progress>
+          <p class="progress__count" data-count aria-live="polite">[1/12]</p>
+          <!-- A plain div here on purpose. src/project-rail.js promotes it to a
+               real slider on mount — role, tab stop, values — because without
+               the module it cannot be dragged, and a page that announces a
+               slider it cannot move is worse than one that announces nothing. -->
+          <div class="progress__slider" data-scrub>
+            <div class="progress__track"></div>
+            <div class="progress__fill" data-fill></div>
+          </div>
+        </div>
+
+        <!-- The copyright, on the charcoal and in the band every other page puts
+             its footer in: left margin, bottom 0, 37.594 tall, centred in it —
+             the same geometry as .still__foot and .reel__foot, and the same
+             height the landing page's .foot row comes to. So the line lands
+             where the eye already expects a footer, below the progress bar
+             rather than on it.
+
+             Hidden below 768, where the paper footer under the rail carries it
+             instead — see .rail__rule in src/rail-page.css. -->
+        <p class="rail__rule">&copy; 2026 Claire Ong</p>
+
+        <!-- PREV / NEXT. Generated between the markers from the order the
+             landing page's index has its rows in — see scripts/build-gallery.mjs.
+             Do not hand-edit: the two hrefs are this page's neighbours in that
+             list, and a hand-kept copy is how one of them ends up pointing at a
+             project that has moved. -->
+        <!-- pager:start -->
+        <nav class="pager" aria-label="Projects">
+          <a class="pager__link" href="/projects/trending-this-week/" rel="prev">Prev</a>
+          <span class="pager__sep" aria-hidden="true">/</span>
+          <a class="pager__link" href="/projects/eight-immortals/" rel="next">Next</a>
+        </nav>
+        <!-- pager:end -->
       </div>
-    </div>
+    </section>
+
+    <!-- The site's footer row, below the rail and on paper — a thing a rail page
+         can have and the deck could not, because the deck had no vertical axis
+         to put a footer on. -->
+    <footer class="rail-foot">
+      <p class="rail-foot__rule">&copy; 2026 Claire Ong</p>
+      <a
+        class="rail-foot__link"
+        href="https://www.linkedin.com/in/clairemong/"
+        target="_blank"
+        rel="me noopener"
+        >LinkedIn</a
+      >
+      <button
+        class="rail-foot__link"
+        type="button"
+        data-copy="mclaireong@gmail.com"
+      >
+        <span data-copy-label>mclaireong@gmail.com</span>
+      </button>
+    </footer>
   </body>
 </html>

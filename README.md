@@ -243,6 +243,36 @@ Each plate keeps the leaf box its own Figma variant was drawn at, carried on the
 element as `--pv-w` / `--pv-h` in design units, so no preview is stretched to a
 shared frame. `scripts/build-images.mjs` renders each one at exactly 2× that box.
 
+**Two of the seven plates move, and both move only while they are the one up.**
+Studio Edit 02's is a `<video>`; Trending This Week's is a `<div>` holding the
+ten-frame carousel its project page shows, cut between on the same 1.4s beat.
+Off-screen motion would burn a decoder on something nobody can see, and a clip or
+a cycle still running while hidden would be caught mid-phrase on the next hover
+— so `project-viewer.js` slaves both to the same `is-active` class that shows
+them, and each hover winds the plate back to its first frame so the cut and the
+start of the motion are the same image.
+
+The cycle itself is `createPlateCycle` in `src/plate-cycle.js`, which is a
+factory rather than a mount precisely because there are now two callers wanting
+one beat under different rules. It owns the two reasons a cycle must not run that
+belong to the machine — a reduce-motion preference, a hidden tab — and the caller
+owns the one that is its own, whether it is this plate's turn. So the viewer
+cannot forget to honour the preference, and the cycle does not have to know what
+a hover is. The still project page's `mountPlateCycle` is the same factory with
+`start()` called immediately, because on that page nothing has to wait.
+
+**Frame 1 of the preview cycle is the preview plate that slot already held** —
+the right-sized `/img/projects/trending-this-week.webp`, built from the same
+photograph the carousel opens on. So the resting image is unchanged and correctly
+sized for a 455 × 606 box, and only frames 2–10 are new weight: 492 KB, deferred
+behind `data-src` and promoted by `load-order.js` once the print has painted.
+That is the same arrangement the clip uses, where the poster is the still already
+built from its own first frame. The block is generated between
+`<!-- preview-frames:start -->` and `<!-- preview-frames:end -->` from the same
+manifest the project page's frames come from, because the carousel is a folder,
+folders grow, and a hand-kept second copy of the list is how one of them ends up
+pointing at a frame that is not there.
+
 **Eight Immortals is the one exception**, at 744 × 499 where its variant is still
 drawn at 744 × 529. Its preview was changed to the frame the project page opens
 on — the newer of the two shots, cup at one edge and box at the other — and that
@@ -354,10 +384,19 @@ to the viewport, rather than reading `scrollWidth`. `body` carries `overflow-x:
 hidden`, so anything running past the edge is clipped and reports zero overflow —
 which hid a real one when the mark's name lengthened.
 
-### The dark panel and its accents
+### The dark panel and its accents — removed
 
-On the project pages the grey behind the slides is **one screen wide and it never
-moves**. It is a `position: sticky; left: 0` flex item at the _head_ of the
+> **This section is provenance.** The sideways deck template and the cyanotype
+> accents it carried are no longer in the checkout: both presentations became
+> rails, a rail draws neither, and `src/deck-page.css`, `src/deck-page.js`,
+> `src/project-deck.js` and the two `assets/accent-cyanotype-*.webp` sources went
+> with them. What follows is kept because the reasoning — how the two plates were
+> derived, why they are two grades and not one photograph lightened, why the
+> build insets a pixel off every edge — is the part that would have to be redone
+> rather than re-read. Everything here is recoverable from commit `c6fb04a`.
+
+On the project pages the grey behind the slides was **one screen wide and it never
+moved**. It is a `position: sticky; left: 0` flex item at the _head_ of the
 track, so its flow position is track x 0 — already the window's left edge — and
 there is nothing for the sticky offset to correct on the first frame and
 everything for it to hold afterwards. The paper and the presentation travel over
@@ -516,7 +555,7 @@ deck three revisions ago — one horizontal track, the brief travelling off the 
 edge with it, a progress row underneath, a hand-over at the end. Almost none of
 that survives a vertical reel: there is no track, no wheel to redirect, no
 progress to report and no end to push past. So `src/reel-page.css` is its own
-template rather than a modifier on `deck-page.css`, and what carries over is the
+template rather than a modifier on the deck's, and what carries over is the
 shape of the opening frame — the paper's width and the brief's line.
 
 **Nothing here is scripted.** The snapping is `scroll-snap-type: y mandatory` on
@@ -588,10 +627,10 @@ in the **window**, which is what "centred" means and what `scroll-snap-align:
 center` gives for free. It puts frame 1 at 141 where the design draws 121.
 
 **And one walk-back.** Making this page a deck had parameterised the slide box in
-`deck-page.css` as `--slide-ratio` / `--slide-h-design`, so a 3:2 deck could
-restate them. With the page no longer a deck, both decks are 16:9 again and a
-parameter with one value is a claim that something varies when nothing does — so
-the ratio went back to a constant and `src/eight-immortals.css` was deleted. The
+the deck template as `--slide-ratio` / `--slide-h-design`, so a 3:2 deck could
+restate them. With the page no longer a deck, the remaining decks were 16:9 again
+and a parameter with one value is a claim that something varies when nothing does
+— so the ratio went back to a constant and `src/eight-immortals.css` was deleted. The
 two decks render pixel-identically either way; that was checked rather than
 assumed.
 
@@ -670,6 +709,139 @@ broken rather than as unfinished. Put the clause back the moment it has an endin
 The SHOP line points at `phia.com/shop`, which is the design's own address rather
 than a guess — it is what the browser mockup in the first frame has in its address
 bar, and the paragraph names the same site.
+
+### Confidence Underneath — the rail
+
+Figma node `455:4163`, and the **fourth** kind of project page after the deck,
+the reel and the still. It is the only one whose two halves are read on different
+axes: the brief centred on paper and read downward, then the presentation on
+charcoal and read sideways. `src/rail-page.css` is the template,
+`src/project-rail.js` is the lock, `src/rail-page.js` is the entry.
+
+**Both presentations are rails**, and they are the same layout twice — Confidence
+Underneath came first, MFW Color Trends followed, and `src/rail-page.css` and
+`src/rail-page.js` are shared with nothing placed by hand on either.
+
+**Both used to be decks**, and the axis did not turn so much as the composition
+did. As a deck the brief sat on paper at the left and the slides on a charcoal
+panel at the right, both on one screen. The brief is now *above* the work rather
+than beside it, which hands the presentation the whole window — and that is what
+let the slides grow half again, from the deck's 826.66 box to **eleven columns,
+1309.17 × 736.4**.
+
+When the second page left it, the deck template had no callers, so it was removed:
+`src/deck-page.css` (787 lines), `src/project-deck.js` (733) and `src/deck-page.js`
+(10), plus the accent build step and both accent sources, which nothing drew any
+more. All of it is in commit `c6fb04a`.
+
+#### The rail's numbers are the grid's, and the design's were not
+
+The lead was already on the twelve-column grid and is written as such: the
+design's 101 top offset is one column (100.83), its 1430 brief is twelve, its 946
+paragraph measure is eight (946.67), its 100.83 fact track is one. Those agree to
+within two thirds of a unit — the grid rounded for a designer's hand.
+
+The rail's did not agree, and the reason is that the frame was drawn by **scaling
+the old sideways deck up by 1.5226**: 826.66 × 1.5226 = 1258.66, and the deck's 40
+gutter × 1.5226 = 60.90. Those are artifacts of a scale factor rather than
+measurements, and 1258.663 falls between ten columns (1188.33) and eleven
+(1309.17), on no line at all. So the slide is **eleven columns** — the nearest
+column line, and the one on the larger side — and the gap is **three gutters**,
+60 against the design's 60.903.
+
+A 16:9 box can put only one of its two dimensions on a column line. Width leads,
+because the page grid is horizontal.
+
+Eleven columns is a *twelve*-column number, and below 768 the grid is **four** —
+`--grid-columns` changes at that breakpoint. Asking for eleven of four columns is
+asking for 1005 on a 390 screen, which is exactly what it gave until the narrow
+block overrode the slide to the full measure.
+
+**Nothing had to be re-exported to make the slides bigger.** The sources are
+3840 × 2160 and the new box needs 2517 × 1416 at 2×, so it still delivers a full
+2× with headroom to spare — the build reports `17 slides at 2.00x`. The delivered
+set went from 2.3 MB to 3.8 MB for 2.24× the pixels.
+
+#### How the lock works, and why it is not the deck's
+
+The deck page is its own horizontal scroller and takes the wheel over: it calls
+`preventDefault` on every vertical notch and adds the distance to `scrollLeft`.
+That works, but it is scroll the browser is not doing — no momentum, no keyboard,
+no scrollbar, and the page has no vertical axis at all.
+
+The rail keeps **one axis, the document's own, and never calls
+`preventDefault`**. `.rail` is a tall section; `.rail__pin` inside it is one
+window tall and `position: sticky`, so it stands still while the section's extra
+height passes under it. The module reads `scrollY` and writes a transform:
+
+```
+travel = the track's extent less the window's
+.rail   is 100dvh + travel tall
+p       = (scrollY - railTop) / travel        0 → 1 while pinned
+track   is translated by -p * travel
+```
+
+**One screen of scroll buys one slide.** At 1470 × 1078 the rail costs 18326px of
+scroll — exactly 17 steps of one 1078px window — while the track travels 23276px,
+so it moves about 1.27× the rate of the finger, which is under the threshold where
+it reads as a speed rather than as a scroll.
+
+The pin is real: the same `position: sticky` the reel page pins its brief with,
+and the scrollbar, the keyboard, a trackpad's momentum and a phone's fling all
+keep working.
+
+That it comes out exact is the centring's doing. The track is padded at both ends
+by half of what the window has left over once the slide has taken its eleven
+columns, so **the first slide and the last centre on the same terms** and the
+travel reduces to `(items − 1) × stride`. Every slide's centred position is a
+whole multiple of one stride, and there is no accumulated drift by the
+seventeenth. The end card is given the slide's own width for the same reason: a
+narrower last item would make the final step short, and the pair would arrive
+off-centre.
+
+#### It does not lock, and a sideways swipe drives it
+
+**There is no snapping.** The rail carried `scroll-snap` stops for a while — one
+zero-size anchor per slide, laid down the rail at the offsets that centre each
+one — and they are gone. A stop per slide is the strongest form of *this page is
+driving*, and the reading is better without it: the slides pass at whatever rate
+the reader chooses and nothing takes the scroll back off them.
+
+**One screen of scroll still buys one slide**, and that step outlived the snap it
+was introduced for. It bounds the page at one window per slide, which is both
+predictable and shorter than the track is wide — 18326px of scroll against 23276px
+of travel, about 1.27× — and it makes the keyboard land squarely: Page Down and
+the space bar move about one viewport, so here they move about one slide. Under
+the 1:1 mapping this page used first, a Page Down covered four fifths of a slide
+and every press left the row further out of true than the last.
+
+**A two-finger sideways swipe is the one event this page takes over.** A
+horizontal wheel delta here has nowhere to go — the document does not scroll
+across and the pin's overflow is hidden while pinned — so the browser's response
+to `deltaX` is to discard it. Nothing is taken away from the reader; a gesture
+that did nothing is given the obvious meaning. Only the dominant-horizontal case
+is claimed, only while the rail holds the screen, and the delta is handed back as
+a scroll of the *page* rather than as a transform, so it goes through the same
+`scrollY → translate` path as the wheel and cannot become a second source of
+truth for where the track is.
+
+#### Two things the geometry got wrong first
+
+Both were silent, and both are worth keeping written down.
+
+`img { max-width: 100% }` in `styles.css` is right everywhere else on the site
+and wrong on a scroller. It resolves against the flex container's *content* box —
+the window less the track's two insets, 1242 at 1470 — so every slide was capped
+16.7 short of the 1258.663 the design draws. A 1.3% squeeze reads as nothing
+until you measure the ratio and find 1.754 where 16:9 is 1.778. `.rail__slide`
+sets `max-width: none`; the row is meant to be wider than its container and
+nothing in it should be fitted to the window.
+
+A flex container's **`scrollWidth` does not count its trailing `padding-right`**
+when the content overflows. The travel came up exactly one `--rail-inset` short,
+and the symptom was the end card clipped against the right edge of the window at
+the very bottom of the rail. `measure()` now takes the extent from the last
+child's right edge plus the computed trailing padding.
 
 ### The still project pages
 
@@ -991,8 +1163,6 @@ them by `scripts/build-images.mjs` and are disposable.
 | source                               | used for                               |
 | ------------------------------------ | -------------------------------------- |
 | `assets/hero-cyanotype.png`          | the landing plate, at 1600 and 1080 wide |
-| `assets/accent-cyanotype-print.webp` | deck accent plate, at 720 square       |
-| `assets/accent-cyanotype-wash.webp`  | deck accent plate, at 720 square       |
 | `assets/projects/<slug>/preview.png` | one per project, rendered at 2× its leaf box — and, where the project has them, also the plate's cover frame and slot 1's clip poster |
 | `assets/projects/<slug>/slides/`     | one folder of slides per deck page, delivered whole into a 16:9 box |
 | `assets/projects/<slug>/frames/`     | a reel's frames, each into its own box — and the Trending This Week plate's, see note 6 |
@@ -1086,13 +1256,11 @@ Three notes on where those came from:
    for what is in them where the first two are named for their tone, and it is
    also why neither of the two that remain stands in for them.
 
-   Both are delivered at 720 square, which is 2× the largest square the deck
-   draws (three columns and their gutters, 342.5 units), and the one- and
-   two-column squares are the same file scaled down. Placement is
-   `src/project-deck.js`; the geometry is `.deck__accent` in
-   `src/deck-page.css`. **The deck pages are the only ones that draw them now** —
-   the still pages carried one apiece and no longer do; see the note at the head
-   of *The still project pages*.
+   Both were delivered at 720 square, which is 2× the largest square the deck
+   drew (three columns and their gutters, 342.5 units), and the one- and
+   two-column squares were the same file scaled down. **Nothing draws them now**:
+   the still pages gave theirs up when they went to paper, and the deck pages went
+   with the template when both became rails.
 
    **A one-pixel inset comes off every side in the build**, and it is a fix. The
    print plate carries a dark rim baked into its left and right edge columns by
@@ -1156,8 +1324,15 @@ Three notes on where those came from:
    `1.webp` and listed first, which is both the carousel's order and the design's
    — the plate opens on the cover.
 
-   The frames are delivered into a **four-column 3:4 box at 2×** (927 × 1236),
-   `fit: 'cover'` at q82 — 476 KB for all ten. Deck slides `contain` instead,
+   The frames are delivered into a **five-column 3:4 box** (584.17 × 778.89),
+   `fit: 'cover'` at q82 — 580 KB for all ten. The box was four columns until the
+   plate was widened and hung off the right margin; see the head of
+   `src/trending-this-week.css`. **They no longer reach 2×**, and the build says
+   so: these are Instagram's own 1080 × 1440 export, 2× of the wider box wants
+   1168, so the scale caps at **1.85×** and the frames are delivered at their
+   native 1080 × 1440 with nothing resampled at all. Capping rather than enlarging
+   is the rule every source here follows. A true 2× would need a re-export above
+   1168 wide, which Instagram does not hand back. Deck slides `contain` instead,
    because a slide is a whole page and cropping it would take words off it; a
    plate is a photograph shown in a box of its own ratio, so `cover` crops
    nothing here.

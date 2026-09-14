@@ -10,7 +10,7 @@
    THE AXIS TURNED, and that is what this file is. Eight Immortals was built as a
    deck three revisions ago — one horizontal track, the brief travelling off the
    left edge with it, a progress row underneath. The design now scrolls the work
-   vertically past a brief that stays put, so almost nothing of deck-page.css
+   vertically past a brief that stays put, so almost nothing of the deck template
    applies: there is no track, no wheel to redirect, no progress to report and no
    end to push past. What survives is the shape of the opening frame, which is why
    the paper is still 419.586 wide and the brief still starts on the 222 line.
@@ -30,7 +30,7 @@
      starts in the bar — the same alignment the deck pages make, and the reason
      the design's panel is 420 rather than a round number.
 
-     The deck has project-deck.js measure that word and publish --projects-left,
+     The deck had a module measure that word and publish --projects-left,
      because the bar sets PROJECTS flush right in column 4 and its left edge is
      therefore a TEXT measurement. This page runs no such module, so it takes the
      arithmetic the deck uses as its own fallback: the column-5 line less the
@@ -89,7 +89,7 @@ body {
 
 /* The bar does not travel on this page — there is no print to rest on — so it
    wears .nav--locked exactly as the other project pages do. Repeated here rather
-   than shared because it is one declaration and deck-page.css is not loaded. */
+   than shared because it is one declaration and no other template is loaded. */
 .nav--locked {
   transform: none;
 }
@@ -384,3 +384,29 @@ body {
    turn off, and turning snapping off would take away the design rather than its
    decoration. What the preference does reach is the smooth scrolling styles.css
    sets globally, which is already handled there. */
+
+/* THE PAGER, fixed to the window. A reel is several screens tall and its right
+   half is charcoal the whole way down — body carries that colour, not a panel —
+   so a fixed box in the bottom right corner is over the same ground at every
+   scroll position, and there is no container on that side to hang it off
+   anyway: .reel__shots is a plain flex child with nothing positioned about it.
+
+   Fixed also keeps it reachable throughout, which is what .reel__foot already
+   gets for free by riding in the sticky lead.
+
+   It lights to white, because it is on the dark — see .pager in styles.css for
+   the resting grey and the ease. */
+.reel .pager {
+  position: fixed;
+  right: var(--grid-margin);
+  bottom: 0;
+  z-index: 2;
+  height: 37.594rem;
+  --pager-lit: var(--color-white);
+}
+
+@media (max-width: 767px) {
+  .reel .pager {
+    display: none;
+  }
+}

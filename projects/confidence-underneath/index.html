@@ -8,6 +8,9 @@
       name="description"
       content="Confidence Underneath — Dexcom x SKIMS, 2026. A cross-industry strategy for adaptive wear. A project by Claire Ong."
     />
+    <!-- The first slide, which is the one the markup lights and the only one
+         above the fold of the rail. Written by scripts/build-gallery.mjs from
+         what the image build emitted. -->
     <link
       rel="preload"
       as="image"
@@ -22,22 +25,27 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=La+Belle+Aurore&family=Spectral:ital,wght@0,400;1,400&display=swap"
       rel="stylesheet"
     />
-    <!-- Linked rather than imported by the module: an imported stylesheet is
-         injected by JavaScript in dev, so the browser paints the raw HTML first
-         and the page flashes unstyled. Here that flash would be an 18-image
-         column several screens tall before the track exists to lay it sideways. -->
+    <!-- Linked rather than imported by the module, for the same reason the other
+         project pages link theirs: an imported stylesheet is injected by
+         JavaScript in dev, so the browser paints the raw HTML first and the page
+         flashes unstyled. Here that flash would be the brief and seventeen
+         full-width slides in one column on white, before the lead exists to
+         centre the copy and the rail exists to lay the slides in a row. -->
     <link rel="stylesheet" href="/src/styles.css" />
     <link rel="stylesheet" href="/src/project-brief.css" />
-    <link rel="stylesheet" href="/src/deck-page.css" />
-    <script type="module" src="/src/deck-page.js"></script>
+    <link rel="stylesheet" href="/src/rail-page.css" />
+    <script type="module" src="/src/rail-page.js"></script>
   </head>
 
   <body>
     <!-- ==================================================================
-         NAV — the landing page's bar, locked. is-over-paper is set here
-         rather than by a scroll frame because on this page it is true from
-         the start, and it stays true: the bar is the one thing that does not
-         travel with the track.
+         NAV — the landing page's bar, locked.
+
+         is-over-paper is set here rather than by a scroll frame because it is
+         true from the first frame and stays true: the design draws the bar as a
+         paper strip across the top of the window (node 455:4198), and that strip
+         is opaque, so the charcoal passes UNDER it rather than changing it. The
+         class is what gives the bar both the paper ground and the graphite type.
          ================================================================== -->
     <header class="nav nav--locked is-over-paper">
       <a class="nav__mark" href="/">Claire M Ong</a>
@@ -64,339 +72,305 @@
     </header>
 
     <!-- ==================================================================
-         THE TRACK
+         THE LEAD — paper, and the brief centred on it
 
-         The page's only scroller, and it runs sideways. tabindex makes it
-         focusable so the deck can be read from the keyboard; the label says
-         what the focus ring has landed on, since the element itself is just
-         the viewport. src/project-deck.js redirects the wheel onto it.
+         This page reads DOWNWARD first and sideways second, which is what makes
+         it a rail rather than a deck: the brief is above the work instead of
+         beside it, so the presentation gets the whole window. See the head of
+         src/rail-page.css.
+
+         Everything here is centred, which no other project page does. The design
+         centres the stack on the page and each line within it, so the block
+         reads as a title page rather than as a caption on the work.
          ================================================================== -->
-    <main
-      class="deck"
-      data-deck
-      tabindex="0"
-      aria-label="Confidence Underneath — presentation, scrolls horizontally"
-    >
-      <div class="deck__track" data-track>
-        <!-- The dark panel, and the only thing on this page that never moves. It
-             is one screen wide and sticks at the window's left edge from the
-             first frame — the paper and the presentation travel over it and off
-             to the left, and the grey and its cyanotype accents do not travel at
-             all.
+    <section class="lead">
+      <section class="brief" aria-label="Project details">
+        <h1 class="brief__title">Confidence Underneath</h1>
 
-             Being first in the row is what puts it there: its flow position is
-             track x 0, which is already the window's left edge, so `left: 0` has
-             nothing to correct until the scroll starts and then holds it. It is
-             also what cuts the lower accent at the paper's right edge in the
-             opening frame, which is how the design draws it — the square is on
-             the page's grid at 384 and the paper runs to 420, so a sixth of it
-             is under the brief until the brief has gone.
+        <!-- Three facts where the deck carried four, and the year is the one
+             dropped — it is in the award line already ("2026 SKIMS x FSF
+             Scholar"), and a row that repeats the row below it is a row that
+             makes a reader check whether they are the same thing.
 
-             It takes no space in the row — see the negative margin in
-             deck-page.css — so the paper still starts at track x 0 and the track
-             is no wider for it. Empty and aria-hidden: it is a surface, and
-             everything on it is decoration. -->
-        <div class="deck__panel" data-panel aria-hidden="true"></div>
+             The labels are right-aligned and the values left-aligned against a
+             pair of one-column tracks, so the three rows meet on one line down
+             the middle of the page. See .lead .brief__facts. -->
+        <div class="brief__facts">
+          <span class="brief__label">[Client]</span>
+          <p class="brief__value">Dexcom x SKIMS</p>
 
-        <!-- The paper the deck starts beside. It travels with the track rather
-             than staying put: by the time the presentation is under the
-             progress row the brief is off the left edge, having been read. -->
-        <div class="deck__lead">
-          <section class="brief" data-margin aria-label="Project details">
-            <h1 class="brief__title">Confidence Underneath</h1>
+          <span class="brief__label">[Type]</span>
+          <p class="brief__value">Brand Strategy</p>
 
-            <div class="brief__facts">
-              <span class="brief__label">[Client]</span>
-              <p class="brief__value">Dexcom x SKIMS</p>
-
-              <span class="brief__label">[Type]</span>
-              <p class="brief__value">Brand Strategy</p>
-
-              <span class="brief__label">[Year]</span>
-              <p class="brief__value"><time datetime="2026">2026</time></p>
-
-              <!-- The award lives here rather than in the overview: it is a
-                   credential, and this grid is where the page keeps facts. The
-                   paragraph below has one job, which is to say what the work is. -->
-              <span class="brief__label">[Award]</span>
-              <p class="brief__value">SKIMS x FSF Scholar, 1 of 100 from 760</p>
-            </div>
-
-            <p class="brief__text">
-              7.7 million people with diabetes rely on continuous glucose
-              monitors, yet tight seams, friction, and adhesives that irritate
-              the skin are a daily reminder that fashion wasn’t made for them.
-              For the 2026 Fashion Scholarship Fund competition, I developed a
-              cross-industry collaboration strategy for Dexcom x SKIMS through
-              consumer research, competitive analysis, and full-funnel
-              marketing. Confidence Underneath is an adaptive wear line
-              engineered with light, breathable, non-irritant fabrics that
-              secure sensors without compression, so nobody has to choose
-              between health and confidence.
-            </p>
-
-            <!-- One destination where MFW Color Trends has two, and the label is the
-                 thing itself rather than a heading over it — the same 10pt line,
-                 once. This project has no repository or notebook to point at;
-                 what it has instead is the write-up.
-
-                 The href is LinkedIn's own shortener rather than the post's full
-                 URL. That is deliberate: the expanded one carries the share
-                 tracking LinkedIn appends when you copy a link out of it
-                 (utm_source, utm_medium, rcm), and none of that belongs in the
-                 markup. lnkd.in/p/gadTwJdc 301s to the post either way. -->
-            <div class="brief__source">
-              <a
-                class="brief__link"
-                href="https://lnkd.in/p/gadTwJdc"
-                target="_blank"
-                rel="noopener"
-                >Reflection</a
-              >
-            </div>
-          </section>
-
-          <!-- The site's footer row, reduced to what is ever visible here: the
-               deck panel covers everything right of the paper from the opening
-               frame onward, so the five-column grid the other pages use would
-               be four hidden cells and one line.
-               The pair below 768 is not decoration — the bar cannot hold the
-               mark, two words and a 20-character address on four columns, so it
-               drops them, and this is the only other place they appear. -->
-          <footer class="deck__foot">
-            <p class="deck__foot-rule">&copy; 2026 Claire Ong</p>
-            <a
-              class="deck__foot-link"
-              href="https://www.linkedin.com/in/clairemong/"
-              target="_blank"
-              rel="me noopener"
-              >LinkedIn</a
-            >
-            <button
-              class="deck__foot-link"
-              type="button"
-              data-copy="mclaireong@gmail.com"
-            >
-              <span data-copy-label>mclaireong@gmail.com</span>
-            </button>
-          </footer>
+          <span class="brief__label">[Award]</span>
+          <p class="brief__value">2026 SKIMS x FSF Scholar</p>
         </div>
 
-        <!-- ================= THE DECK =================
-             GENERATED between the markers. Do not hand-edit: run
-             `npm run images` to build the frames from assets/, then
-             `npm run gallery` to write them in here. Everything outside the
-             markers is hand-written and is not touched.
-
-             The deck runs 2..18: there is no 1.png in the folder, and 19 — the
-             citations slide — has been taken out. So the counter's position and
-             the source filename are one apart, and the delivered files keep the
-             deck's own numbers rather than being renumbered. Adding a frame back
-             is a matter of putting the file in the folder; the directory is the
-             manifest. -->
-        <div class="deck__stage" data-stage>
-        <!-- slides:start -->
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/2.webp"
-          alt="Confidence Underneath — slide 1 of 17."
-          fetchpriority="high"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/3.webp"
-          alt="Confidence Underneath — slide 2 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/4.webp"
-          alt="Confidence Underneath — slide 3 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/5.webp"
-          alt="Confidence Underneath — slide 4 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/6.webp"
-          alt="Confidence Underneath — slide 5 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/7.webp"
-          alt="Confidence Underneath — slide 6 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/8.webp"
-          alt="Confidence Underneath — slide 7 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/9.webp"
-          alt="Confidence Underneath — slide 8 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/10.webp"
-          alt="Confidence Underneath — slide 9 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/11.webp"
-          alt="Confidence Underneath — slide 10 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/12.webp"
-          alt="Confidence Underneath — slide 11 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/13.webp"
-          alt="Confidence Underneath — slide 12 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/14.webp"
-          alt="Confidence Underneath — slide 13 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/15.webp"
-          alt="Confidence Underneath — slide 14 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/16.webp"
-          alt="Confidence Underneath — slide 15 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/17.webp"
-          alt="Confidence Underneath — slide 16 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <img
-          class="deck__slide"
-          data-slide
-          src="/img/projects/confidence-underneath/18.webp"
-          alt="Confidence Underneath — slide 17 of 17."
-          loading="lazy"
-          decoding="async"
-        />
-        <!-- slides:end -->
-
-          <!-- The two ways out, at the end of the deck — the last item on the
-               row, where a nineteenth slide would stand. Outside the markers,
-               so the gallery build never touches it.
-
-               RESTART is an action on this page and so a button; the other goes
-               somewhere and so is a link. They are styled alike because to a
-               reader they are one pair, but they are not the same kind of thing
-               and the markup should not pretend otherwise.
-
-               The link points at the landing page's project index. It is the
-               only honest destination today: this is the first of seven
-               projects there, and the second has no page yet. -->
-          <div class="deck__end">
-            <button class="deck__end-link" type="button" data-restart>
-              Restart
-            </button>
-            <!-- Says what to do, and still does it when clicked — which is the
-                 only way through on a touch screen, where there is no wheel to
-                 keep scrolling with.
-
-                 The accessible name is left as the visible words rather than
-                 being overridden to something tidier like "Next project":
-                 anything driving this page by voice says what it can see, and a
-                 name that does not contain the label is a name that cannot be
-                 spoken.
-
-                 The empty span is the gauge: project-deck.js grows it into an
-                 underline as a push past the last slide accumulates, and the
-                 page hands over when it is full. Inside the link on purpose —
-                 the thing that fills is the thing that is about to happen. -->
-            <a class="deck__end-link" href="/#projects" data-next
-              >Keep scrolling for next<span
-                class="deck__push"
-                data-push
-                aria-hidden="true"
-              ></span
-            ></a>
-          </div>
+        <div class="brief__prose">
+          <p class="brief__text">
+            7.7 million people with diabetes rely on continuous glucose monitors,
+            yet tight seams, friction, and adhesives that irritate the skin are a
+            daily reminder that fashion wasn’t made for them. For the 2026
+            Fashion Scholarship Fund competition, I developed a cross-industry
+            collaboration strategy for Dexcom x SKIMS through consumer research,
+            competitive analysis, and full-funnel marketing. Confidence
+            Underneath is an adaptive wear line engineered with light,
+            breathable, non-irritant fabrics that secure sensors without
+            compression, so nobody has to choose between health and confidence.
+          </p>
         </div>
-      </div>
-    </main>
+
+        <!-- One destination, and the label is the thing itself rather than a
+             heading over it — the same 10pt line the other project pages carry.
+
+             The href is LinkedIn's own shortener rather than the post's full
+             URL: the expanded one carries the share tracking LinkedIn appends
+             when you copy a link out of it (utm_source, utm_medium, rcm), and
+             none of that belongs in the markup. lnkd.in/p/gadTwJdc 301s to the
+             post either way. -->
+        <div class="brief__source">
+          <a
+            class="brief__link"
+            href="https://lnkd.in/p/gadTwJdc"
+            target="_blank"
+            rel="noopener"
+            >Reflection</a
+          >
+        </div>
+      </section>
+    </section>
 
     <!-- ==================================================================
-         PROGRESS
+         THE RAIL — charcoal, and the presentation on it
 
-         Outside the scroller, because it does not scroll. It is hidden until
-         the dark panel's left edge reaches the window's — when the
-         presentation is the whole screen — and then holds that position to
-         the end of the deck. See the .progress rule in deck-page.css.
+         The section is a TALL SPACER and the pin inside it is one window tall.
+         src/project-rail.js measures how far the track has to move, writes that
+         onto the section as its extra height, and translates the track by
+         exactly the scroll the section gives up. So the pin stands still against
+         the window while the slides pass sideways, and when they are spent the
+         pin releases and the page carries on down to the footer.
 
-         The counter's seed is written by scripts/build-gallery.mjs and is
-         what shows if the module never runs.
+         WITHOUT THAT MODULE THIS IS STILL A PAGE: .rail__pin is an ordinary
+         overflow-x box in the base stylesheet, so the row can be swiped,
+         dragged and tabbed through. The module adds the lock and nothing else,
+         which is why the class that switches the CSS over is set from script.
+
+         The slides are GENERATED between the markers: run `npm run images` to
+         build them from assets/, then `npm run gallery` to write the elements in
+         here. Everything outside the markers is hand-written.
          ================================================================== -->
-    <div class="progress" data-progress>
-      <p class="progress__count" data-count aria-live="polite">[1/17]</p>
-      <!-- A plain div here on purpose. project-deck.js promotes it to a real
-           slider on mount — role, tab stop, values — because without the module
-           it cannot be dragged, and a page that announces a slider it cannot
-           move is worse than one that announces nothing. -->
-      <div class="progress__slider" data-scrub>
-        <div class="progress__track"></div>
-        <div class="progress__fill" data-fill></div>
+    <section class="rail" data-rail>
+      <div class="rail__pin" data-pin>
+        <div class="rail__track" data-track>
+          <!-- slides:start -->
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/2.webp"
+            alt="Confidence Underneath — slide 1 of 17."
+            fetchpriority="high"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/3.webp"
+            alt="Confidence Underneath — slide 2 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/4.webp"
+            alt="Confidence Underneath — slide 3 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/5.webp"
+            alt="Confidence Underneath — slide 4 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/6.webp"
+            alt="Confidence Underneath — slide 5 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/7.webp"
+            alt="Confidence Underneath — slide 6 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/8.webp"
+            alt="Confidence Underneath — slide 7 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/9.webp"
+            alt="Confidence Underneath — slide 8 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/10.webp"
+            alt="Confidence Underneath — slide 9 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/11.webp"
+            alt="Confidence Underneath — slide 10 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/12.webp"
+            alt="Confidence Underneath — slide 11 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/13.webp"
+            alt="Confidence Underneath — slide 12 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/14.webp"
+            alt="Confidence Underneath — slide 13 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/15.webp"
+            alt="Confidence Underneath — slide 14 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/16.webp"
+            alt="Confidence Underneath — slide 15 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/17.webp"
+            alt="Confidence Underneath — slide 16 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/confidence-underneath/18.webp"
+            alt="Confidence Underneath — slide 17 of 17."
+            loading="lazy"
+            decoding="async"
+          />
+          <!-- slides:end -->
+        </div>
+
+        <!-- ==================================================================
+             PROGRESS
+
+             Inside the pin, which is the whole of what the lock buys this row:
+             it is on screen exactly while the presentation is, and off it the
+             rest of the time, with no state to drive and nothing to fade. The
+             deck's version is fixed to the window and has to be faded in and
+             out because its panel arrives sideways.
+
+             The counter's seed is written by scripts/build-gallery.mjs and is
+             what shows if the module never runs.
+             ================================================================== -->
+        <div class="progress" data-progress>
+          <p class="progress__count" data-count aria-live="polite">[1/17]</p>
+          <!-- A plain div here on purpose. src/project-rail.js promotes it to a
+               real slider on mount — role, tab stop, values — because without
+               the module it cannot be dragged, and a page that announces a
+               slider it cannot move is worse than one that announces nothing. -->
+          <div class="progress__slider" data-scrub>
+            <div class="progress__track"></div>
+            <div class="progress__fill" data-fill></div>
+          </div>
+        </div>
+
+        <!-- The copyright, on the charcoal and in the band every other page puts
+             its footer in: left margin, bottom 0, 37.594 tall, centred in it —
+             the same geometry as .still__foot and .reel__foot, and the same
+             height the landing page's .foot row comes to. So the line lands
+             where the eye already expects a footer, below the progress bar
+             rather than on it.
+
+             Hidden below 768, where the paper footer under the rail carries it
+             instead — see .rail__rule in src/rail-page.css. -->
+        <p class="rail__rule">&copy; 2026 Claire Ong</p>
+
+        <!-- PREV / NEXT. Generated between the markers from the order the
+             landing page's index has its rows in — see scripts/build-gallery.mjs.
+             Do not hand-edit: the two hrefs are this page's neighbours in that
+             list, and a hand-kept copy is how one of them ends up pointing at a
+             project that has moved. -->
+        <!-- pager:start -->
+        <nav class="pager" aria-label="Projects">
+          <a class="pager__link" href="/projects/eight-immortals/" rel="prev">Prev</a>
+          <span class="pager__sep" aria-hidden="true">/</span>
+          <a class="pager__link" href="/projects/shop-every-store/" rel="next">Next</a>
+        </nav>
+        <!-- pager:end -->
       </div>
-    </div>
+    </section>
+
+    <!-- The site's footer row, reduced to what this page needs. It is below the
+         rail and on paper, which is a thing this page can have and the deck
+         cannot: the deck has no vertical axis to put a footer on. -->
+    <footer class="rail-foot">
+      <p class="rail-foot__rule">&copy; 2026 Claire Ong</p>
+      <a
+        class="rail-foot__link"
+        href="https://www.linkedin.com/in/clairemong/"
+        target="_blank"
+        rel="me noopener"
+        >LinkedIn</a
+      >
+      <button
+        class="rail-foot__link"
+        type="button"
+        data-copy="mclaireong@gmail.com"
+      >
+        <span data-copy-label>mclaireong@gmail.com</span>
+      </button>
+    </footer>
   </body>
 </html>

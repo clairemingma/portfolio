@@ -29,17 +29,32 @@
 
    The stage is what is left of the window after the lead takes its 419.59, which
    is not a whole number of columns and has no column lines on it to place
-   against. So the plate keeps the relationships the design actually states, and
-   the stage centres it:
+   against. The plate is therefore placed by ONE edge and sized by one number:
 
      plate box     3:4, the photograph's own ratio
-     plate width   four columns — 463.33 at the 1470 artboard
+     plate width   five columns — 584.17 at the 1470 artboard
+     plate right   the page's own margin, 20, off the right edge of the window
 
-   HEIGHT LEADS AND WIDTH FOLLOWS, which is the reverse of the old file and is
-   forced by the page having no scroll: height is the scarce dimension, and
-   artwork taller than the window on a page that cannot scroll is artwork that
-   cannot be seen. So the plate is capped against the stage and the width comes
-   off the ratio.
+   IT IS RIGHT-ALIGNED RATHER THAN CENTRED ON THE STAGE, which is the one place
+   this page now differs from Studio Edit 02 and is why the override below is
+   here rather than in the template. The stage is not a whole number of columns,
+   so centring in it put the plate's edges on no line at all; the margin IS a line
+   — the same 20 the bar, the brief and the footer are all set to — so hanging the
+   plate off it is the only placement on this stage that agrees with the rest of
+   the page. It also reads as the composition it is: copy at the left edge of the
+   sheet, work at the right edge, air between them.
+
+   WIDTH LEADS AND HEIGHT FOLLOWS, which is the reverse of what this file did
+   before. The width is the stated quantity — five columns — so it is the one the
+   arithmetic starts from, and the ratio gives the height.
+
+   But height is still the SCARCE dimension, because the page has no scroll and
+   artwork taller than the window cannot be seen. So the height cap survives as a
+   cap on the width, and the consequence is worth stating plainly: five columns at
+   3:4 is 778.9 tall, and the window has to be about 896 tall to hold that with
+   the bar and the air. Below that the plate scales down — still right-aligned,
+   still 3:4 — rather than overflowing a page that cannot scroll. At the design's
+   own 1470x835 it lands at about 4.6 columns.
    ========================================================================== */
 
 :root {
@@ -50,25 +65,47 @@
 
   /* THE PLATE, capped three ways and the smallest wins:
 
-       1  the design's own box — four columns at 3:4, 617.8 at 1470
+       1  the width the design asks for — five columns and their four gutters
        2  what the stage leaves DOWN: the window less the bar, less the air above
-          and below
-       3  what the stage leaves ACROSS: the plate inside the air
+          and below, taken back through the ratio so it caps the WIDTH
+       3  what the stage leaves ACROSS: the stage less the margin the plate hangs
+          off at the right, less one --still-air of clear space at the left, so a
+          narrow window can never run the plate into the brief's column
 
-     Neither of the last two binds at a real window shape — at the design's own
-     1470x835 the second allows 701.4 against the 617.8 the design draws, and the
-     third allows well over twice that. Both loosened when the squares went, the
-     second by the two gutters the print square used to hang past the plate's
-     bottom edge and the third by the two slivers; neither bound before and
-     neither binds now. They are here because a page that cannot scroll cannot
-     recover from artwork that overflows, and a cap that never fires costs
-     nothing. */
-  --plate-h: min(
-    calc((4 * var(--col) + 3 * var(--grid-gutter)) * 4 / 3),
-    calc(100dvh - var(--nav-h) - 2 * var(--still-air)),
-    calc((var(--stage-w) - 2 * var(--still-air)) * 4 / 3)
+     The second binds at ordinary window shapes and is not a guard — see the note
+     above. The third has never bound at a real window shape: at 1470x835 it
+     allows 990 against the 584 the design asks for, and it only comes into play
+     on a window that is wide enough to be short of neither. */
+  --plate-w: min(
+    calc(5 * var(--col) + 4 * var(--grid-gutter)),
+    calc((100dvh - var(--nav-h) - 2 * var(--still-air)) * 3 / 4),
+    calc(var(--stage-w) - var(--grid-margin) - var(--still-air))
   );
-  --plate-w: calc(var(--plate-h) * 3 / 4);
+  --plate-h: calc(var(--plate-w) * 4 / 3);
+}
+
+/* ==========================================================================
+   THE STAGE — overridden, for the right edge
+   ========================================================================== */
+
+/* The template centres its composition on the stage, which is what Studio Edit 02
+   still wants. This page hangs its plate off the page margin instead.
+
+   `justify-items: end` with the margin as the stage's own right padding, rather
+   than a margin on the plate: the padding belongs to the surface that owns the
+   edge, and stating it here means the plate stays a box with a width and nothing
+   else to say about where it is. `align-items` is left as the template set it, so
+   the plate is still centred DOWN the stage — only the horizontal changes.
+
+   Inside the split only. Below 768 the stage is a band under the brief with the
+   plate at the full measure and the margin already applied as padding on both
+   sides; there is no right edge to hang off down there, and `justify-items: end`
+   on a full-width box would do nothing but confuse the next reader. */
+@media (min-width: 768px) {
+  .still__stage {
+    justify-items: end;
+    padding-right: var(--grid-margin);
+  }
 }
 
 /* ==========================================================================

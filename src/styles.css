@@ -76,7 +76,7 @@
      is the design's own arithmetic rather than an assumption: things there sit on
      twelve rows as well as twelve columns, and those rows are what the columns
      would be if the page were SQUARE — same margin, same gutter, so the same
-     step. See src/still-page.css and .deck__accent. */
+     step. See src/rail-page.css, where --rail-guard is one. */
   --col: calc(
     (100vw - 2 * var(--grid-margin) - (var(--grid-columns) - 1) *
           var(--grid-gutter)) / var(--grid-columns)
@@ -754,6 +754,113 @@ p {
 .viewer__plate.is-active {
   visibility: visible;
 }
+
+/* THE ONE CYCLING PLATE. Trending This Week's preview is the carousel it is on
+   its own page: a stack of frames in the plate's box, cut between on a beat
+   while that plate is the one up. See src/plate-cycle.js and the note in
+   src/project-viewer.js.
+
+   The plate is a <div> here where every other one is an <img> or a <video>, so
+   it holds the stack. `.viewer__plate`'s own object-fit is inert on a container
+   and is left alone rather than unset — it is the box's rule, and each frame
+   below carries its own.
+
+   visibility rather than opacity or display, and for the same three reasons the
+   project page's .plate__frame gives: it takes the hidden frames out of the
+   accessibility tree and out of hit-testing, there is no transition to interrupt
+   so the swap lands in one frame like every other cut in this viewer, and unlike
+   display:none it does not stop the browser decoding them up front — which is
+   the whole point of having all ten in the DOM.
+
+   THE `is-active` IN THE SELECTOR BELOW IS LOAD-BEARING AND IS NOT BELT AND
+   BRACES. `visibility: hidden` on the plate does NOT settle the matter for what
+   is inside it: unlike display:none, it is an inherited value that a descendant
+   may override, and a frame saying `visibility: visible` says it absolutely. So
+   a rule of the form `.viewer__frame.is-current { visibility: visible }` puts the
+   cycle's current frame on screen whether or not its plate is the one up — it
+   sat on top of whichever plate was, from first paint, because the markup seeds
+   frame 1 as is-current.
+
+   Qualifying on the plate is what ties the two together: when the plate is not
+   active nothing in the stack claims visibility, every frame keeps the hidden
+   above, and the cycle is as absent as any other plate that is not up. */
+.viewer__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  visibility: hidden;
+}
+
+.viewer__plate.is-active .viewer__frame.is-current {
+  visibility: visible;
+}
+
+/* ==========================================================================
+   THE PAGER — prev / next, on every project page
+   ========================================================================== */
+
+/* Two links and a slash, sitting in the footer band at the bottom RIGHT of the
+   window — the corner the landing page's footer gives the address, opposite the
+   copyright line at the left.
+
+   HERE RATHER THAN IN A TEMPLATE because all three project templates carry it
+   and none of them is loaded with another. This file is: it holds the site's
+   furniture — the bar, the footer row, the viewer — and a pager that reads the
+   same on a rail, a reel and a still page belongs with them. What each template
+   states for itself is the two things that genuinely differ: WHERE its bottom
+   right corner is, since all three build that corner out of a different box, and
+   what colour it has to be on the ground it lands on.
+
+   The order is the INDEX'S, and it is read from index.html at build time rather
+   than written here or in the pages — see scripts/build-gallery.mjs. The list of
+   projects and the order they are read in is one fact, and the landing page is
+   where it lives.
+
+   It wraps: the last project's NEXT is the first. A pager that dead-ends on the
+   sixth page is a pager that has to grey out a link and explain itself, and the
+   index is a loop of work rather than a sequence with an end. */
+.pager {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--grid-gutter) / 2);
+  color: var(--color-system-grey);
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* IT LIGHTS RATHER THAN UNDERLINES. The pair rests in the site's secondary grey
+   and the one under the cursor comes up to the page's own full text colour —
+   white on the charcoal templates, graphite on the paper one. Each template says
+   which by setting --pager-lit; the rest of the behaviour is here, because it is
+   the same behaviour everywhere.
+
+   The change is EASED and the state is not: 250ms on the colour with the site's
+   one curve, which is the arrangement .nav already uses for its own white ->
+   graphite change and which styles.css attributes to the reference this design
+   follows. The token is there precisely so a colour change on this site feels
+   like the same colour change wherever it happens.
+
+   Only `color` transitions. A transition on `all` would also catch the focus
+   ring, which has to appear the instant it is earned. */
+.pager__link {
+  color: inherit;
+  transition: color var(--dur) var(--ease);
+}
+
+.pager__link:hover,
+.pager__link:focus-visible {
+  color: var(--pager-lit);
+}
+
+/* The slash is a separator drawn between two links and is not one itself, so it
+   is out of the accessibility tree and it never lights — staying at the resting
+   grey while the links come up is what keeps it reading as punctuation rather
+   than as a third thing that could be clicked. */
 
 /* ==========================================================================
    FOOT

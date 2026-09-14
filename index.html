@@ -286,13 +286,102 @@
               data-preload="auto"
               aria-hidden="true"
             ></video>
-            <img
+            <!-- The one CYCLING plate, and the second of the two that move.
+                 It is the same carousel the Trending This Week project page
+                 shows, in the preview box: ten frames stacked, cut between on a
+                 beat while this is the plate up. project-viewer.js starts and
+                 stops it off the same is-active class that shows it, exactly as
+                 it starts and stops the clip above.
+
+                 A <div> where every other plate is an <img>, because it holds
+                 the stack rather than being one picture.
+
+                 FRAME 1 IS THE PREVIEW PLATE THIS SLOT ALREADY HELD — the
+                 right-sized /img/projects/trending-this-week.webp, built from
+                 the same photograph the carousel opens on. So the resting image
+                 is unchanged and correctly sized for this box, and only frames
+                 2..10 are new weight. That is the same arrangement the clip
+                 above uses, where the poster is the still already built from its
+                 own first frame.
+
+                 Frames 2..10 carry data-src like every other deferred plate, so
+                 they are held until the print has painted and then promoted by
+                 src/load-order.js. By the time anyone has scrolled 1.6 viewports
+                 to the index they are long in, which is the same assumption that
+                 module already makes for the stills.
+
+                 GENERATED between the markers: run `npm run images`, then
+                 `npm run gallery`. Everything outside them is hand-written. -->
+            <div
               class="viewer__plate"
               data-plate="trending-this-week"
+              data-plate-cycle
               style="--pv-w: 455; --pv-h: 606"
-              data-src="/img/projects/trending-this-week.webp"
-              alt=""
-            />
+              aria-hidden="true"
+            >
+              <!-- preview-frames:start -->
+              <img
+                class="viewer__frame is-current"
+                data-frame
+                src="/img/projects/trending-this-week.webp"
+                alt=""
+              />
+              <img
+                class="viewer__frame"
+                data-frame
+                data-src="/img/projects/trending-this-week/2.webp"
+                alt=""
+              />
+              <img
+                class="viewer__frame"
+                data-frame
+                data-src="/img/projects/trending-this-week/3.webp"
+                alt=""
+              />
+              <img
+                class="viewer__frame"
+                data-frame
+                data-src="/img/projects/trending-this-week/4.webp"
+                alt=""
+              />
+              <img
+                class="viewer__frame"
+                data-frame
+                data-src="/img/projects/trending-this-week/5.webp"
+                alt=""
+              />
+              <img
+                class="viewer__frame"
+                data-frame
+                data-src="/img/projects/trending-this-week/6.webp"
+                alt=""
+              />
+              <img
+                class="viewer__frame"
+                data-frame
+                data-src="/img/projects/trending-this-week/7.webp"
+                alt=""
+              />
+              <img
+                class="viewer__frame"
+                data-frame
+                data-src="/img/projects/trending-this-week/8.webp"
+                alt=""
+              />
+              <img
+                class="viewer__frame"
+                data-frame
+                data-src="/img/projects/trending-this-week/9.webp"
+                alt=""
+              />
+              <img
+                class="viewer__frame"
+                data-frame
+                data-src="/img/projects/trending-this-week/10.webp"
+                alt=""
+              />
+              <!-- preview-frames:end -->
+            </div>
             <img
               class="viewer__plate"
               data-plate="mfw-color-trends"

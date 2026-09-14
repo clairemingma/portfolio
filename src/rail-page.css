@@ -1,0 +1,673 @@
+/* ==========================================================================
+   RAIL PROJECT PAGE — the template
+
+   Figma node 455:4163. One of the three kinds of project page, beside the reel
+   and the still, and the only one whose two halves are read on DIFFERENT AXES:
+
+     the lead   paper, the brief centred on it, read DOWNWARD as ordinary page
+     the rail   charcoal, the presentation on it, read SIDEWAYS
+
+     projects/confidence-underneath/   17 slides
+     projects/mfw-color-trends/        12 slides
+
+   BOTH PRESENTATIONS ARE RAILS, and they are the same layout twice: this file and
+   src/rail-page.js are shared, and neither page places anything by hand.
+
+   Both used to be DECKS — brief on paper at the left, slides on a charcoal panel
+   at the right, both on one screen, the wheel redirected onto the track. The axis
+   did not turn so much as the composition did: the brief is no longer beside the
+   work, it is ABOVE it, so the presentation has the whole window instead of two
+   thirds of it. That is what let the slides grow half again, from the deck's
+   826.66 box to eleven columns. See RAIL_STAGE in scripts/build-images.mjs.
+
+   The deck template went out of the checkout when the second page left it — see
+   the note on it at the head of that script.
+
+   Load order is styles.css, project-brief.css, then this, then src/rail-page.js.
+
+   ==========================================================================
+   HOW THE SCROLL WORKS, AND WHY IT IS NOT THE DECK'S
+
+   The deck is its own horizontal scroller and takes the wheel over: it calls
+   preventDefault on every vertical notch and adds the distance to scrollLeft.
+   That works, but it is scroll the browser is not doing — no momentum, no
+   keyboard, no scrollbar, and the page has no vertical axis at all.
+
+   This page keeps ONE axis, the document's own, and never calls preventDefault.
+   The rail is a tall section with a sticky child:
+
+     .rail          as tall as the window PLUS the distance the track must move
+     .rail__pin     sticky, one window tall, so it stands still while the rail's
+                    extra height passes under it
+     .rail__track   a flex row of slides, translated left by exactly the scroll
+                    distance the rail has given up
+
+   So: the page scrolls down through the lead, the pin arrives and locks to the
+   window, every further notch of vertical scroll moves the track sideways, and
+   when the track is spent the pin releases and the page goes on down to the
+   footer. The lock is real — it is `position: sticky`, the same mechanism the
+   reel page pins its brief with — and the scrollbar, the keyboard, a trackpad's
+   momentum and a phone's touch all keep working.
+
+   ONE SCREEN OF SCROLL BUYS ONE SLIDE. Nothing snaps — the rail carried
+   scroll-snap stops for a while and they are gone, so the slides pass at whatever
+   rate the reader chooses. The step stays because it bounds the page at one
+   window per slide and makes Page Down move about one slide. See THE ARITHMETIC
+   in src/project-rail.js.
+
+   ONE EVENT IS TAKEN OVER, and only one: a two-finger sideways swipe, which the
+   browser would otherwise discard because nothing on this page scrolls across.
+   The note on it is in the module.
+
+   WITHOUT JAVASCRIPT THE PIN NEVER ENGAGES, and the base rules below are the
+   fallback rather than a broken page: .rail__pin is a plain horizontal scroller
+   that can be swiped, dragged or tabbed through. src/rail-page.js adds .is-pinned
+   to upgrade it. Same bargain the progress slider makes — the affordance appears
+   exactly when the behaviour does — and the same one prefers-reduced-motion gets
+   held to, since a window that stops scrolling the way it was asked to is
+   precisely what that preference is about. The module does not mount under it.
+
+   Numbers are design units like the rest of the site: 1 unit is 1px on the
+   artboard, and --vr resolves 1rem to it.
+   ========================================================================== */
+
+:root {
+  /* EVERYTHING ON THIS PAGE IS A GRID QUANTITY, and on the rail that took
+     re-deriving rather than transcribing.
+
+     The lead's numbers were already the grid's and are used as such below: the
+     design's 101 top offset is one column (100.83), its 1430 brief is twelve,
+     its 946 paragraph measure is eight (946.67), its 100.83 fact track is one.
+     Those agree to within two thirds of a unit, which is the grid rounded for a
+     designer's hand rather than a coincidence.
+
+     The RAIL's did not agree, and the reason is that this frame was drawn by
+     scaling the old sideways deck up by 1.5226: 826.66 x 1.5226 = 1258.66, and
+     the deck's 40 gutter x 1.5226 = 60.90. Those are artifacts of the scale
+     factor, not measurements — 1258.663 falls between ten columns (1188.33) and
+     eleven (1309.17), on no line at all.
+
+     So the slide is ELEVEN COLUMNS, which is the nearest column line and the one
+     on the larger side. The gap is THREE GUTTERS, 60 against the design's 60.903
+     — nine tenths of a unit, and a multiple of the grid's own gutter where
+     60.903 is a multiple of nothing.
+
+     Width leads and height follows, because the page grid is horizontal: a
+     16:9 box can put only one of its two dimensions on a column line, and on
+     this site that is the width. */
+  --rail-slide-w: min(
+    calc(11 * var(--col) + 10 * var(--grid-gutter)),
+    calc((100dvh - 2 * var(--rail-guard)) * 16 / 9)
+  );
+  --rail-slide-h: calc(var(--rail-slide-w) * 9 / 16);
+  --rail-gap: calc(3 * var(--grid-gutter));
+
+  /* THE INSET IS WHAT CENTRES THE FIRST SLIDE, and it is a consequence rather
+     than a number: half of what the window has left over once the slide has
+     taken its eleven columns. The same padding goes on both ends of the track,
+     so the LAST slide centres on the same terms the first does — which is what
+     the rail now ends on, the row having carried a RESTART / KEEP SCROLLING FOR
+     NEXT pair as an eighteenth item until that was taken off.
+
+     That is also what keeps the centring exact all the way along. With the track
+     padded by half the leftover at each end, its travel comes out at exactly
+     (items - 1) x stride, so mapping the rail's scroll linearly onto it puts
+     every slide's centred position on a whole multiple of one stride — and there
+     is no accumulated drift by the seventeenth. */
+  --rail-inset: calc((100vw - var(--rail-slide-w)) / 2);
+
+  /* What is kept clear above and below the slide once it is centred in the pin.
+     One grid step, which is the page's vertical unit — see --col-step in
+     styles.css, where the rows are what the columns would be if the page were
+     square.
+
+     It is what the height cap above is written against, and it has to clear the
+     three things that share the pin with the slide: the bar at 37.594 above, and
+     below it the footer band at 37.594 with the progress row stacked on top of
+     that — 77.594 in all. One step is 120.83 at 1470, so everything clears. */
+  --rail-guard: var(--col-step);
+
+  /* The progress row: two gutters tall. The deck's was 40 in a 96 band, which
+     was the design's number and not the grid's; 40 is two gutters exactly. */
+  --rail-progress-row: calc(2 * var(--grid-gutter));
+
+  /* The footer band, and it is the SITE'S rather than this page's: .still__foot
+     and .reel__foot are both 37.594 anchored to the bottom, and the landing
+     page's .foot row comes to the same once its 17.594 track and its two 10s of
+     padding are added. The copyright sits in it, and the progress row sits
+     directly on top of it. */
+  --rail-foot-h: 37.594rem;
+}
+
+/* The bar does not travel on this page, and it is a paper strip the whole way
+   down — which is what the design draws (node 455:4198, a #fdfdfa band at the
+   top of a page whose lower half is charcoal). is-over-paper is what gives it
+   both the paper ground and the graphite type; it is set in the markup rather
+   than by a scroll frame because it is true from the first frame and stays true.
+
+   So the bar does NOT flip to white over the charcoal. The strip is opaque and
+   the rail passes beneath it. */
+.nav--locked {
+  transform: none;
+}
+
+/* ==========================================================================
+   THE LEAD — paper, and the brief centred on it
+   ========================================================================== */
+
+/* Everything here is centred, which is the one thing this page does that no
+   other project page does: every other brief is a column set against the left
+   margin. The design centres the whole stack on the page and each line within
+   it, so the block reads as a title page rather than as a caption beside the
+   work — which is what it now is, with the work underneath instead of beside.
+
+   101 is the design's own top offset, measured from the top of the page and not
+   from the bar, so the bar's 37.594 is inside it. 20 below is what the design
+   leaves before the charcoal starts: its lead resolves to 392 tall at the
+   design's own copy, and 371 of that is content.
+
+   The gap is the design's 20 between every child of this block. */
+.lead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--grid-gutter);
+  /* 101 is one column; 20 is one gutter. Both are the design's own numbers and
+     both are grid quantities — see the note at :root. */
+  padding: var(--col) var(--grid-margin) var(--grid-gutter);
+  background: var(--color-paper);
+  text-align: center;
+}
+
+/* project-brief.css sets the shared brief, which is a LEFT-ALIGNED column on
+   every other page. These are the overrides that centre it, and they are written
+   against .lead so nothing else that loads that file is touched. */
+.lead .brief {
+  align-items: center;
+  gap: var(--grid-gutter);
+  width: 100%;
+  /* Twelve columns — the design's 1430 exactly. */
+  max-width: calc(12 * var(--col) + 11 * var(--grid-gutter));
+  text-align: center;
+}
+
+/* THE FACTS ARE A TWO-COLUMN GRID CENTRED AS A UNIT, which is the part the
+   design is specific about and the part a naive `text-align: center` gets wrong.
+   Each row is a label and a value; the labels are right-aligned and the values
+   left-aligned, so the pair meets on one line down the middle of the page and
+   the three rows read as a table rather than as three centred sentences.
+
+   Both columns are one column of the page grid wide — the design's 100.83, which
+   is exactly --col at 1470 — and the gap between them is the gutter, its 20. The
+   grid is then centred with `justify-content: center` and `width: auto`, so the
+   two tracks size to the design's number rather than to the copy in them.
+
+   10 between rows is the design's, and it is smaller than the 20 the block keeps
+   between its other children: the three rows are one object. */
+.lead .brief__facts {
+  justify-content: center;
+  width: auto;
+  /* One column each — the design's 100.83 is --col at 1470 to the decimal. */
+  grid-template-columns: var(--col) var(--col);
+  column-gap: var(--grid-gutter);
+  row-gap: calc(var(--grid-gutter) / 2);
+}
+
+/* THE SOURCE LINE, and it has two shapes because the two rail pages have
+   different numbers of destinations.
+
+   project-brief.css stacks the links in a column and hangs them off the LEFT
+   edge, which is right on every page whose brief is a left-hand column and wrong
+   under centred copy.
+
+   ONE DESTINATION is simply centred. Confidence Underneath has one, REFLECTION,
+   and a box that shrinks to fit its only child is centred by the brief above it
+   either way — this line only has to stop the child being pulled left. */
+.lead .brief__source {
+  align-items: center;
+}
+
+/* TWO DESTINATIONS ARE A ROW ON THE FACTS' OWN LINES. MFW Color Trends has
+   ANALYSIS and GITHUB, and they are set exactly as a fact's label and value are:
+   two one-column tracks a gutter apart, the first right-aligned and the second
+   left-aligned, the pair centred as a unit. So the whole centred lead — three
+   facts and the source line — meets on the same two lines down the middle of the
+   page, and the source reads as the last row of the block rather than as a
+   separate thing that happens to sit under it.
+
+   `:has(> :nth-child(2))` is what keeps the two shapes in one stylesheet. The
+   rule has to be conditional because this file is shared: a single link dropped
+   into a two-column grid would land in column ONE and sit right-aligned half a
+   column left of centre, which is exactly the off-centre look the block above is
+   there to prevent. Keying on "is there a second child" states the condition that
+   actually matters, rather than asking each page to declare a modifier class and
+   trusting it to be kept in step with how many links it carries. */
+.lead .brief__source:has(> :nth-child(2)) {
+  display: grid;
+  grid-template-columns: var(--col) var(--col);
+  column-gap: var(--grid-gutter);
+  justify-content: center;
+  width: auto;
+}
+
+.lead .brief__source:has(> :nth-child(2)) > :first-child {
+  text-align: right;
+}
+
+.lead .brief__source:has(> :nth-child(2)) > :nth-child(2) {
+  text-align: left;
+}
+
+.lead .brief__label {
+  text-align: right;
+}
+
+/* nowrap, and the value is ALLOWED TO OVERFLOW ITS TRACK, which is what the
+   design does rather than something it gets away with: the track is 100.83 and
+   "2026 SKIMS x FSF Scholar" is wider than that, set `whitespace-nowrap` in the
+   Figma node (455:4229) so it runs on past the column. Letting it wrap instead
+   puts a second line under one of three rows and breaks the table the three make
+   together. The grid stays centred on its two fixed tracks either way, so the
+   column the values start on does not move when a value gets longer. */
+.lead .brief__value {
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* 946 is the design's measure for the paragraph, and it is a measure rather than
+   a share of the page: centred copy is read by its line length, and at the full
+   1430 this would be a 90-character line.
+
+   THE FIRST-LINE INDENT IS TAKEN OFF, and that is not a tidy. project-brief.css
+   indents .brief__text by 121.335 because on every other page the brief is a
+   left-aligned column and the indent is what opens it. An indent on CENTRED copy
+   shortens the first line and shifts it right, which reads as a typo rather than
+   as an opening. The design draws no indent here. */
+.lead .brief__prose,
+.lead .brief__text {
+  /* Eight columns — 946.67, where the design draws 946. */
+  max-width: calc(8 * var(--col) + 7 * var(--grid-gutter));
+  text-align: center;
+  text-indent: 0;
+}
+
+/* ==========================================================================
+   THE RAIL — charcoal, and the presentation on it
+   ========================================================================== */
+
+/* THE BASE STATE IS A PLAIN HORIZONTAL SCROLLER, which is what shows without
+   JavaScript and under prefers-reduced-motion. One window tall, the track
+   scrolling inside it, nothing pinned and nothing sticky — an ordinary
+   overflow-x box that every input method already knows how to drive.
+
+   height rather than min-height: the pin below is the same box, and the two
+   states have to agree on how tall the charcoal is. */
+.rail {
+  position: relative;
+  background: var(--color-charcoal);
+}
+
+.rail__pin {
+  height: 100dvh;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: var(--color-charcoal);
+}
+
+/* THE PINNED STATE, which src/rail-page.js turns on. .rail grows to one window
+   plus the scroll the rail costs — one screen per slide, which the module writes
+   as --rail-scroll — and the pin sticks to the top of the window for exactly that
+   distance. See THE ARITHMETIC in src/project-rail.js.
+
+   overflow is hidden here where the base state scrolls: the track is moved by a
+   transform now, and a scroller that also had a scrollLeft would be two
+   positions for one thing. */
+.rail.is-pinned {
+  height: calc(100dvh + var(--rail-scroll, 0px));
+}
+
+.rail.is-pinned .rail__pin {
+  position: sticky;
+  top: 0;
+  overflow: hidden;
+}
+
+/* The row of slides. In the base state it is the scroller's content; in the
+   pinned state the module translates it.
+
+   align-items: flex-start with the air as padding, rather than centring: the
+   design does not centre the slides in the band — it leaves 114 above and 256
+   below, and the 256 is the progress row's. See --rail-air.
+
+   padding-right is the inset again, so the last item on the row clears the right
+   edge of the window by the same distance the first clears the left.
+
+   will-change: transform only in the pinned state, where there is a transform to
+   promote. The deck's note on the nav applies in reverse here: this layer is a
+   row of seventeen full-screen photographs, it is moved on every frame of the
+   scroll, and it is exactly the kind of thing a compositing layer is for. */
+/* CENTRED BOTH WAYS. align-items: center puts every slide on the middle of the
+   pin, and the inset padding at both ends puts the first and last on the middle
+   across — so the rail opens on slide 1 dead centre of the charcoal and every
+   slide it snaps to afterwards lands in the same place.
+
+   The design hung the slides from a line 114 below the charcoal's top edge, with
+   256 left under them. That was the old deck's off-centre placement carried
+   through the scale, and it is what the centring replaces: with the row snapping
+   slide by slide, an off-centre slide reads as a slide that has not finished
+   arriving. */
+.rail__track {
+  display: flex;
+  align-items: center;
+  gap: var(--rail-gap);
+  height: 100%;
+  padding: 0 var(--rail-inset);
+}
+
+.rail.is-pinned .rail__track {
+  will-change: transform;
+}
+
+/* The design's box, and `contain` is what it draws. The delivered file already
+   has the box's 16:9 — scripts/build-images.mjs fits every slide `inside` this
+   ratio, so contain and cover are the same operation here and contain is the
+   safer word: if a slide ever arrives at another shape it is letterboxed rather
+   than cropped, and a deck slide is a whole page whose edges carry type.
+
+   flex: none, or seventeen slides would be squeezed to share one window.
+
+   max-width: none UNDOES A GLOBAL, and it is load-bearing rather than defensive.
+   styles.css sets `img { max-width: 100% }`, which is right everywhere else on
+   the site and wrong here: 100% resolves against this flex container's CONTENT
+   box, which is the window less the track's two insets — 1242 at the design's
+   own 1470. So every slide was being capped 16.7 short of the 1258.663 the
+   design draws, and silently, because a 1.3% squeeze reads as nothing until you
+   measure the ratio and find 1.754 where 16:9 is 1.778. The row is a scroller;
+   it is meant to be wider than its container, and nothing in it should be fitted
+   to the window. */
+.rail__slide {
+  flex: none;
+  width: var(--rail-slide-w);
+  max-width: none;
+  height: var(--rail-slide-h);
+  object-fit: contain;
+  background: var(--color-charcoal);
+}
+
+/* ==========================================================================
+   THE PROGRESS ROW
+   ========================================================================== */
+
+/* The row the deck template used to carry, restated here rather than shared. The
+   precedent is the one still-page.css set when it needed the same lead column:
+   the templates are never loaded together, and a shared file would be one more
+   stylesheet on every project page to save fifty lines.
+
+   WHAT DIFFERS FROM THE DECK'S IS WHEN IT IS UP. The deck's is fixed to the
+   window and fades in once the dark panel has covered the screen, because on
+   that page the panel arrives sideways. Here the row lives INSIDE the pin, so it
+   is on screen exactly while the presentation is and off it the rest of the
+   time, with no state to drive and nothing to fade. That is the whole of what
+   the pin buys the row.
+
+   Centred in the band the design leaves below the slides. */
+.progress {
+  position: absolute;
+  left: var(--grid-margin);
+  right: var(--grid-margin);
+  bottom: var(--rail-foot-h);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--grid-gutter);
+  height: var(--rail-progress-row);
+  color: var(--color-white);
+}
+
+/* A fixed box and lining figures, so the slider's left edge does not step
+   sideways when the counter goes from one digit to two. 40 is the design's, and
+   it holds [17/17] at 11px Inter with room to spare. */
+.progress__count {
+  flex: none;
+  width: calc(2 * var(--grid-gutter));
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+}
+
+.progress__slider {
+  position: relative;
+  flex: 1 1 auto;
+  height: 100%;
+}
+
+/* THE COPYRIGHT, on the charcoal and IN THE BAND EVERY OTHER PAGE PUTS ITS
+   FOOTER IN. Left margin, bottom 0, 37.594 tall with the line centred in it —
+   which is `.still__foot` and `.reel__foot` exactly, and the height the landing
+   page's `.foot` row comes to once its track and padding are added. So the line
+   lands where the eye already expects a footer on this site, and the progress
+   row sits directly on top of that band rather than carrying the line itself.
+
+   It briefly rode at the far end of the progress row, which put it on the bar
+   instead of under it and shortened the bar by its own width. Out of that row,
+   the slider is the full measure between the counter and the right margin again.
+
+   SYSTEM GREY, WHICH IS MORE VISIBLE HERE THAN IT WAS ON PAPER, not less — the
+   instinct runs the wrong way on a dark ground. #919191 against the paper's
+   #fdfdfa is 3.09:1, which is why the old footer line read as quiet. The same
+   grey against charcoal is 5.52:1: comfortably past AA, and still plainly
+   subordinate to the counter above it, which is white at 17.4:1. So the token
+   needed checking rather than changing — and it is the same one every other
+   footer on the site sets its rule in.
+
+   Below 768 the paper footer under the rail carries the copyright itself, so
+   this copy stands down rather than printing it twice on one page. */
+.rail__rule {
+  position: absolute;
+  left: var(--grid-margin);
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  height: var(--rail-foot-h);
+  margin: 0;
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  color: var(--color-system-grey);
+}
+
+@media (max-width: 767px) {
+  .rail__rule {
+    display: none;
+  }
+}
+
+/* The control, and only once there is one. src/rail-page.js sets role="slider"
+   on mount, so this block is inert until the module has run — the cursor never
+   promises an interaction the page cannot perform.
+
+   The hit area is the full 40 of the row's height, not the 1px line. The line is
+   what the design draws; the band is what a finger can find, and it is why there
+   is no thumb to draw — you press the band rather than catching a handle.
+
+   touch-action: none, because a horizontal drag here has to scrub rather than be
+   claimed by the browser as a pan. */
+.progress__slider[role='slider'] {
+  cursor: pointer;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.progress__track,
+.progress__fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--color-white);
+}
+
+.progress__track {
+  opacity: 0.4;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.progress__slider[role='slider']:hover .progress__track,
+.progress__slider[role='slider']:focus-visible .progress__track,
+.progress__slider.is-scrubbing .progress__track {
+  opacity: 0.7;
+}
+
+/* The travelled part. Its width is written by the module as a percentage; right
+   is auto so the two ends are not both claimed. */
+.progress__fill {
+  right: auto;
+  width: 0;
+}
+
+/* ==========================================================================
+   THE FOOT
+   ========================================================================== */
+
+/* GONE FROM THE SPLIT, AND KEPT BELOW IT — which is not a hedge, it is the one
+   arrangement that does not cost anything.
+
+   The strip used to close the page: paper again under the rail, with the
+   copyright line and the pair of links on it. On a wide window it is the wrong
+   note to end on — the rail hands over on its own last frame, with RESTART and
+   KEEP SCROLLING FOR NEXT centred on the charcoal, and a white band sliding up
+   under that reads as the page having run out rather than as the end of it.
+
+   But the bar drops LINKEDIN and the address below 768 — see the pair's
+   `display: none` in styles.css, which only lifts at that breakpoint, because
+   four columns cannot hold the mark, two words and a 20-character address on one
+   row. So on a phone this footer is the ONLY place either appears on this page,
+   and removing it outright would take the contact details off the narrow view to
+   tidy the wide one.
+
+   Hidden at 768 and up, therefore, and left alone underneath. Same split the
+   still pages make with .still__foot-link, and for exactly the same reason. */
+.rail-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--grid-gutter);
+  height: 37.594rem;
+  padding: 0 var(--grid-margin);
+  background: var(--color-paper);
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  color: var(--color-system-grey);
+}
+
+.rail-foot__rule {
+  margin: 0;
+}
+
+.rail-foot__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-graphite);
+  cursor: pointer;
+}
+
+.rail-foot__link:hover,
+.rail-foot__link:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+}
+
+/* AFTER the rules above, not before them: the media query and `.rail-foot` have
+   the same specificity, so whichever is written last wins and a query placed
+   first would simply be overridden by the display: flex below it. */
+@media (min-width: 768px) {
+  .rail-foot {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   NARROW
+   ========================================================================== */
+
+/* Below 768 the pin is given up and the rail is the base scroller again: a
+   pinned rail on a phone fights the browser's own address-bar behaviour, and
+   100dvh changing under a sticky element as that bar hides is the kind of jump
+   the whole page would be judged on. Swiping a row of slides sideways is what a
+   phone is good at, so that is what it gets.
+
+   The module reads the same breakpoint and does not pin below it. */
+@media (max-width: 767px) {
+  /* ELEVEN COLUMNS IS A TWELVE-COLUMN NUMBER, and down here the grid is FOUR —
+     --grid-columns changes at this same breakpoint in styles.css. Asking for
+     eleven of four columns is asking for 1005 on a 390 screen, which is what it
+     gave before this rule existed.
+     The full measure is what a narrow page gives any piece of artwork: four
+     columns and their gutters, which is the window less its two margins. */
+  :root {
+    --rail-slide-w: calc(100vw - 2 * var(--grid-margin));
+  }
+
+  .rail.is-pinned {
+    height: auto;
+  }
+
+  .rail.is-pinned .rail__pin {
+    position: static;
+    overflow-x: auto;
+  }
+
+  .rail.is-pinned .rail__track {
+    transform: none !important;
+  }
+
+  .lead {
+    padding-top: calc(var(--nav-h) + 40rem);
+  }
+
+  /* A column is 80.5 down here where it is 100.83 at 1470, and the tracks are
+     sized to the design's twelve-column figure. Content-sized instead, so a value
+     or a link that would not fit in a narrow column is not clipped to one. */
+  .lead .brief__facts,
+  .lead .brief__source:has(> :nth-child(2)) {
+    grid-template-columns: auto auto;
+  }
+}
+
+/* THE PAGER, in the pin so it is on the charcoal and only while the rail holds
+   the screen. Opposite .rail__rule in the same footer band: copyright left,
+   prev/next right, both centred in the 37.594 the site gives a footer.
+
+   Absolute against the pin rather than fixed to the window, because the half of
+   this page above the rail is PAPER — a fixed pager would cross from one ground
+   to the other on the way down and would have to change colour to survive it.
+   In the pin it is only ever on the dark.
+
+   It rests in the same system grey as the copyright beside it and lights to
+   white under the cursor — see .pager in styles.css. Resting alike and lighting
+   differently is the honest pairing: one of them is a live link and the other is
+   a line of fine print, and that only has to show when you go looking. */
+.rail__pin .pager {
+  position: absolute;
+  right: var(--grid-margin);
+  bottom: 0;
+  z-index: 2;
+  height: var(--rail-foot-h);
+  --pager-lit: var(--color-white);
+}
+
+@media (max-width: 767px) {
+  .rail__pin .pager {
+    display: none;
+  }
+}

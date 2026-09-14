@@ -37,65 +37,23 @@ const VIDEO_OUT = 'public/video';
 const MANIFESTS = 'scripts/.manifests';
 const HERO = 'assets/hero-cyanotype.png';
 
-// The two cyanotype squares that pop out from behind the slides on the project
-// pages' dark panel. Neither plate is derived from the hero:
+// THE CYANOTYPE ACCENTS ARE GONE, and with them the last thing on this site that
+// drew them. Two squares in two grades — `print`, the design's own at node
+// 217:7395, and `wash`, the pale second exposure at 217:7388 — used to pop out
+// from behind the slides on the deck pages' dark panel, built here at 720 square
+// with a one-pixel inset off every side to cut the dark rim Figma baked into
+// print's edge columns.
 //
-//   PRINT is the design's own square, taken from Figma node 217:7395 at 4x —
-//     1360 of the 340 it is drawn at. It is the same subject as the landing
-//     scan but not the same frame or the same grade: Figma bakes the node's
-//     image-fill adjustment into what it exports, so the export IS the colour
-//     the design shows, where covering a square with the hero scan was a
-//     different crop of a differently graded plate.
-//   WASH is the pale second exposure, node 217:7388's own fill at its full
-//     2446. Its export cannot be used the way PRINT's is — the node is clipped
-//     by the frame it sits in, so Figma hands back 184x220 of a 220 square —
-//     but the raw fill needs no grade fitted to stand in for it: against the
-//     export it comes back at k 0.97 per channel, which is resampling error.
+// They came off the still pages first, when those went to paper; the deck pages
+// kept them until both decks became rails, and a rail draws none. A source
+// nothing builds is not a source, so assets/accent-cyanotype-print.webp and
+// -wash.webp went out of the checkout with the step that read them.
 //
-// They are one subject in two grades, which is what they are named for — and not
-// one photograph lightened, either. Fitting a per-channel gain and offset from
-// one to the other lands at r 0.75, so no filter or white veil over one would
-// stand in for the other.
-//
-// Two further plates used to sit in assets/ unbuilt, nodes 238:7576 and
-// 217:7389 — the squares a third accent was drawn in before it was taken back
-// out. Nothing ever drew them, so nothing ever delivered them, and they have
-// since been taken out of the checkout too. Re-export from those nodes if a
-// third accent is ever wanted; they are paler than these two and are different
-// subjects rather than different grades, so neither of the files here stands in.
-//
-// 720 is 2x the largest square the deck ever draws: three columns and their two
-// gutters, 342.5 units at the 1470 artboard. The two-column square is the same
-// file scaled down, which costs nothing — it is the same picture, and a second
-// rung for a 220-unit box would save 20 KB.
-//
-// Flattened for the reason the hero is, over charcoal rather than paper: these
-// sit on the dark panel where the deck draws them, and the alpha channel the
-// sources carry has no use here either.
-//
-// A ONE-PIXEL INSET comes off every side first, and it is a fix rather than a
-// tidy. The print plate carries a dark rim baked into its left and right edge
-// columns by Figma's export — one pixel each, mean brightness 42.5 and 44.7
-// against 125.0 and 154.0 for the columns beside them. Rows are clean, and the
-// wash plate has no rim at all.
-//
-// It went unnoticed for as long as these were only ever drawn on the dark panel,
-// where a dark hairline on charcoal is nothing. The still project page draws the
-// print plate on PAPER, and there it reads as a black line ruled down the edge of
-// the photograph. Downscaling does not remove it — it blends it, which is worse:
-// 720 came out with a 82,126,138 edge against its neighbour's 152,197,211.
-//
-// Inset rather than sharp's trim(), which decides what a border is by colour
-// similarity and would be a guess re-made on every source. One pixel off all
-// four sides is deterministic, costs the wash plate one clean pixel of 2446, and
-// changes the delivered scale by 0.15% — which is nothing on a texture, and is
-// invisible where the deck already draws these.
-const ACCENTS = [
-  { name: 'accent-print', src: 'assets/accent-cyanotype-print.webp' },
-  { name: 'accent-wash', src: 'assets/accent-cyanotype-wash.webp' },
-];
-const ACCENT = 720;
-const ACCENT_INSET = 1;
+// To bring them back: re-export both nodes, and note that they are one subject in
+// two GRADES rather than one photograph lightened — fitting a per-channel gain
+// and offset from either to the other lands at r 0.75, so no CSS filter over one
+// stands in for the other. Everything else about them is in the README under
+// "The dark panel and its accents".
 
 // The clips. sharp does not touch video, so every one of these is a copy and a
 // rename — the point is only that the delivered file keeps coming from assets/
@@ -182,16 +140,39 @@ const PROJECTS = [
 // covers for the same reason.
 //
 // The boxes are therefore sized to the deck, not the other way round. Both decks
-// are 3840x2160 throughout, so 16:9 is the shape, and 840 wide is a little over
-// half the widest slide box the layout ever asks for (826.66 at the 1470
-// artboard) — which at 2x is comfortably more pixels than any screen shows.
-// A deck at another aspect would need STAGE.h changed here; --slide-h in
-// deck-page.css derives the box from the same ratio, and the two must agree.
-const STAGE = { w: 840, h: (840 * 9) / 16 };
+// are 3840x2160 throughout, so 16:9 is the shape.
+//
+// THE BOX IS PER PAGE, because the two decks are no longer drawn at the same
+// size. A deck at another aspect would need its own `h` changed here; the CSS
+// derives its box from the same ratio, and the two must agree.
+//
+//   RAIL_STAGE   the pinned rail, and BOTH decks read this way now. The slide
+//                is eleven columns at 16:9 — 1309.17 x 736.4 at the 1470
+//                artboard — which is half again the old sideways box, because
+//                the presentation has the whole window instead of sharing it
+//                with the brief. See src/rail-page.css.
+//
+//                It still delivers at a full 2x: 2618 x 1473 against sources
+//                that are 3840 x 2160, which would allow 2.93x. Nothing had to
+//                be re-exported to make the slides bigger — the headroom was
+//                already in the files.
+//
+// The old DECK_STAGE is gone with the layout it was for. It was 840 wide, a
+// little over half the widest box that layout ever asked for, and it has no
+// caller now that both decks are rails.
+const RAIL_STAGE = { w: 11 * 100.8333 + 10 * 20, h: ((11 * 100.8333 + 10 * 20) * 9) / 16 };
 
 const PAGES = [
-  { slug: 'confidence-underneath', dir: 'assets/projects/confidence-underneath/slides' },
-  { slug: 'mfw-color-trends', dir: 'assets/projects/mfw-color-trends/slides' },
+  {
+    slug: 'confidence-underneath',
+    dir: 'assets/projects/confidence-underneath/slides',
+    stage: RAIL_STAGE,
+  },
+  {
+    slug: 'mfw-color-trends',
+    dir: 'assets/projects/mfw-color-trends/slides',
+    stage: RAIL_STAGE,
+  },
 ];
 
 // The REELS. A reel is a project page read DOWNWARD: the brief sits still on
@@ -277,10 +258,18 @@ const REELS = [
 // the box the page draws them in and cycled by src/plate-cycle.js. Directory-
 // driven for the same reason the decks are — a carousel arrives as a folder.
 //
-// The box is FOUR COLUMNS at 3:4, which is 463.333 x 617.78 at the 1470 artboard
+// The box is FIVE COLUMNS at 3:4, which is 584.17 x 778.89 at the 1470 artboard
 // — the plate's width is a grid quantity and its height is the photograph's own
-// ratio; see the note at the top of src/project-page.css. Delivered at 2x, which
-// these sources can cover: 1080 wide against 927 asked for.
+// ratio; see the note at the top of src/trending-this-week.css.
+//
+// IT DOES NOT REACH 2x, and that is a cap rather than a fault. These sources are
+// Instagram's own 1080x1440 export, and 2x of a five-column box wants 1168 —
+// so the scale lands at 1.85x and the build says so. The rule below is the one
+// every other source follows: cap at what the source can honestly fill, never
+// enlarge past it. It was 2.00x while the box was four columns and 927 was the
+// ask; widening the box is what spent the headroom, and 1.85x is still most of
+// a retina plate. A true 2x would need a re-export above 1168 wide, which
+// Instagram does not hand back.
 //
 // `fit: 'cover'`, unlike the decks. A deck frame is a whole slide and cropping it
 // would take words off it, so those contain; a plate is a photograph shown in a
@@ -301,7 +290,7 @@ const PLATES = [
     slug: 'trending-this-week',
     dir: 'assets/projects/trending-this-week/frames',
     cover: 'assets/projects/trending-this-week/preview.png',
-    w: 4 * 100.8333 + 3 * 20,
+    w: 5 * 100.8333 + 4 * 20,
   },
 ];
 
@@ -407,27 +396,6 @@ await writeFile(
   ].join('\n'),
 );
 
-for (const a of ACCENTS) {
-  // Measured per source rather than assumed: the two plates are 1360 and 2446.
-  const { width: aw, height: ah } = await sharp(a.src).metadata();
-  await sharp(a.src)
-    .extract({
-      left: ACCENT_INSET,
-      top: ACCENT_INSET,
-      width: aw - 2 * ACCENT_INSET,
-      height: ah - 2 * ACCENT_INSET,
-    })
-    .flatten({ background: '#1a1a1a' })
-    .resize({
-      width: ACCENT,
-      height: ACCENT,
-      fit: 'cover',
-      position: 'centre',
-    })
-    .webp({ quality: 86 })
-    .toFile(`${OUT}/${a.name}.webp`);
-}
-
 for (const p of PROJECTS) {
   await sharp(`assets/projects/${p.slug}/preview.png`)
     .resize({
@@ -505,7 +473,7 @@ for (const page of PAGES) {
   await mkdir(`${OUT}/projects/${page.slug}`, { recursive: true });
 
   const frames = await listFrames(page.dir);
-  const stage = STAGE;
+  const stage = page.stage;
 
   const scales = new Set();
   let sourceBytes = 0;
@@ -674,7 +642,7 @@ for (const reel of REELS) {
 }
 
 console.log(
-  `built hero from ${W}x${H} scan + ${ACCENTS.length} deck accents at ${ACCENT}` +
+  `built hero from ${W}x${H} scan` +
     ` + ${PROJECTS.length} project previews at ${DPR}x` +
     `, clips: ${clipNotes.join('; ')}` +
     `, ${stageNotes.join('; ')}` +

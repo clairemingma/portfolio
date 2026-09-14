@@ -5,12 +5,12 @@
    it in a label/value grid, the paragraph that says what the work was, and the
    one or two places to read more.
 
-   It lived in deck-page.css until a project arrived that is not a deck — the
+   It lived in the deck template until a project arrived that is not a deck — the
    Trending This Week page is one still screen, not a presentation read sideways
    — and the block is the same block on all of them. So it is here, on its own,
    and each surface places it, absolutely and off the paper column it sits on:
 
-     `.deck__lead .brief`    deck-page.css
+     `.lead .brief`          rail-page.css
      `.reel__lead .brief`    reel-page.css
      `.still__lead .brief`   still-page.css
 

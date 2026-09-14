@@ -1,7 +1,7 @@
 /* ==========================================================================
    STILL PROJECT PAGE — the template
 
-   Two of the project pages are decks, a presentation read sideways, and two are
+   Two of the project pages are rails, a presentation read sideways, and two are
    reels, read downward. The other two are STILL: ONE SCREEN, no scroll axis at
    all, the work shown beside the brief and moving on its own.
 
@@ -11,12 +11,11 @@
    Load order is styles.css, project-brief.css, this, then the page's own.
 
    THE PAGE IS THE SPLIT EVERY OTHER PROJECT PAGE MAKES: the brief on the left,
-   the work on the right. That is the deck pages' arrangement (.deck__lead against
-   .deck__panel) and the reel pages' (.reel__lead against .reel__shots), and it is
-   now these two as well — so all six project pages open on the same composition
-   and the eye lands in the same place whichever one it arrives at.
+   the work on the right. That is the reel pages' arrangement (.reel__lead against
+   .reel__shots) and it is these two as well, so the pages that split open on the
+   same composition and the eye lands in the same place whichever it arrives at.
 
-   WHAT IT DOES NOT SHARE WITH THEM IS THE DARK. The decks and reels set their
+   WHAT IT DOES NOT SHARE WITH THEM IS THE DARK. The rails and reels set their
    work on charcoal; these two are PAPER THROUGHOUT, lead and stage alike, so the
    split is an arrangement rather than a colour change and the only edge on the
    page is the artwork's own. The accents went with it — see the note where they
@@ -36,24 +35,23 @@
    page is still and the picture is not.
 
    Each page's own placements stay in its own stylesheet, because unlike the
-   decks the still pages are not the same layout twice — one is a pair of portrait
+   rails the still pages are not the same layout twice — one is a pair of portrait
    clips, the other a single 3:4 plate. What is here is the split they share.
 
-   THE LEAD IS RESTATED HERE rather than shared with deck-page.css or
-   reel-page.css. That follows the precedent reel-page.css already set when it
-   needed the same column: the three templates are never loaded together, a
-   shared file would be a fourth stylesheet on every project page to save forty
-   lines, and each surface's copy can then answer to its own page. What must not
-   drift is the WIDTH, and it does not — all three derive it the same way, from
-   the column-5 line less the gutter and the design's width for the word
-   PROJECTS.
+   THE LEAD IS RESTATED HERE rather than shared with reel-page.css. That follows
+   the precedent reel-page.css already set when it needed the same column: the
+   templates are never loaded together, a shared file would be one more stylesheet
+   on every project page to save forty lines, and each surface's copy can then
+   answer to its own page. What must not drift is the WIDTH, and it does not —
+   both derive it the same way, from the column-5 line less the gutter and the
+   design's width for the word PROJECTS.
 
    Numbers are in design units like the rest of the site: 1 unit is 1px on the
    artboard, and --vr resolves 1rem to it.
 
    Written mobile-first. Below 768 the split becomes a column — the paper takes a
    screen, the work follows underneath — and the page scrolls, which is the same
-   trade the deck and reel pages make down there.
+   trade the rail and reel pages make down there.
    ========================================================================== */
 
 :root {
@@ -78,7 +76,7 @@
 }
 
 /* The bar does not travel on these pages — there is no print to rest on — so it
-   wears .nav--locked exactly as the deck and reel pages do. Repeated here rather
+   wears .nav--locked exactly as the rail and reel pages do. Repeated here rather
    than shared because it is one declaration and neither of those files is
    loaded. */
 .nav--locked {
@@ -134,8 +132,8 @@ body {
 /* THE BRIEF SITS ON THE DESIGN'S 222 LINE WHEN THERE IS ROOM AND SLIDES UP TO
    THE BAR WHEN THERE IS NOT, and that is one declaration rather than a script.
 
-   222 is the line the deck and reel pages start their brief on, so it is the
-   line this one wants too. But these two pages carry more copy than a reel does
+   222 is the line the reel page starts its brief on, so it is the line this one
+   wants too. But these two pages carry more copy than a reel does
    — Trending This Week's four paragraphs come to about 700 units in a
    three-column measure — and a page that cannot scroll has nowhere to put what
    does not fit: copy pushed past the footer band would simply be gone.
@@ -308,8 +306,8 @@ body {
 
 /* There was a .still__accent here: a cyanotype square peeking out from behind
    the artwork, one on Studio Edit 02 and two on Trending This Week, drawn from
-   the same /img/accent-print.webp and /img/accent-wash.webp plates the deck
-   pages use. Both squares and the dark they sat on are off these two pages now.
+   the same two cyanotype plates the deck pages carried. Both squares and the dark
+   they sat on came off these two pages first.
 
    They went TOGETHER and not one after the other, because they were one
    decision. The squares were the piece of colour that made the dark panel read
@@ -320,9 +318,30 @@ body {
    scripts/build-images.mjs.
 
    Nothing is left to turn off: the rules, the markup and the placements in both
-   page stylesheets are removed, not hidden. The plates themselves stay in the
-   build — the four deck and reel pages still draw them, so `npm run images`
-   keeps emitting both.
+   page stylesheets are removed, not hidden. THE PLATES THEMSELVES ARE GONE TOO
+   now — the deck pages were the last thing drawing them and both decks became
+   rails, so the build step and the two sources went with the template. See the
+   note at the head of scripts/build-images.mjs for how to bring them back. */
 
-   This note is here so the next reader of the deck pages' accents knows the
-   still pages' absence is deliberate rather than an omission. */
+/* THE PAGER, on the stage rather than in the lead — which is where the bottom
+   right of the WINDOW is on this page. .still__foot sits at the foot of the lead
+   column, and that column is 419.59 wide, so its right edge is nowhere near the
+   page's; the stage takes everything from there to the window's edge and is
+   already positioned, so the corner is its to give.
+
+   It lights to graphite, like .still__foot-link, because this page is paper
+   throughout — see .pager in styles.css for the resting grey and the ease. */
+.still__stage .pager {
+  position: absolute;
+  right: var(--grid-margin);
+  bottom: 0;
+  z-index: 2;
+  height: var(--still-foot-h);
+  --pager-lit: var(--color-graphite);
+}
+
+@media (max-width: 767px) {
+  .still__stage .pager {
+    display: none;
+  }
+}

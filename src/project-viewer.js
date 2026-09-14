@@ -17,6 +17,8 @@
    image.
    ========================================================================== */
 
+import { createPlateCycle } from './plate-cycle.js';
+
 export function mountProjectViewer() {
   const index = document.querySelector('[data-index]');
   const viewer = document.querySelector('[data-viewer]');
@@ -36,19 +38,44 @@ export function mountProjectViewer() {
   );
   if (!plates.size) return;
 
-  // A plate may be a video rather than a still. Motion only belongs to the
-  // plate that is up: off-screen playback would burn a decoder on something
-  // nobody can see, and a clip that kept running while hidden would be caught
-  // mid-phrase on the next hover. So playback is slaved to is-active, and each
-  // hover restarts the clip — the poster is its first frame, so the cut and the
-  // start of the motion are the same image.
+  // A plate may MOVE rather than sit still, and there are two kinds that do: a
+  // video, and a stack of frames cut between on a beat — the same carousel the
+  // Trending This Week project page shows, in the preview box.
   //
-  // Reduced motion keeps the plate but not the movement: the paused first frame
-  // is exactly the still this slot used to hold, so nothing is lost by holding
-  // it there.
+  // Motion only belongs to the plate that is up. Off-screen playback would burn
+  // a decoder on something nobody can see, and a clip or a cycle that kept
+  // running while hidden would be caught mid-phrase on the next hover. So both
+  // kinds are slaved to is-active, and each hover winds the plate back to its
+  // first frame: the cut and the start of the motion are then the same image.
+  //
+  // Reduced motion keeps the plate but not the movement, and the first frame is
+  // exactly the still each slot used to hold, so nothing is lost by holding it
+  // there. The cycle enforces that for itself and watches the preference live —
+  // see createPlateCycle — which is why start() is called unconditionally below
+  // and only the video has to ask.
   const stillsOnly = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function cue(el, active) {
+  // Built once. A plate that declares no cycle is simply absent from this map,
+  // which is what makes cue() below a lookup rather than a tag test.
+  const cycles = new Map();
+  for (const [key, el] of plates) {
+    if (!el.hasAttribute('data-plate-cycle')) continue;
+    const cycle = createPlateCycle(el);
+    if (cycle) cycles.set(key, cycle);
+  }
+
+  function cue(el, key, active) {
+    const cycle = cycles.get(key);
+    if (cycle) {
+      if (active) {
+        cycle.reset();
+        cycle.start();
+      } else {
+        cycle.stop();
+      }
+      return;
+    }
+
     if (el.tagName !== 'VIDEO') return;
     if (!active) {
       el.pause();
@@ -66,7 +93,7 @@ export function mountProjectViewer() {
     plates.forEach((el, key) => {
       const active = key === id;
       el.classList.toggle('is-active', active);
-      cue(el, active);
+      cue(el, key, active);
     });
     rows.forEach((el, key) => el.classList.toggle('is-current', key === id));
   }

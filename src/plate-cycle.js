@@ -30,25 +30,34 @@ const HOLD = 1400;
 
 const CURRENT = 'is-current';
 
-export function mountPlateCycle() {
-  const plate = document.querySelector('[data-plate-cycle]');
-  if (!plate) return;
+/* A cycle over one stack of frames, as a thing that can be handed to an owner.
+   It is a factory rather than a mount because there are now TWO callers wanting
+   the same beat under different rules:
 
+     the still project page   one plate, always cycling — mountPlateCycle below
+     the landing page's index one preview among seven, cycling only while it is
+                              the one on show — see src/project-viewer.js
+
+   THE SPLIT OF RESPONSIBILITY IS THE POINT. This holds the two reasons a cycle
+   must NOT run that are properties of the machine rather than of the page — a
+   reduce-motion preference and a hidden tab — and the caller holds the one
+   reason that is its own: whether it is this plate's turn. `wanted` is that
+   answer, and `run()` is the conjunction. So a caller cannot forget to honour
+   the preference, and this file does not have to know what a hover is.
+
+   Both machine conditions are watched LIVE rather than read once, because either
+   can change while the page is open and a loop that keeps running because it was
+   allowed at mount is the failure those APIs exist to prevent. They resume only
+   if the owner still wants them to. */
+export function createPlateCycle(plate) {
   const frames = [...plate.querySelectorAll('[data-frame]')];
-  if (frames.length < 2) return;
+  if (frames.length < 2) return null;
 
-  // Held rather than cycled for anyone who has asked for less motion. The first
-  // frame is the one the markup already shows and the one the preload hint
-  // names, so this branch is simply not starting — nothing to undo, and the post
-  // is one click away either way.
-  //
-  // A live query, not a snapshot: the setting can be changed while the page is
-  // open, and a cycle that keeps running because the preference was read once at
-  // mount is the failure this API is meant to prevent.
   const still = matchMedia('(prefers-reduced-motion: reduce)');
 
   let at = 0;
   let timer = 0;
+  let wanted = false;
 
   function show(next) {
     frames[at].classList.remove(CURRENT);
@@ -60,15 +69,16 @@ export function mountPlateCycle() {
     show((at + 1) % frames.length);
   }
 
-  function stop() {
+  function halt() {
     clearInterval(timer);
     timer = 0;
   }
 
-  function start() {
-    // Guarded on both counts: a second start would leak the first interval, and
-    // a hidden tab or a reduce-motion preference is a reason not to have one.
-    if (timer || still.matches || document.hidden) return;
+  // Guarded on every count: a second start would leak the first interval, and a
+  // hidden tab, a reduce-motion preference or an owner that has not asked are
+  // each on their own a reason not to have one.
+  function run() {
+    if (timer || !wanted || still.matches || document.hidden) return;
     timer = setInterval(tick, HOLD);
   }
 
@@ -77,18 +87,44 @@ export function mountPlateCycle() {
   // plate would jump several frames at once. Stopping and restarting means it
   // resumes from wherever it was left, on the beat.
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) stop();
-    else start();
+    if (document.hidden) halt();
+    else run();
   });
 
+  // Held rather than cycled for anyone who has asked for less motion, and wound
+  // back to the first frame — which on both callers is the image that was
+  // already there, so holding it costs nothing and loses nothing.
   still.addEventListener('change', () => {
     if (still.matches) {
-      stop();
+      halt();
       show(0);
     } else {
-      start();
+      run();
     }
   });
 
-  start();
+  return {
+    start() {
+      wanted = true;
+      run();
+    },
+    stop() {
+      wanted = false;
+      halt();
+    },
+    // Back to the cover without touching whether it is running. The viewer wants
+    // this on every hover so the cut and the start of the motion are the same
+    // image — the same reason it rewinds the one video plate to 0.
+    reset() {
+      show(0);
+    },
+  };
+}
+
+/* The still project page's plate: one on the page, and it cycles from the moment
+   it is mounted because there is nothing else on that page for it to wait for. */
+export function mountPlateCycle() {
+  const plate = document.querySelector('[data-plate-cycle]');
+  if (!plate) return;
+  createPlateCycle(plate)?.start();
 }

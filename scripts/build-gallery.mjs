@@ -13,16 +13,25 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 
+// Both presentations are RAILS now — the pinned kind, read sideways inside a
+// section that stands still while the page scrolls past it. `cls` and `indent`
+// are kept as fields rather than folded into the template because they are the
+// two things a differently-shaped page would need to change, and a third
+// presentation is more likely than not.
 const PAGES = [
   {
     manifest: 'scripts/.manifests/confidence-underneath.json',
     html: 'projects/confidence-underneath/index.html',
     title: 'Confidence Underneath',
+    cls: 'rail__slide',
+    indent: 10,
   },
   {
     manifest: 'scripts/.manifests/mfw-color-trends.json',
     html: 'projects/mfw-color-trends/index.html',
     title: 'MFW Color Trends',
+    cls: 'rail__slide',
+    indent: 10,
   },
 ];
 
@@ -58,6 +67,25 @@ const PLATES = [
     // the name of that link must not depend on which of nine photographs happens
     // to be showing when someone reaches it.
     alt: 'The 4 fastest rising trends in fashion — the post on Instagram.',
+
+    // The landing page shows the SAME cycle in its preview box, so the same
+    // manifest writes a second block — into index.html rather than the project
+    // page, between its own markers. Generated for the reason everything else
+    // here is: the carousel is a folder, folders grow, and a hand-kept copy of
+    // the list in a second file is how one of them ends up pointing at a frame
+    // that is not there.
+    //
+    // `cover` is what stands in for frame 1: the preview plate this slot already
+    // held, built to this box from the same photograph the carousel opens on. So
+    // the resting image is unchanged and right-sized, and only 2..N are added.
+    // It is the only frame with a real `src` — the rest are deferred behind
+    // data-src and promoted by src/load-order.js once the print has painted.
+    preview: {
+      html: 'index.html',
+      marker: 'preview-frames',
+      indent: 14,
+      cover: '/img/projects/trending-this-week.webp',
+    },
   },
 ];
 
@@ -113,6 +141,62 @@ function splice(html, name, body, indent = 8) {
   return html.replace(re, `$1\n${body}\n${' '.repeat(indent)}$2`);
 }
 
+// ============================================================================
+// THE PAGER — prev / next on every project page
+//
+// The order is the INDEX'S, read out of index.html rather than written down
+// here. The list of projects and the order they are read in is one fact and the
+// landing page is where it lives; a second copy in this file is a second thing
+// to remember when a row moves, and the failure it produces is silent — a pager
+// pointing at the wrong neighbour looks exactly like a pager.
+//
+// `data-project` is the attribute the index already carries on each row for the
+// viewer to match plates against, so the order is taken from the markup that
+// has to be right anyway for hovering a row to light the correct picture.
+//
+// A slug with no page directory is SKIPPED rather than linked: glowwie has an
+// index row and a preview plate but nothing to open yet, so it is in the list
+// and must not be in the loop. Its absence is the same fact every other build
+// step here treats it as.
+//
+// It WRAPS. The last project's next is the first, so no link is ever dead and
+// no page has to explain a greyed-out one.
+async function pager() {
+  if (!existsSync('index.html')) return;
+  const index = await readFile('index.html', 'utf8');
+
+  const order = [...index.matchAll(/data-project="([^"]+)"/g)]
+    .map((m) => m[1])
+    .filter((slug) => existsSync(`projects/${slug}/index.html`));
+
+  if (order.length < 2) return;
+
+  for (const [i, slug] of order.entries()) {
+    const html = `projects/${slug}/index.html`;
+    const prev = order[(i - 1 + order.length) % order.length];
+    const next = order[(i + 1) % order.length];
+
+    let page = await readFile(html, 'utf8');
+    if (!page.includes('<!-- pager:start -->')) continue;
+
+    // The indent is read off the marker itself, so a template that sits its
+    // pager deeper in the tree does not have to declare how deep.
+    const indent = page.match(/^([ \t]*)<!-- pager:start -->/m)[1];
+    const body = [
+      `${indent}<nav class="pager" aria-label="Projects">`,
+      `${indent}  <a class="pager__link" href="/projects/${prev}/" rel="prev">Prev</a>`,
+      `${indent}  <span class="pager__sep" aria-hidden="true">/</span>`,
+      `${indent}  <a class="pager__link" href="/projects/${next}/" rel="next">Next</a>`,
+      `${indent}</nav>`,
+    ].join('\n');
+
+    page = splice(page, 'pager', body, indent.length);
+    await writeFile(html, page);
+    console.log(`${html}: pager (${prev} <- -> ${next})`);
+    touched++;
+  }
+}
+
 let touched = 0;
 
 for (const page of PAGES) {
@@ -132,28 +216,29 @@ for (const page of PAGES) {
   // someone who can see it. Stated plainly so it is obviously a placeholder.
   //
   // Every slide carries a real `src` and is deferred by the browser rather than
-  // by JS — they are siblings on a track, so an off-track slide really is off
-  // screen and `loading="lazy"` means what it says. The first is eager and high
-  // priority: it is beside the brief in the opening frame, and it is the one the
-  // preload hint below names. project-deck.js promotes the rest to eager once the
-  // page is idle, so a scrub never lands on a blank.
+  // by JS — they are siblings on a row, so an off-track slide really is off screen
+  // and `loading="lazy"` means what it says. The first is eager and high priority:
+  // it is the one the rail opens on and the one the preload hint below names.
+  // src/project-rail.js promotes the rest to eager once the page is idle, so a
+  // scrub never lands on a blank.
+  const pad = ' '.repeat(page.indent);
   const slides = frames
     .map((name, i) =>
       [
-        `        <img`,
-        `          class="deck__slide"`,
-        `          data-slide`,
-        `          src="${dir}/${name}.webp"`,
-        `          alt="${page.title} — slide ${i + 1} of ${frames.length}."`,
-        i === 0 ? `          fetchpriority="high"` : `          loading="lazy"`,
-        `          decoding="async"`,
-        `        />`,
+        `${pad}<img`,
+        `${pad}  class="${page.cls}"`,
+        `${pad}  data-slide`,
+        `${pad}  src="${dir}/${name}.webp"`,
+        `${pad}  alt="${page.title} — slide ${i + 1} of ${frames.length}."`,
+        i === 0 ? `${pad}  fetchpriority="high"` : `${pad}  loading="lazy"`,
+        `${pad}  decoding="async"`,
+        `${pad}/>`,
       ].join('\n'),
     )
     .join('\n');
 
   let html = await readFile(page.html, 'utf8');
-  html = splice(html, 'slides', slides);
+  html = splice(html, 'slides', slides, page.indent);
 
   // The counter's seed. JS overwrites it on mount, but the markup has to be
   // right on its own — it is what shows before the module runs, and if it never
@@ -227,6 +312,38 @@ for (const plate of PLATES) {
   console.log(
     `${plate.html}: ${frames.length} frames (${first}..${frames.at(-1)})`,
   );
+  touched++;
+
+  // The same cycle again, in the landing page's preview box. Skipped if that
+  // page is not in the checkout, on the same rule as everything else here.
+  if (!plate.preview || !existsSync(plate.preview.html)) continue;
+  const pv = plate.preview;
+  const pad = ' '.repeat(pv.indent);
+
+  // Frame 1 is the preview plate rather than the plate set's own 1.webp, so it
+  // is the one entry with a real src and no data-src; see PLATES above. The rest
+  // are deferred. No alt on any of them and no counter: the whole stack sits
+  // inside a container the markup marks aria-hidden, because it is a preview of
+  // a link whose name is the index row beside it, not a picture of its own.
+  const previewFrames = frames
+    .map((name, i) =>
+      [
+        `${pad}<img`,
+        `${pad}  class="viewer__frame${i === 0 ? ' is-current' : ''}"`,
+        `${pad}  data-frame`,
+        i === 0
+          ? `${pad}  src="${pv.cover}"`
+          : `${pad}  data-src="${dir}/${name}.webp"`,
+        `${pad}  alt=""`,
+        `${pad}/>`,
+      ].join('\n'),
+    )
+    .join('\n');
+
+  let pvHtml = await readFile(pv.html, 'utf8');
+  pvHtml = splice(pvHtml, pv.marker, previewFrames, pv.indent);
+  await writeFile(pv.html, pvHtml);
+  console.log(`${pv.html}: ${frames.length} preview frames (${slug})`);
   touched++;
 }
 
@@ -359,5 +476,7 @@ for (const reel of REELS) {
   );
   touched++;
 }
+
+await pager();
 
 console.log(`wrote ${touched} page${touched === 1 ? '' : 's'}`);
