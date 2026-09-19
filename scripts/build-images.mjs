@@ -37,23 +37,64 @@ const VIDEO_OUT = 'public/video';
 const MANIFESTS = 'scripts/.manifests';
 const HERO = 'assets/hero-cyanotype.png';
 
-// THE CYANOTYPE ACCENTS ARE GONE, and with them the last thing on this site that
-// drew them. Two squares in two grades — `print`, the design's own at node
-// 217:7395, and `wash`, the pale second exposure at 217:7388 — used to pop out
-// from behind the slides on the deck pages' dark panel, built here at 720 square
-// with a one-pixel inset off every side to cut the dark rim Figma baked into
-// print's edge columns.
+// THE CYANOTYPE ACCENTS ARE BACK, on the two still pages, and this step is back
+// with them. They had gone out entirely: two squares in two grades — `print`, the
+// design's own at node 217:7395, and `wash`, the pale second exposure at 217:7388
+// — used to pop out from behind the slides on the deck pages' dark panel, and
+// when both decks became rails nothing drew either one, so the sources left the
+// checkout with the step that read them.
 //
-// They came off the still pages first, when those went to paper; the deck pages
-// kept them until both decks became rails, and a rail draws none. A source
-// nothing builds is not a source, so assets/accent-cyanotype-print.webp and
-// -wash.webp went out of the checkout with the step that read them.
+// What the still pages ask for now is NOT that pair. It is `wash` again, and a
+// third plate that was never here: a portrait exposure of pressed nettle leaves,
+// drawn on both pages as "image 750" (nodes 479:5485 and 481:4). `print` is not
+// in either design and is not rebuilt — the one frame that still draws it is the
+// dead dark panel behind the duplicated Studio Edit 02 artboard, which is
+// invisible in the design itself.
 //
-// To bring them back: re-export both nodes, and note that they are one subject in
-// two GRADES rather than one photograph lightened — fitting a per-channel gain
-// and offset from either to the other lands at r 0.75, so no CSS filter over one
-// stands in for the other. Everything else about them is in the README under
-// "The dark panel and its accents".
+// The grades are one subject exposed twice rather than one photograph lightened,
+// which is why they are two files and not a filter: fitting a per-channel gain
+// and offset from either to the other lands at r 0.75. The means are the
+// identification — 172,210,225 for wash and 94,163,204 for print — and the third
+// plate is its own picture at 99,165,204, close to print and not it.
+//
+// NO ONE-PIXEL INSET HERE, which the old step applied to every square. That inset
+// existed to cut a dark rim Figma baked into `print`'s edge columns; neither of
+// these two exports carries one — row 0 and row 1 agree to a level or two on
+// both — so taking a pixel off every side would be resampling the picture to fix
+// a fault it does not have.
+//
+// THE LEAF PLATE ARRIVES AT 75% IN ITS ALPHA, and both of the things that
+// follow from that are settled here rather than in CSS.
+//
+// The design draws it as an image at 75% opacity over a white rectangle, and the
+// export carries that opacity rather than describing it: the file's alpha is a
+// flat 191, which is 0.75 of 255. So the page does not fade anything — the build
+// composites the export over WHITE, once, and what the pages get is an opaque
+// plate they can draw like any other. `under` is that colour, and it is white
+// rather than the page's warm paper because the design's underlay is white and
+// the difference shows: composited on paper the print comes out tinted.
+//
+// `fit` is how a source that is not square becomes one. The leaf plate is
+// 724x1024 and BOTH designs squash the whole of it into a square box rather than
+// cropping to one — verified against Figma's own render of the node, which means
+// 138.3,187.3,216.7 against 138.3,187.5,216.8 for the squashed plate and
+// 152.8 for a bottom crop. It is the design's distortion and it is deliberate
+// enough to be in both frames, so it is baked in here rather than approximated
+// by an object-fit the two pages would each have to carry.
+const ACCENTS = [
+  { name: 'accent-wash', src: 'assets/accent-cyanotype-wash.png', fit: 'cover' },
+  {
+    name: 'accent-leaf',
+    src: 'assets/accent-cyanotype-leaf.png',
+    fit: 'fill',
+    under: '#ffffff',
+  },
+];
+
+// The widest square either design draws an accent at: three columns on the
+// twelve-column grid, 342.5 at the 1470 artboard. The other two boxes are two
+// columns, so one delivered file serves every placement at 2x or better.
+const ACCENT_BOX = 3 * 100.8333 + 2 * 20;
 
 // The clips. sharp does not touch video, so every one of these is a copy and a
 // rename — the point is only that the delivered file keeps coming from assets/
@@ -258,18 +299,16 @@ const REELS = [
 // the box the page draws them in and cycled by src/plate-cycle.js. Directory-
 // driven for the same reason the decks are — a carousel arrives as a folder.
 //
-// The box is FIVE COLUMNS at 3:4, which is 584.17 x 778.89 at the 1470 artboard
+// The box is FOUR COLUMNS at 3:4, which is 463.33 x 617.78 at the 1470 artboard
 // — the plate's width is a grid quantity and its height is the photograph's own
 // ratio; see the note at the top of src/trending-this-week.css.
 //
-// IT DOES NOT REACH 2x, and that is a cap rather than a fault. These sources are
-// Instagram's own 1080x1440 export, and 2x of a five-column box wants 1168 —
-// so the scale lands at 1.85x and the build says so. The rule below is the one
-// every other source follows: cap at what the source can honestly fill, never
-// enlarge past it. It was 2.00x while the box was four columns and 927 was the
-// ask; widening the box is what spent the headroom, and 1.85x is still most of
-// a retina plate. A true 2x would need a re-export above 1168 wide, which
-// Instagram does not hand back.
+// IT REACHES 2x AGAIN. The box was five columns while the plate hung off the
+// right margin of a stage that had no column lines, and 2x of that wanted 1168
+// against the 1080 Instagram's export hands back — so the scale was capped at
+// 1.85x. The redesign puts the plate back on the grid at columns 3-6, which asks
+// 927, and the source covers that outright. Same rule either way: cap at what the
+// source can honestly fill, never enlarge past it.
 //
 // `fit: 'cover'`, unlike the decks. A deck frame is a whole slide and cropping it
 // would take words off it, so those contain; a plate is a photograph shown in a
@@ -290,7 +329,7 @@ const PLATES = [
     slug: 'trending-this-week',
     dir: 'assets/projects/trending-this-week/frames',
     cover: 'assets/projects/trending-this-week/preview.png',
-    w: 5 * 100.8333 + 4 * 20,
+    w: 4 * 100.8333 + 3 * 20,
   },
 ];
 
@@ -395,6 +434,41 @@ await writeFile(
     '',
   ].join('\n'),
 );
+
+// The accents. One square each, delivered to the widest box either page draws
+// them in, at the same 2x cap and the same honesty rule every other source here
+// follows — a square that cannot fill the box is delivered at what it can and the
+// build says so rather than enlarging it.
+//
+// Always flattened, so every delivered plate is opaque: these squares sit BEHIND
+// the artwork, and an alpha channel that survived to the page would be a second
+// place the 75% could be applied. `under` says over what — see ACCENTS. The wash
+// export is already opaque, so its flatten is a no-op and is here for the rule
+// rather than the effect.
+const accentNotes = [];
+for (const accent of ACCENTS) {
+  if (!existsSync(accent.src)) {
+    accentNotes.push(`${accent.name} source absent, skipped`);
+    continue;
+  }
+  const { width: aw, height: ah } = await sharp(accent.src).metadata();
+  const scale = Math.min(DPR, aw / ACCENT_BOX, ah / ACCENT_BOX);
+  const side = Math.round(ACCENT_BOX * scale);
+
+  await sharp(accent.src)
+    .flatten({ background: accent.under ?? '#fdfdfa' })
+    .resize({
+      width: side,
+      height: side,
+      fit: accent.fit,
+      position: 'centre',
+      withoutEnlargement: true,
+    })
+    .webp({ quality: 86 })
+    .toFile(`${OUT}/${accent.name}.webp`);
+
+  accentNotes.push(`${accent.name} ${side}px at ${scale.toFixed(2)}x`);
+}
 
 for (const p of PROJECTS) {
   await sharp(`assets/projects/${p.slug}/preview.png`)
@@ -644,6 +718,7 @@ for (const reel of REELS) {
 console.log(
   `built hero from ${W}x${H} scan` +
     ` + ${PROJECTS.length} project previews at ${DPR}x` +
+    `, accents: ${accentNotes.join('; ')}` +
     `, clips: ${clipNotes.join('; ')}` +
     `, ${stageNotes.join('; ')}` +
     `, ${plateNotes.join('; ')}` +

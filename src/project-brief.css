@@ -8,16 +8,20 @@
    It lived in the deck template until a project arrived that is not a deck — the
    Trending This Week page is one still screen, not a presentation read sideways
    — and the block is the same block on all of them. So it is here, on its own,
-   and each surface places it, absolutely and off the paper column it sits on:
+   and each surface places it:
 
-     `.lead .brief`          rail-page.css
-     `.reel__lead .brief`    reel-page.css
-     `.still__lead .brief`   still-page.css
+     `.lead .brief`          rail-page.css   absolutely, off its paper column
+     `.reel__lead .brief`    reel-page.css   absolutely, off its paper column
+     `.still__brief`         still-page.css  a cell of the page's twelve, 9-11
 
-   All three now do the same thing, which they did not always — the still pages
-   used to put this block in a cell of a twelve-column page grid, under
-   .brief--head and .brief--aside, and both of those modifiers are gone with that
-   layout. Nothing below positions anything.
+   The still pages are the odd one and have been twice: they put this block in a
+   grid cell, then absolutely off a fixed lead column when the template became a
+   split, and in a cell again now the designs are twelve columns of paper. What
+   has not come back with the grid is .brief--head and .brief--aside, the pair of
+   modifiers that used to cut this block in two and hang the halves on opposite
+   sides of the artwork — the copy is one column at the right. Nothing below
+   positions anything, which is what let the surface change three times without
+   this file changing at all.
 
    Numbers are in design units like the rest of the site: 1 unit is 1px on the
    artboard, and --vr resolves 1rem to it. styles.css is imported ahead of this
@@ -78,32 +82,53 @@
   color: var(--color-graphite);
 }
 
-/* .brief__prose, in the markup, has no rule of its own and needs none — it is
-   there so a brief whose copy runs to more than one paragraph spends the 20
-   above BETWEEN THE FACTS AND THE COPY and not between the paragraphs. The
-   designs set a column as one block in which every line is indented, not as
-   separate items with air between them, and `p { margin: 0 }` in styles.css
-   already makes that exactly nothing. Without the wrapper the brief's own gap
-   would fall between the paragraphs too.
+/* .brief__prose wraps the paragraphs so that the brief's own 20 falls BETWEEN
+   THE FACTS AND THE COPY and not between them — without it the column's gap
+   would open every paragraph break to 20 as well.
+
+   What falls between them instead is 10, the design's own (node 451:4078). It
+   used to be nothing: the copy was one block in which every line was indented,
+   with no air anywhere in it. That is not what the designs draw — see the note on
+   the indent below — and the two changes are one change.
 
    It lives here rather than on either surface because it is the BRIEF's gap it
-   exists to redirect, and both surfaces have the same problem: it wraps the
-   still page's right-hand column of copy and the deck pages' two-paragraph
-   overview alike. */
+   exists to redirect, and every surface has the same problem: it wraps the still
+   pages' column of copy and the rail pages' two-paragraph overview alike. */
+.brief__prose {
+  display: flex;
+  flex-direction: column;
+  gap: 10rem;
+}
 
 /* The indent is the design's, and it is large on purpose — it is the whole of
    the paragraph's relationship to the two columns above it, which is why it is
-   121.335 and not a round number.
-   Every paragraph takes it, not only the first: where the copy runs to two the
-   design indents both, so the indent reads as the column's own left edge rather
-   than as the start of a piece of prose. */
+   121.335 and not a round number. It is 120.83 to within half a unit, which is
+   one grid step, so what it actually does is set the first line on column 2 of
+   the brief's own three.
+
+   THE FIRST PARAGRAPH TAKES IT AND NO OTHER, which is the reverse of what this
+   file did before. The earlier reading was that every paragraph is indented, so
+   the indent reads as the column's own left edge rather than as the start of a
+   piece of prose — and the designs do not do that. Node 451:4078 indents its
+   opening paragraph and sets the other three flush, with the 10 above doing the
+   work of separating them. Which is the ordinary typographic arrangement: an
+   indent marks a paragraph against the one before it, and the first paragraph has
+   nothing before it to be marked against, so an indent there is a flourish and an
+   indent on the rest is redundant with the air.
+
+   :first-child rather than a modifier class, so a brief that runs to one
+   paragraph still opens with the indent and nothing in the markup has to know
+   how many paragraphs follow it. */
 .brief__text {
   font-family: var(--font-primary);
   font-size: 16rem;
   line-height: normal;
-  text-indent: 121.335rem;
   color: var(--color-graphite);
   text-wrap: pretty;
+}
+
+.brief__text:first-child {
+  text-indent: 121.335rem;
 }
 
 /* A link inside a paragraph, on the words rather than on an address. It is the

@@ -1,138 +1,144 @@
 /* ==========================================================================
    TRENDING THIS WEEK — placements
 
-   Figma node 405:2201. The work was a weekly Instagram series, so what there is
-   to show is one plate and the account it ran on. A still project page:
-   src/still-page.css is the template and is loaded ahead of this. What is here
-   is the composition that hangs on the template's stage.
+   Figma node 485:83. The work was a weekly Instagram series, so what there is to
+   show is one plate and the account it ran on. A still project page:
+   src/still-page.css is the template and is loaded ahead of this. What is here is
+   where this page's three boxes sit on the template's twelve columns, and how far
+   down the window they are pinned.
 
-   The composition is ONE 3:4 PLATE, cycling its frames, and nothing else. The
-   brief is in the column at the left, which the template places; nothing here
-   touches it.
+   The composition is ONE 3:4 PLATE, cycling its frames, with a cyanotype square
+   tucked behind each of two opposite vertical edges. The brief is in columns 9 to
+   11, which the template places; nothing here touches it.
 
-   IT USED TO BE THREE THINGS. A cyanotype square was tucked behind each of two
-   opposite corners — the small pale one at the top-left, the large deep one at
-   the bottom-right — on a charcoal stage. Both squares and the charcoal are gone
-   together; the reasoning is in still-page.css under THE ACCENTS, and what is
-   left here is the plate alone on paper. Everything the squares owned went with
-   them: their sizes, the three-eighths sliver each stood clear by, the padding
-   the group reserved for the overhang, and the term they took out of the width
-   cap.
+     the plate     columns 3-6     3:4, the photograph's own ratio
+     the leaf      columns 2-4     square, over the plate's LEFT edge
+     the wash      columns 6-7     square, over the plate's RIGHT edge
 
-   WHAT CHANGED BEFORE THAT. This page used to be twelve columns of paper across
-   the whole window, with the plate in the MIDDLE at columns 5-8 and the copy
-   split around it — the head and two paragraphs at columns 1-3, the closing two
-   and REFLECTION at columns 10-12, one row lower. It is now the split every other
-   project page makes, and that takes the middle away: there is one side to put
-   copy on, so the two blocks are one column of prose, and the plate has the stage
-   to itself.
+   EVERY ONE OF THOSE IS A COLUMN SPAN and not a measured offset. The plate used
+   to hang off the right margin of a stage that was whatever the window had left
+   over after a 419.59 paper column — a surface with no lines on it, where the
+   margin was the only edge to place against. The page is twelve columns, so the
+   plate is in cells and the squares are in cells beside it.
 
-   The stage is what is left of the window after the lead takes its 419.59, which
-   is not a whole number of columns and has no column lines on it to place
-   against. The plate is therefore placed by ONE edge and sized by one number:
+   THE SQUARES STRADDLE THE PLATE BY EXACTLY ONE COLUMN each, which is why the
+   spans read as they do: the plate ends on column 6's right edge, so a square
+   STARTING on column 6 covers one column of plate and hangs one column clear; the
+   plate starts on column 3's left edge, so a square ENDING on column 4 does the
+   same on that side.
 
-     plate box     3:4, the photograph's own ratio
-     plate width   five columns — 584.17 at the 1470 artboard
-     plate right   the page's own margin, 20, off the right edge of the window
+   The plate is LAST in the markup, so it paints over both squares. Source order
+   is the stacking order — no z-index anywhere on this page.
 
-   IT IS RIGHT-ALIGNED RATHER THAN CENTRED ON THE STAGE, which is the one place
-   this page now differs from Studio Edit 02 and is why the override below is
-   here rather than in the template. The stage is not a whole number of columns,
-   so centring in it put the plate's edges on no line at all; the margin IS a line
-   — the same 20 the bar, the brief and the footer are all set to — so hanging the
-   plate off it is the only placement on this stage that agrees with the rest of
-   the page. It also reads as the composition it is: copy at the left edge of the
-   sheet, work at the right edge, air between them.
+   ALL THREE ARE PINNED. The brief is the only thing on this page that moves; see
+   PINNING in src/still-page.css for how --pin does it. Each box states one
+   offset, that offset is both where it starts and where it stops, and the
+   composition therefore holds its shape at every scroll position.
 
-   WIDTH LEADS AND HEIGHT FOLLOWS, which is the reverse of what this file did
-   before. The width is the stated quantity — five columns — so it is the one the
-   arithmetic starts from, and the ratio gives the height.
+   THE VERTICAL IS THE DESIGN'S AND IT IS ONE GRID STEP. The plate's top edge
+   lands on --col-step, 120.83, where node 485:83 draws 121.17 — the page's own
+   vertical unit, and near enough the middle of the band: 83 of clearance under
+   the bar against 59 above the footer. An earlier revision stood it on the
+   footer's air and lifted it half a step off that, which left it low; this states
+   the line directly instead, which is both simpler and what the design does.
 
-   But height is still the SCARCE dimension, because the page has no scroll and
-   artwork taller than the window cannot be seen. So the height cap survives as a
-   cap on the width, and the consequence is worth stating plainly: five columns at
-   3:4 is 778.9 tall, and the window has to be about 896 tall to hold that with
-   the bar and the air. Below that the plate scales down — still right-aligned,
-   still 3:4 — rather than overflowing a page that cannot scroll. At the design's
-   own 1470x835 it lands at about 4.6 columns.
+   WIDTH LEADS AND HEIGHT FOLLOWS. The width is the stated quantity — four columns
+   — so it is what the arithmetic starts from, and the ratio gives the height.
+   Height is still the SCARCE dimension, because the plate is pinned and a pinned
+   thing taller than the window can never be scrolled into view, so the height cap
+   survives as a cap on the width.
    ========================================================================== */
 
 :root {
-  /* The stage, as a length. The template gives the lead --still-lead and the
-     stage takes the rest; the cap below needs it as a number because the plate
-     has to fit across as well as down. */
-  --stage-w: calc(100vw - var(--still-lead));
+  /* The plate's top edge, which is one grid step from the top of the window and
+     is the page's single stated vertical. Everything else on this side of the
+     page is measured from it.
 
-  /* THE PLATE, capped three ways and the smallest wins:
+     It is a WINDOW offset, not a document one — the plate is pinned, so it is
+     both. That equality is the template's --pin and is the whole of why nothing
+     here moves. */
+  --plate-top: var(--col-step);
 
-       1  the width the design asks for — five columns and their four gutters
-       2  what the stage leaves DOWN: the window less the bar, less the air above
-          and below, taken back through the ratio so it caps the WIDTH
-       3  what the stage leaves ACROSS: the stage less the margin the plate hangs
-          off at the right, less one --still-air of clear space at the left, so a
-          narrow window can never run the plate into the brief's column
+  /* THE PLATE, capped two ways and the smaller wins:
 
-     The second binds at ordinary window shapes and is not a guard — see the note
-     above. The third has never bound at a real window shape: at 1470x835 it
-     allows 990 against the 584 the design asks for, and it only comes into play
-     on a window that is wide enough to be short of neither. */
+       1  the width the design asks for — four columns and their three gutters
+       2  what the window leaves DOWN between the plate's line and the footer
+          band, less a gutter, taken back through the ratio so it caps the WIDTH
+
+     At the design's own 1470x835 the first binds by a distance — 463.3 asked
+     against the 492.4 the window allows — so the plate renders at exactly the
+     four columns drawn, with 59 of paper left between it and the band. The second
+     is not a guard: it takes over on any window shorter than about 796, and what
+     it protects against is specific to a pinned element. Copy that overflows can
+     be scrolled to; a plate that overflows is simply never seen.
+
+     THE GUTTER IS IN THE CAP AND NOT LEFT TO THE DESIGN'S OWN 59. Without it the
+     cap lets the plate come down until its lower edge meets the band exactly — at
+     1920x700 it did — and the copyright line is centred in that band, so the
+     photograph and the type end up sharing an edge. A gutter is the smallest
+     thing this site has to say they are separate, and it costs nothing where
+     there is room: at any window tall enough to draw the design, the plate is
+     nowhere near the cap. */
   --plate-w: min(
-    calc(5 * var(--col) + 4 * var(--grid-gutter)),
-    calc((100dvh - var(--nav-h) - 2 * var(--still-air)) * 3 / 4),
-    calc(var(--stage-w) - var(--grid-margin) - var(--still-air))
+    calc(4 * var(--col) + 3 * var(--grid-gutter)),
+    calc(
+      (100dvh - var(--plate-top) - var(--still-foot-h) - var(--grid-gutter)) * 3 /
+        4
+    )
   );
   --plate-h: calc(var(--plate-w) * 4 / 3);
-}
 
-/* ==========================================================================
-   THE STAGE — overridden, for the right edge
-   ========================================================================== */
+  /* THE PLATE'S OWN GRID STEP, and it is what keeps the squares attached to it.
 
-/* The template centres its composition on the stage, which is what Studio Edit 02
-   still wants. This page hangs its plate off the page margin instead.
+     The plate is four columns and three gutters wide, so a step of its own width
+     is (width + gutter) / 4 — a length divided by a number, which is arithmetic
+     CSS can do, where dividing one length by another is not. When the plate is at
+     its full four columns this is exactly --col-step and every square lands on a
+     page column line. When the height cap takes the plate down, this shrinks with
+     it and the squares shrink and follow.
 
-   `justify-items: end` with the margin as the stage's own right padding, rather
-   than a margin on the plate: the padding belongs to the surface that owns the
-   edge, and stating it here means the plate stays a box with a width and nothing
-   else to say about where it is. `align-items` is left as the template set it, so
-   the plate is still centred DOWN the stage — only the horizontal changes.
-
-   Inside the split only. Below 768 the stage is a band under the brief with the
-   plate at the full measure and the margin already applied as padding on both
-   sides; there is no right edge to hang off down there, and `justify-items: end`
-   on a full-width box would do nothing but confuse the next reader. */
-@media (min-width: 768px) {
-  .still__stage {
-    justify-items: end;
-    padding-right: var(--grid-margin);
-  }
+     That second case is the whole reason it exists. Sized in page columns
+     instead, the squares held still at a short window while the plate narrowed
+     under them: at 1920x700 the plate's right edge came in to 775 and the square
+     that is meant to straddle it started at 812, so the composition was a plate
+     and a square with clear air between them. */
+  --plate-step: calc((var(--plate-w) + var(--grid-gutter)) / 4);
 }
 
 /* ==========================================================================
    THE COMPOSITION
    ========================================================================== */
 
-/* The group, which now holds one thing. Its padding used to BE the squares'
-   overhang — the plate was the content box and each edge a square hung past got
-   exactly as much padding as it hung, which both made the stage centre the whole
-   composition rather than the plate and let each square's own offset be zero.
-   With the squares gone there is no overhang to reserve, so the padding is gone
-   and the group's border box is the plate's.
+/* The group, which holds one thing. It is kept as a wrapper rather than folded
+   away: the markers the gallery build writes its frames between are inside the
+   plate, not here.
 
-   It is kept as a wrapper rather than folded away: the stage centres one child
-   either way, and the markers the gallery build writes its frames between are
-   inside the plate, not here. position: relative is what the plate's frames are
-   absolute against, by way of .plate itself.
+   IT STATES NO `position`, AND THAT IS NOT AN OVERSIGHT. It carried
+   `position: relative` while the frames were thought to hang off it; they do not
+   — .plate is the relative box and the frames are absolute against that — so the
+   declaration was doing nothing, until .still__pin needed this element to be
+   `sticky`. Both are one class deep and this file loads second, so the dead rule
+   won: the plate took the pin's `top` as a relative nudge instead, landed a step
+   below its line at 241.7, and slid with the copy. Nothing about that looked like
+   a stray `position`.
 
-   Below 768 it takes the whole measure, as everything on a narrow page does. */
+   justify-self: start, so that when the height cap takes the width down the plate
+   stays on column 3's line and gives the space back at its right, rather than
+   floating off both lines at once.
+
+   Below 768 it takes the whole measure, as everything on a narrow page does, and
+   nothing is pinned. */
 .post {
-  position: relative;
   width: 100%;
 }
 
 @media (min-width: 768px) {
   .post {
-    width: auto;
+    grid-column: 3 / span 4;
+    justify-self: start;
+    width: var(--plate-w);
+    height: var(--plate-h);
+    --pin: var(--plate-top);
   }
 }
 
@@ -156,17 +162,17 @@
   display: block;
   aspect-ratio: 3 / 4;
   overflow: hidden;
-  /* The frames are absolute, so the box has no content to be measured from and
-     a narrow page would collapse it. */
+  /* The frames are absolute, so the box has no content to be measured from and a
+     narrow page would collapse it. */
   width: 100%;
   background: var(--color-index-grey);
 }
 
 @media (min-width: 768px) {
   .plate {
-    width: var(--plate-w);
-    height: var(--plate-h);
-    /* The box is set by the two lengths above, which already carry the ratio. */
+    /* The group above carries the two derived lengths, and they already carry the
+       ratio; the plate is simply the whole of it. */
+    height: 100%;
     aspect-ratio: auto;
   }
 }
@@ -195,31 +201,68 @@
 }
 
 /* ==========================================================================
-   THE ACCENTS — gone
+   THE ACCENTS — the two squares
    ========================================================================== */
 
-/* Nodes 405:2238 and 405:2237 were drawn here: the wash square at the plate's
-   top-left, one grid step down from the plate's own top, and the print square at
-   the bottom-right, hanging two gutters below it. Both are off the page along
-   with the charcoal they sat on — see THE ACCENTS in still-page.css.
+/* BOTH SQUARES ARE PLACED AGAINST THE PLATE, not against the page, and that is
+   deliberate rather than a convenience. The plate is the only thing on this side
+   of the page either square is drawn in relation to; measured from the window
+   they would hold still while the plate scaled under the height cap, and the
+   overlap that IS the composition would come apart on the first short window.
 
-   The design's nodes are named so the pairing survives the removal, because it
-   was worked out rather than guessed: the two exports have mean RGB 172,210,225
-   and 94,163,204, which are the built `wash` and `print` plates to a tenth of a
-   level. Anyone restoring these squares should take that mapping and not re-guess
-   it.
+   So both take the plate's own column — grid-column 3, which is the line the
+   plate starts on — and then move and size in --plate-step, which is that same
+   line's grid seen from the plate. A square is free to overflow the single column
+   it is placed in; that overflow is the point.
 
-   ========================================================================== */
+     down     a fraction of the plate's height, fed to --pin so the square starts
+              and stops on the same line. 0.142 and 0.332 are node 485:83's own
+              offsets read back against the plate it draws — 87.7 and 205.2 of
+              617.8 — landing at 208.6 and 325.9 against the design's 208.9 and
+              326.4
+     across   whole steps from the plate's left edge
+     wide     whole steps less the gutter, which is what a span of N columns is
+
+   At the plate's full four columns every one of those resolves to a page column
+   line, so the design's grid and the plate's are the same grid — which is the
+   claim at the top of this file, and this is where it is kept true.
+
+   The template gives them the square box, the fill and the grade. */
+
+/* The pale square, over the plate's right edge: three steps across, so it opens
+   on the plate's last column, and two steps wide, so it stands one clear. */
+.still__accent--wash {
+  grid-column: 3;
+  justify-self: start;
+  width: calc(2 * var(--plate-step) - var(--grid-gutter));
+  margin-left: calc(3 * var(--plate-step));
+  --pin: calc(var(--plate-top) + 0.142 * var(--plate-h));
+}
+
+/* The leaf plate, larger and lower, over the plate's left edge: one step back, so
+   it stands one clear on that side, and three steps wide. */
+.still__accent--leaf {
+  grid-column: 3;
+  justify-self: start;
+  width: calc(3 * var(--plate-step) - var(--grid-gutter));
+  margin-left: calc(-1 * var(--plate-step));
+  --pin: calc(var(--plate-top) + 0.332 * var(--plate-h));
+}
 
 /* ==========================================================================
    MOTION
    ========================================================================== */
 
 /* There is no prefers-reduced-motion block here, and that is the point: the one
-   thing that moves on this page is the plate's cycle, and the cycle is a class
-   being moved by a timer rather than anything CSS is animating. So there is
-   nothing for a media query to turn off — hiding the change in CSS would leave
-   the interval running and the frames swapping underneath it. The preference is
-   honoured where it can actually be honoured, by not starting the timer, and it
-   is watched live so a change made while the page is open takes effect. See
-   src/plate-cycle.js. */
+   thing that moves on this page of its own accord is the plate's cycle, and the
+   cycle is a class being moved by a timer rather than anything CSS is animating.
+   So there is nothing for a media query to turn off — hiding the change in CSS
+   would leave the interval running and the frames swapping underneath it. The
+   preference is honoured where it can actually be honoured, by not starting the
+   timer, and it is watched live so a change made while the page is open takes
+   effect. See src/plate-cycle.js.
+
+   The scroll is not motion in that sense. Nothing is animated against it and
+   nothing is transformed by it: the brief is an ordinary block in the flow and
+   the rest of the page is `position: sticky`. There is no scroll handler on this
+   page and nothing for a reduced-motion reader to be spared. */

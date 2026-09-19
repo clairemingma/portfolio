@@ -1,82 +1,98 @@
 /* ==========================================================================
    STUDIO EDIT 02 — placements
 
-   Figma node 345:1790. A still project page: src/still-page.css is the template
-   and is loaded ahead of this. What is here is the composition that hangs on the
-   template's stage.
+   Figma node 463:4384. A still project page: src/still-page.css is the template
+   and is loaded ahead of this. What is here is where this page's three boxes sit
+   on the template's twelve columns.
 
-   The composition is TWO PORTRAIT CLIPS, side by side and staggered. The brief is
-   in the column at the left, which the template places; nothing here touches it.
+   The composition is TWO PORTRAIT CLIPS, side by side and staggered, with a
+   cyanotype square tucked behind the leading clip's outer edge. The brief is in
+   columns 9 to 11, which the template places; nothing here touches it.
 
-   A CYANOTYPE SQUARE USED TO SIT BEHIND THE LEADING CLIP, centred on its outer
-   edge, on a charcoal stage. The square and the charcoal are gone together; the
-   reasoning is in still-page.css under THE ACCENTS. What went with it here is its
-   size and its one re-derived offset — nothing else in the composition was ever
-   measured against it, so the clips are placed exactly as they were.
+     clip 1        columns 4-6     9:16, the source's own ratio — the UPPER one
+     clip 2        columns 1-3     9:16, one grid step lower
+     the leaf      columns 6-7     square, over clip 1's right edge
 
-   WHAT CHANGED BEFORE THAT, AND WHY THE NUMBERS BELOW ARE RATIOS RATHER THAN GRID
-   LINES.
-   This page used to be twelve columns of paper across the whole window, with the
-   clips placed in cells at columns 7-12 and their vertical anchored to the footer
-   band. It is now the split every other project page makes, so the work no longer
-   sits on the page grid at all — the stage is what is left of the window after
-   the paper takes its 419.59, which is not a whole number of columns and has no
-   column lines on it to place against.
+   A NOTE ON THE FRAME THIS CAME FROM. Node 463:4384 is still NAMED "Confidence
+   Underneath — Claire Ong" and still wraps this page in that project's horizontal
+   rail — an outer scrolling container, a charcoal panel of its own, and a
+   RESTART / KEEP SCROLLING FOR NEXT end cap. None of that is drawn: the charcoal
+   panel sits in a zero-width box behind the opaque paper one and is invisible in
+   the design itself, and the rail is a presentation's chrome on a page that is
+   not a presentation. What was rebuilt is the paper panel, which is this page.
+   The brief's copy in that frame is stale in the same way; see the markup.
 
-   So the composition keeps its INTERNAL relationships, which are the ones the
-   design actually states, and the stage centres the result:
+   EVERY PLACEMENT IS A COLUMN SPAN and not a measured offset, which is the change
+   this revision makes. The clips used to be a group centred on whatever the
+   window had left over after a 419.59 paper column — a surface with no lines on
+   it — so the composition held itself together by internal ratios alone and sat
+   on nothing. The page is twelve columns again, so both clips are in cells, the
+   stagger is a grid step between two cells, and the square is in cells beside
+   them.
 
-     clip box        9:16, the source's own ratio (720x1280)
-     clip width      three columns — 342.5 at the 1470 artboard
-     the gap         one gutter between the two clips
-     the stagger     one grid step, clip 1 above clip 2
+   THE SQUARE STRADDLES CLIP 1 BY EXACTLY ONE COLUMN: clip 1 ends on column 6's
+   right edge, so a square starting on column 6 covers one column of clip and
+   hangs one column clear. Trending This Week's pale square is placed by the same
+   rule against the same edge, which is what makes the two pages read as one
+   template rather than two arrangements that happen to rhyme.
 
-   Every one of those survives the move unchanged. What does not survive is the
-   pair of absolute anchors the old layout used — the footer band underneath and
-   the row-2 line above — because neither exists on the stage. Their one
-   consequence was the square's vertical, and the square is gone.
+   The clips are LAST in the markup, so they paint over the square. Source order
+   is the stacking order — no z-index anywhere on this page.
 
-   HEIGHT LEADS AND WIDTH FOLLOWS, which is the reverse of the old file and is
-   forced by the page having no scroll: height is the scarce dimension, and
-   artwork taller than the window on a page that cannot scroll is artwork that
-   cannot be seen. So the clip is capped against the stage and the width comes off
-   the ratio.
+   HEIGHT LEADS AND WIDTH FOLLOWS, which is the reverse of Trending This Week and
+   is forced by what the design anchors. Clip 2 stands ON the footer band with no
+   air under it and clip 1 is one grid step above it, so the pair fills the band
+   between the bars almost exactly — height is what the design states here, and
+   the ratio gives the width.
    ========================================================================== */
 
 :root {
-  /* The stagger, and it is the design's own: one grid step between the two
-     clips' top edges. Named because the group's height is the clip plus this and
-     the cap below has to take it off before it divides. */
+  /* The stagger, and it is the design's own: one grid step between the two clips'
+     top edges, which is also one grid step between their bottom edges. Named
+     because the group's height is one clip plus this, and the cap below has to
+     take it off the band before it divides. */
   --clip-step: var(--col-step);
 
-  /* The stage, as a length. The template gives the lead --still-lead and the
-     stage takes the rest; the cap below needs it as a number because the group
-     has to fit across as well as down. */
-  --stage-w: calc(100vw - var(--still-lead));
+  /* THE CLIP, capped two ways and the smaller wins:
 
-  /* THE CLIP, capped three ways and the smallest wins:
+       1  the design's own box — three columns at 9:16, 608.9 at the 1470 artboard
+       2  what the page leaves DOWN: the band between the bars, less the stagger
+          the group carries on top of one clip
 
-       1  the design's own box — three columns at 9:16, 608.9 at 1470
-       2  what the stage leaves DOWN: the window less the bar, less the air above
-          and below, less the stagger the group carries on top of one clip
-       3  what the stage leaves ACROSS: two clips and a gutter inside the air
-
-     At the design's own 1470x835 the second binds by a little — 717.4 of room
-     against the 729.7 the full-size group wants — so the clips render at 596.6
-     rather than 608.9, two per cent under. On anything taller than about 850 the
-     design's own box is what renders. The third has never bound at a real window
-     shape; it is there because a page that cannot scroll cannot recover from
-     artwork that overflows, and a cap that never fires costs nothing. */
+     At the design's own 1470x835 the first binds — 608.9 asked against the 639
+     the band allows — so the clips render at exactly the three columns drawn. The
+     second is not a guard: it takes over on any window shorter than about 805,
+     which an ordinary laptop window can be. */
   --clip-h: min(
     calc((3 * var(--col) + 2 * var(--grid-gutter)) * 16 / 9),
-    calc(
-      100dvh - var(--nav-h) - 2 * var(--still-air) - var(--clip-step)
-    ),
-    calc(
-      (var(--stage-w) - 2 * var(--still-air) - var(--grid-gutter)) / 2 * 16 / 9
-    )
+    calc(var(--still-band) - var(--clip-step))
   );
   --clip-w: calc(var(--clip-h) * 9 / 16);
+
+  /* Clip 1's top edge, as a length from the top of the window. The clips do not
+     need it — both are anchored from the bottom, which is where the design
+     measures them from — but the square is placed DOWN CLIP 1 and a grid item's
+     vertical offset has to be stated from one end or the other. */
+  --clip-top: calc(
+    100dvh - var(--still-foot-h) - var(--clip-step) - var(--clip-h)
+  );
+
+  /* THE CLIP'S OWN GRID STEP, and it is what keeps the square attached to it.
+
+     A clip is three columns and two gutters wide, so a step of its own width is
+     (width + gutter) / 3 — a length divided by a number, which is arithmetic CSS
+     can do, where dividing one length by another is not. At the clip's full three
+     columns this is exactly --col-step and the square lands on a page column
+     line. When the height cap takes the clips down, this shrinks with them and
+     the square shrinks and follows.
+
+     That second case is the whole reason it exists. Sized in page columns
+     instead, the square held still at a short window while the clips narrowed
+     under it: at 1920x700 clip 1's right edge came in to 757 and the square that
+     is meant to straddle it started at 812, so the composition was a clip and a
+     square with clear air between them. Trending This Week's two squares carry
+     the same fix, derived the same way from a four-column box. */
+  --clip-grid: calc((var(--clip-w) + var(--grid-gutter)) / 3);
 }
 
 /* ==========================================================================
@@ -84,8 +100,21 @@
    ========================================================================== */
 
 /* Below 768 the group is a plain column: the clips stack at the full measure in
-   the order the markup has them, so the narrow page shows the leading clip
-   first. Above it the group becomes the design's row. */
+   the order the markup has them, so the narrow page shows the leading clip first.
+
+   Above it the group spans columns 1 to 6 and becomes a SIX-COLUMN GRID OF ITS
+   OWN. That is not a second grid in any real sense — six columns of the page's
+   twelve, with the page's own gutter, put their lines in exactly the same places
+   the page's do — but it lets the pair stay one object with one anchor while each
+   clip is still placed by a plain `grid-column`. The alternative was to hand both
+   clips straight to the page grid and give each its own bottom offset, which
+   states the stagger twice and lets the two halves of one composition drift apart
+   if only one is ever edited.
+
+   ANCHORED FROM THE BOTTOM, onto the footer band with no air between: that is the
+   design, and it is the one place these two pages differ — Trending This Week
+   stands its plate one --still-air clear of the same band. A portrait clip is a
+   tall thin thing and the design lets it run to the floor; a 3:4 plate is not. */
 .clips {
   position: relative;
   display: flex;
@@ -95,15 +124,18 @@
 }
 
 @media (min-width: 768px) {
-  /* The row, and its height is one clip plus the stagger — which is what makes
-     the stage's `place-items: center` centre the COMPOSITION rather than the
-     taller of two things in it. align-items: flex-start puts every clip on the
-     group's top edge, and clip 2 takes itself off it. */
   .clips {
-    flex-direction: row;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: 100%;
+    column-gap: var(--grid-gutter);
+    grid-column: 1 / span 6;
+    align-self: end;
     width: auto;
+    /* One clip plus the stagger, which is the height the pair actually occupies.
+       Stated so the two align-selfs below have a box to work against. */
     height: calc(var(--clip-h) + var(--clip-step));
+    margin-bottom: var(--still-foot-h);
   }
 }
 
@@ -125,19 +157,27 @@
 
 @media (min-width: 768px) {
   .clip {
+    grid-row: 1;
+    justify-self: start;
     width: var(--clip-w);
     height: var(--clip-h);
     /* The box is set by the two lengths above, which already carry the ratio. */
     aspect-ratio: auto;
   }
 
+  /* The leading clip — the upper one, and the one whose first frame is the
+     landing page's poster, so the file order and the design's numbering agree.
+     On the group's top edge, which is the stagger's high side. */
+  .clip--1 {
+    grid-column: 4 / span 3;
+    align-self: start;
+  }
+
   /* The lower clip, dropped to the foot of the group — which is the whole of the
-     stagger, stated once and on the clip that takes it. The design anchored this
-     edge to the footer band; the band is on the other side of the page now, so
-     what is kept is the relationship between the two clips, which is the thing
-     the design was actually drawing. */
+     stagger, stated once and on the clip that takes it. */
   .clip--2 {
-    align-self: flex-end;
+    grid-column: 1 / span 3;
+    align-self: end;
   }
 }
 
@@ -149,23 +189,47 @@
    has. */
 
 /* ==========================================================================
-   THE ACCENT — gone
+   THE ACCENT — the square
    ========================================================================== */
 
-/* The design's own square, node 377:1971, carried the `wash` plate and sat two
-   columns across, CENTRED on the leading clip's outer edge — half in and half
-   out, which was this page's own rule rather than the deck pages'. It is off the
-   page along with the charcoal it sat on; see THE ACCENTS in still-page.css.
+/* PLACED AGAINST CLIP 1, not against the page, for the reason Trending This
+   Week's two squares are: the clip is the only thing the square is drawn in
+   relation to, and anchored to the window it would hold still while the clip
+   scaled under the height cap, taking apart the overlap that IS the composition.
 
-   The node and the plate are named so the pairing survives the removal, because
-   it was worked out rather than guessed: the square's fill matches the built
-   `wash` file exactly, mean RGB 172,210,225 for both against `print`'s
-   94,163,204. Anyone restoring it should take that and the centring, and should
-   know the vertical was never the design's own number — 73.2 down from the clip's
-   top was a row line on a page grid that no longer exists, and it was kept here
-   as the proportion 0.12 of the clip's height instead.
+   So it takes clip 1's own column — grid-column 4, the line that clip starts on —
+   and then moves and sizes in --clip-grid, which is that same line's grid seen
+   from the clip. A square is free to overflow the single column it is placed in;
+   that overflow is the point.
 
-   ========================================================================== */
+   It goes down the window through --pin, the template's pinning property, rather
+   than through a margin of its own. On this page that is a formality — the brief
+   is a title, four facts and a link, so the row comes to one viewport and there
+   is no scroll for anything to be pinned against — but the square is placed the
+   same way Trending This Week's two are, and the one page that does scroll is the
+   reason the property exists. See PINNING in src/still-page.css.
+
+     down     a fraction of the clip's height. 0.125 is the design's own offset
+              read back against the clip it draws — 76.1 of 608.9, landing at
+              143.8 against the design's 143, and very nearly the 0.12 this file
+              carried for the square that used to sit here, derived the same way
+              from the previous revision of the same frame.
+     across   two steps from clip 1's left edge, so it opens on the clip's last
+              column
+     wide     two steps less the gutter, so it stands one column clear
+
+   At the clip's full three columns all of that resolves to page column lines, so
+   the design's grid and the clip's are the same grid — which is the claim at the
+   top of this file, and this is where it is kept true.
+
+   The template gives it the square box, the fill and the grade. */
+.still__accent--leaf {
+  grid-column: 4;
+  justify-self: start;
+  width: calc(2 * var(--clip-grid) - var(--grid-gutter));
+  margin-left: calc(2 * var(--clip-grid));
+  --pin: calc(var(--clip-top) + 0.125 * var(--clip-h));
+}
 
 /* ==========================================================================
    MOTION

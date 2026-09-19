@@ -386,11 +386,15 @@ which hid a real one when the mark's name lengthened.
 
 ### The dark panel and its accents — removed
 
-> **This section is provenance.** The sideways deck template and the cyanotype
-> accents it carried are no longer in the checkout: both presentations became
-> rails, a rail draws neither, and `src/deck-page.css`, `src/deck-page.js`,
-> `src/project-deck.js` and the two `assets/accent-cyanotype-*.webp` sources went
-> with them. What follows is kept because the reasoning — how the two plates were
+> **This section is provenance, and the accents have since come back.** The
+> sideways deck template is gone for good — both presentations became rails, and
+> `src/deck-page.css`, `src/deck-page.js` and `src/project-deck.js` went with
+> them. The cyanotype squares left with it and then returned, on the two still
+> pages, where the redrawn designs tuck them behind the artwork; see *The still
+> project pages*. What is built now is `assets/accent-cyanotype-wash.png` and a
+> third plate, `-leaf.png`, and the build applies **no** edge inset — that was
+> `print`'s fault and `print` is not among them. What follows is kept because the
+> reasoning — how the two plates were
 > derived, why they are two grades and not one photograph lightened, why the
 > build insets a pixel off every edge — is the part that would have to be redone
 > rather than re-read. Everything here is recoverable from commit `c6fb04a`.
@@ -648,11 +652,18 @@ Spectral standing in for it is loaded with its italic in this page's `<head>`.
 Nothing sets `font-style`.
 
 Two paragraphs where the deck pages have one, so they are wrapped in
-`.brief__prose` — a ruleless element that takes the brief's own 20 as one child,
-keeping the air between the facts and the copy and out from between the
-paragraphs. It used to be `.page__prose` and live with the still page; it is the
-**brief's** gap it redirects and every surface has the same problem, so it moved
-to `project-brief.css` and the still page's two uses moved with it.
+`.brief__prose` — which takes the brief's own 20 as one child, keeping that air
+between the facts and the copy, and sets the design's own **10** between the
+paragraphs instead. It used to be *ruleless*, with no air between paragraphs at
+all, on the reading that a brief is one block in which every line is indented.
+The designs do not draw that (node `451:4078`): the **opening paragraph is
+indented and the rest are flush**, with the 10 separating them, which is the
+ordinary arrangement — an indent marks a paragraph against the one before it, and
+the first has nothing before it. `.brief__text:first-child` carries the indent.
+
+It used to be `.page__prose` and live with the still page; it is the **brief's**
+gap it redirects and every surface has the same problem, so it moved to
+`project-brief.css` and the still page's two uses moved with it.
 
 **Below 768** the two columns become one: the brief takes a screen of its own and
 the frames follow it down, still one to a screen and still snapped. Three things
@@ -850,25 +861,45 @@ A **still** page is
 one screen with no scroll axis of its own, the work shown as one or two pieces of
 artwork beside the brief.
 
-`src/still-page.css` is what they share — the split, the brief's column and its
-footer, the stage — and each page's own placements are in its own stylesheet,
-because unlike the decks the still pages are not the same layout twice:
+`src/still-page.css` is what they share — the page grid, the brief's column and
+its footer, the pager and the accent box — and each page's own placements are in
+its own stylesheet, because unlike the decks the still pages are not the same
+layout twice:
 
-> **These two pages are paper throughout and carry no accents.** Both the
-> charcoal stage and the cyanotype squares came off them together, because they
-> were one decision: the squares were the colour that made a dark half-window
-> read as a composition, and on a white sheet there is nothing for them to hold.
-> The plates themselves stay in the build — the deck pages still draw them — and
-> the design's node-to-plate pairings are recorded in each page's stylesheet
-> under `THE ACCENTS — gone`, so a restore does not have to re-derive them. Much
-> of the detail below describes the layout as the design drew it, on twelve
-> full-width columns with the accents in place; it is kept as provenance. The
-> code is the current reading.
+> **Read this before the detail below.** These two pages have been redrawn, at
+> nodes `485:83` and `463:4384`, and the current reading is:
+>
+> - **Twelve columns of paper across the window.** The brief is in columns 9 to
+>   11 and the work takes the left six or seven. The intervening revision — a
+>   fixed 419.59 paper column at the left with the artwork centred in the leftover
+>   window, described at length below — is gone, and so is the `.still__lead` /
+>   `.still__stage` split that carried it.
+> - **"Still" now means the WORK is still, not the page.** The brief is the only
+>   thing in the flow, so the document is as tall as the copy; the artwork, the
+>   accents, the footer and the pager are pinned and hold their place in the
+>   window while it scrolls past. `--pin` is both an element's offset and its
+>   sticky stop, so a pinned thing cannot drift between the two. A page whose
+>   brief fits still does not scroll, which is why Studio Edit 02 reads exactly as
+>   it did.
+> - **Both briefs start on the same line, 342.5.** They did not before: a
+>   shrinkable spacer used to slide a long brief up toward the bar to keep the
+>   page to one screen, so Trending This Week opened on 117 and Studio Edit 02 on
+>   342.5. The spacer is gone — the copy that does not fit is scrolled to instead.
+> - **The cyanotype accents are back**, and drawn differently: not floating on the
+>   sheet but tucked *behind* the artwork, each square straddling one of its edges
+>   by exactly one column. Two on Trending This Week, one on Studio Edit 02. The
+>   plates are built again — `accent-wash` from the pale grade, and a third plate,
+>   `accent-leaf`, that was never in the earlier set.
+> - **What survives unchanged** is the shrinkable spacer above the brief's title
+>   and the height cap on the artwork. Both are documented where they live.
+>
+> Everything from `#### Trending This Week` down describes the earlier revision
+> and is kept as provenance. The stylesheets are the current reading.
 
 | page                    | node       | directory                  | placements                |
 | ----------------------- | ---------- | -------------------------- | ------------------------- |
-| **Trending This Week**  | `405:2201` | `projects/trending-this-week/` | `src/trending-this-week.css` |
-| **Studio Edit 02**      | `345:1790` | `projects/studio-edit-02/`     | `src/studio-edit-02.css`     |
+| **Trending This Week**  | `485:83`   | `projects/trending-this-week/` | `src/trending-this-week.css` |
+| **Studio Edit 02**      | `463:4384` | `projects/studio-edit-02/`     | `src/studio-edit-02.css`     |
 
 One module entry serves both, `src/still-page.js`. Every mount in it looks for
 its own hook and returns immediately if the page has none — Trending This Week

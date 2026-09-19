@@ -93,17 +93,20 @@
             <span class="brief__label">[Role]</span>
             <p class="brief__value">Product Marketing Intern</p>
 
-            <span class="brief__label">[Type]</span>
+            <span class="brief__label">[Discipline]</span>
             <p class="brief__value">Product Design</p>
 
             <span class="brief__label">[Year]</span>
             <p class="brief__value"><time datetime="2026">2026</time></p>
           </div>
 
-          <!-- Two paragraphs, so they are wrapped: .brief__prose carries no rule
-               of its own and is here to take the brief's 20 as ONE child, which
-               is what keeps the air between the facts and the copy and out from
-               between the paragraphs.
+          <!-- Two paragraphs, so they are wrapped: .brief__prose takes the
+               brief's 20 as ONE child, which keeps that air between the facts and
+               the copy, and sets the design's own 10 between the paragraphs
+               instead. The 10 is doing real work here — the rail zeroes the
+               first-line indent, because an indent on centred copy reads as a
+               typo, so without it the two paragraphs ran together with no break
+               of any kind. See .brief__prose in src/project-brief.css.
 
                THE FIRST PARAGRAPH IS SHORT OF WHERE IT WAS GOING. The design's
                own text ends mid-clause — "…In one click, Phia " — with the

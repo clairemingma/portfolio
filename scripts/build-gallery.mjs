@@ -280,28 +280,30 @@ for (const plate of PLATES) {
   // They are left to the browser's own priority instead, which puts them after
   // the visible one without deferring them past it.
   //
-  // Indented two deeper than the decks, and the closing marker with it: the plate
-  // sits inside the composition group on the stage rather than directly in the
-  // page. See .post in src/trending-this-week.css.
+  // Indented one deeper than the decks, and the closing marker with it: the plate
+  // sits inside the composition group, which sits directly in the page. It was
+  // two deeper while the group hung on a stage inside a split; the still pages
+  // are a twelve-column grid now and the stage is gone. See .post in
+  // src/trending-this-week.css.
   const imgs = frames
     .map((name, i) =>
       [
-        `            <img`,
-        `              class="plate__frame${i === 0 ? ' is-current' : ''}"`,
-        `              data-frame`,
-        `              src="${dir}/${name}.webp"`,
+        `          <img`,
+        `            class="plate__frame${i === 0 ? ' is-current' : ''}"`,
+        `            data-frame`,
+        `            src="${dir}/${name}.webp"`,
         i === 0
-          ? `              alt="${plate.alt}"`
-          : `              alt=""\n              aria-hidden="true"`,
-        ...(i === 0 ? [`              fetchpriority="high"`] : []),
-        `              decoding="async"`,
-        `            />`,
+          ? `            alt="${plate.alt}"`
+          : `            alt=""\n            aria-hidden="true"`,
+        ...(i === 0 ? [`            fetchpriority="high"`] : []),
+        `            decoding="async"`,
+        `          />`,
       ].join('\n'),
     )
     .join('\n');
 
   let html = await readFile(plate.html, 'utf8');
-  html = splice(html, 'frames', imgs, 12);
+  html = splice(html, 'frames', imgs, 10);
 
   html = html.replace(
     /(<link\s+rel="preload"\s+as="image"\s+href=")[^"]*(")/,
@@ -369,30 +371,32 @@ for (const page of CLIPS) {
   // No `controls`. The clips are artwork on a page, not media someone came to
   // watch, and they are silent — a control bar would be chrome over a photograph.
   //
-  // Indented two deeper than the other blocks, and the closing marker with it:
-  // the clips sit inside the composition group on the stage rather than directly
-  // in the page. See .clips in src/studio-edit-02.css.
+  // Indented one deeper than the other blocks, and the closing marker with it:
+  // the clips sit inside the composition group, which sits directly in the page.
+  // It was two deeper while the group hung on a stage inside a split; the still
+  // pages are a twelve-column grid now and the stage is gone. See .clips in
+  // src/studio-edit-02.css.
   const videos = clips
     .map((clip) =>
       [
-        `          <video`,
-        `            class="clip clip--${clip.slot}"`,
-        `            data-autoplay`,
-        `            src="/video/${clip.name}.mp4"`,
-        ...(clip.poster ? [`            poster="${clip.poster}"`] : []),
-        `            aria-label="${page.labels[clip.slot]}"`,
-        `            autoplay`,
-        `            muted`,
-        `            loop`,
-        `            playsinline`,
-        `            preload="auto"`,
-        `          ></video>`,
+        `        <video`,
+        `          class="clip clip--${clip.slot}"`,
+        `          data-autoplay`,
+        `          src="/video/${clip.name}.mp4"`,
+        ...(clip.poster ? [`          poster="${clip.poster}"`] : []),
+        `          aria-label="${page.labels[clip.slot]}"`,
+        `          autoplay`,
+        `          muted`,
+        `          loop`,
+        `          playsinline`,
+        `          preload="auto"`,
+        `        ></video>`,
       ].join('\n'),
     )
     .join('\n');
 
   let html = await readFile(page.html, 'utf8');
-  html = splice(html, 'clips', videos, 10);
+  html = splice(html, 'clips', videos, 8);
 
   await writeFile(page.html, html);
   console.log(

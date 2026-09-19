@@ -2,77 +2,86 @@
    STILL PROJECT PAGE — the template
 
    Two of the project pages are rails, a presentation read sideways, and two are
-   reels, read downward. The other two are STILL: ONE SCREEN, no scroll axis at
-   all, the work shown beside the brief and moving on its own.
+   reels, read downward. The other two are STILL — which now means the WORK is
+   still, not the page:
 
-     src/trending-this-week.css   Trending This Week   (node 405:2201)
-     src/studio-edit-02.css       Studio Edit 02       (node 345:1790)
+     src/trending-this-week.css   Trending This Week   (node 485:83)
+     src/studio-edit-02.css       Studio Edit 02       (node 463:4384)
 
    Load order is styles.css, project-brief.css, this, then the page's own.
 
-   THE PAGE IS THE SPLIT EVERY OTHER PROJECT PAGE MAKES: the brief on the left,
-   the work on the right. That is the reel pages' arrangement (.reel__lead against
-   .reel__shots) and it is these two as well, so the pages that split open on the
-   same composition and the eye lands in the same place whichever it arrives at.
+   THE PAGE IS TWELVE COLUMNS OF PAPER, which is the arrangement both designs
+   draw and the one the rest of the site already runs on — the bar, the landing
+   index and every footer are placed on the same twelve. Nothing here is centred
+   in a leftover space and nothing is measured: every edge on both pages is a
+   column line.
 
-   WHAT IT DOES NOT SHARE WITH THEM IS THE DARK. The rails and reels set their
-   work on charcoal; these two are PAPER THROUGHOUT, lead and stage alike, so the
-   split is an arrangement rather than a colour change and the only edge on the
-   page is the artwork's own. The accents went with it — see the note where they
-   used to be, at the foot of this file.
+     brief       columns 9-11        342.5 at the 1470 artboard
+     footer      column 1            the page's own margin
+     pager       columns 9-12        running to the right margin
+     the work    columns 1-7         each page says which cells, in its own file
 
-   IT REPLACES A FULL-WIDTH GRID. These two used to be twelve columns of paper
-   across the whole window, with the artwork placed in cells and the copy around
-   it — Trending This Week split its prose into two blocks on opposite sides of
-   its plate. Nothing of that survives except the blocks themselves: the copy is
-   one column at the left now, and the artwork is centred in what is left.
+   THE BRIEF SCROLLS AND NOTHING ELSE DOES. That is the change node 485:83 makes
+   and it is the whole of this template's behaviour:
 
-   WHAT MAKES THEM STILL rather than reels is what the right-hand side holds. A
-   reel's is a column of frames a viewport apart, so the document scrolls. This is
-   ONE STAGE exactly one viewport tall, so there is nothing to scroll to and the
-   page has no scrollbar — not hidden, absent. What moves is inside the artwork:
-   Studio Edit 02's clips play, Trending This Week's plate cycles its frames. The
-   page is still and the picture is not.
+     - the brief sits on its line — 342.5, the same line on both pages — and is as
+       long as it is. It is the only thing in the flow, so the DOCUMENT is as tall
+       as it is.
+     - the work, the footer and the pager are PINNED. They are in the same grid
+       row as the brief and they hold their place in the window while the copy
+       travels past them.
+     - the bar was already fixed, so the frame of the page is now complete: four
+       edges that do not move and one column that does.
 
-   Each page's own placements stay in its own stylesheet, because unlike the
-   rails the still pages are not the same layout twice — one is a pair of portrait
-   clips, the other a single 3:4 plate. What is here is the split they share.
+   WHAT THIS REPLACES IS A PAGE THAT COULD NOT SCROLL, and the trade it could not
+   make. The brief used to hang from a SHRINKABLE SPACER: it wanted to start on
+   342.5, and when the copy was too long for one screen the spacer gave way and
+   the title slid up toward the bar instead. That kept the page to one screen and
+   it cost the thing the design actually states — Trending This Week's title came
+   to rest on 117 while Studio Edit 02's sat on 342.5, so the two pages did not
+   open alike. Now they do, and the copy that does not fit is scrolled to rather
+   than squeezed. The spacer is gone, not disabled.
 
-   THE LEAD IS RESTATED HERE rather than shared with reel-page.css. That follows
-   the precedent reel-page.css already set when it needed the same column: the
-   templates are never loaded together, a shared file would be one more stylesheet
-   on every project page to save forty lines, and each surface's copy can then
-   answer to its own page. What must not drift is the WIDTH, and it does not —
-   both derive it the same way, from the column-5 line less the gutter and the
-   design's width for the word PROJECTS.
+   A PAGE WHOSE BRIEF FITS STILL DOES NOT SCROLL. Studio Edit 02's is a title,
+   four facts and a link; its row comes to one viewport and the pinning is inert.
+   Nothing on that page had to change for any of this.
+
+   THE CYANOTYPE ACCENTS are tucked BEHIND the artwork, each square straddling one
+   of its edges by a column, so the artwork is what holds them. They are pinned
+   with it — see .still__accent. The plates are built by scripts/build-images.mjs,
+   and node 485:83 draws this site's own built files, which is as close to a
+   round trip as a design and its code get.
 
    Numbers are in design units like the rest of the site: 1 unit is 1px on the
    artboard, and --vr resolves 1rem to it.
 
-   Written mobile-first. Below 768 the split becomes a column — the paper takes a
-   screen, the work follows underneath — and the page scrolls, which is the same
-   trade the rail and reel pages make down there.
+   Written mobile-first. Below 768 the grid is four columns and this layout does
+   not survive the loss of eight of them, so the page becomes a plain column —
+   brief, then work — and scrolls as an ordinary document, with nothing pinned.
    ========================================================================== */
 
 :root {
-  /* Paper to the left of the work, and its right edge is where the word PROJECTS
-     starts in the bar. Identical to --reel-lead, and derived rather than copied
-     as a number: the column-5 line less the gutter and the design's 83.742 for
-     the word. That comes to 419.59 against the design's 420, and it only drifts
-     if the bar's labels change metrics — which they will not, since they are
-     Inter and Inter is exact. */
-  --still-lead: calc(var(--grid-margin) + 4 * var(--col-step) - 83.742rem);
+  /* The band the footer sits in, which is also the floor everything on the page
+     is measured up from. The site's footer band rather than a number this page
+     chose. */
+  --still-foot-h: 37.594rem;
 
-  /* Air between the artwork and the edges of the stage. Same 40 the reels keep
-     around a frame, and the same job: it is what guarantees the work is shorter
-     than the window, so a page that cannot scroll never has anything below the
-     fold. Each page caps its artwork against it. */
+  /* Air between the artwork and the footer band. Same 40 the reels keep around a
+     frame. Studio Edit 02's design puts its lower clip flush on the band instead
+     and says so in its own file. */
   --still-air: 40rem;
 
-  /* The band the footer sits in, which is also the floor the stage's artwork is
-     measured against. Named because three rules below need it and it is the
-     site's footer band rather than a number this page chose. */
-  --still-foot-h: 37.594rem;
+  /* THE BAND BETWEEN THE BARS: bar bottom to footer top. It is a WINDOW quantity
+     and not a document one — every height cap is capped against it, because what
+     must fit in a window is the pinned work, never the copy. */
+  --still-band: calc(100dvh - var(--nav-h) - var(--still-foot-h));
+
+  /* The line the brief's title sits on, and it is a GRID quantity rather than a
+     measured offset: three columns and their two gutters, which is 342.5 at the
+     1470 artboard and is also — not by accident — the brief's own width. Both
+     designs put the title within half a unit of it, and both pages now land on it
+     exactly, which is the point of it being one number. */
+  --still-brief-top: calc(3 * var(--col) + 2 * var(--grid-gutter));
 }
 
 /* The bar does not travel on these pages — there is no print to rest on — so it
@@ -83,10 +92,8 @@
   transform: none;
 }
 
-/* Paper, and it is the page rather than a panel — the same arrangement the reels
-   make with their charcoal. Both columns are paper here, so the body is what
-   shows wherever neither of them reaches: below the stage on a narrow window,
-   and under the bounce at either end of the scroll. */
+/* Paper, and it is the page rather than a panel. The body is what shows under the
+   bounce at either end of the scroll. */
 body {
   background: var(--color-paper);
 }
@@ -95,100 +102,188 @@ body {
    THE PAGE
    ========================================================================== */
 
-/* Two columns: the paper and the stage. Both are exactly one viewport tall, so
-   their row is one viewport tall and the document has nothing to scroll — which
-   is the whole of "this page is still", stated once and not enforced anywhere
-   else. No overflow:hidden and no scrollbar rule: there is no overflow to hide.
+/* Below 768 it is a plain block and the children stack in source order: the
+   brief, then the work. The accents are taken out down here rather than stacked
+   — they are squares that exist to overlap something, and a page with nothing
+   beside anything has nothing for them to overlap. */
+.still {
+  position: relative;
+  padding: 0 var(--grid-margin);
+}
 
-   Below 768 this is a plain block and the two children stack in source order. */
 @media (min-width: 768px) {
+  /* ONE ROW, AT LEAST A VIEWPORT TALL AND AS TALL AS THE BRIEF NEEDS, with every
+     child in it. That is what makes this a grid rather than a stack: the row is
+     the whole document, so the children overlap freely inside it — the accents
+     sit behind the artwork, and the artwork crosses the column an accent starts
+     on — while their horizontal placement is still a plain `grid-column`. A flow
+     layout cannot do the first and absolute positioning gives up the second.
+
+     minmax rather than a flat height, and it is what carries the scroll: the row
+     is the window when the brief fits inside it and the brief when it does not.
+     Nothing else in this file has to know which of those happened.
+
+     Each child then says where it sits DOWN the row with align-self and one
+     margin, which is the only measured number any of them carries. */
   .still {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    grid-template-rows: minmax(100dvh, max-content);
+    column-gap: var(--grid-gutter);
+  }
+
+  /* Stated once here rather than on each of the six or seven children. The
+     stacking order is source order — accents before artwork in the markup, which
+     is the order both designs draw them in — so neither of those needs a z-index
+     and neither has one.
+
+     The brief is the one exception, and the reason is at THE BRIEF below. */
+  .still > * {
+    grid-row: 1;
   }
 }
 
 /* ==========================================================================
-   THE LEAD — the brief's column
+   PINNING — the work, the footer, the pager
    ========================================================================== */
 
-/* One screen tall, and the containing block for both the brief and the foot.
-   flex: none, or the row would let this column be squeezed by artwork that is
-   wider than the stage can hold.
+/* --pin IS BOTH THE OFFSET AND THE STOP, and that is the whole trick. An element
+   placed in this row with `margin-top: X` stands X from the top of the DOCUMENT;
+   sticking it with `top: X` pins it X from the top of the WINDOW. Set them from
+   one custom property and the element cannot move at all: it starts where the
+   design draws it, and the first pixel of scroll is already past its stop.
 
-   It states no background of its own: the body is paper and so is the stage, so
-   a fill here would be the same paper painted a third time. */
-.still__lead {
-  position: relative;
-}
+   Two uses of one number rather than two numbers that have to agree — which is
+   the failure this avoids, because a pinned thing whose stop is a few units off
+   its start does not look broken, it looks like a jump on the first scroll and
+   then nothing.
 
+   Each page sets --pin per element, in its own file, because where the work sits
+   down the window is a placement and placements belong to the page. */
 @media (min-width: 768px) {
-  .still__lead {
-    flex: none;
-    width: var(--still-lead);
-    height: 100dvh;
+  .still__pin {
+    align-self: start;
+    position: sticky;
+    top: var(--pin);
+    margin-top: var(--pin);
   }
 }
 
-/* THE BRIEF SITS ON THE DESIGN'S 222 LINE WHEN THERE IS ROOM AND SLIDES UP TO
-   THE BAR WHEN THERE IS NOT, and that is one declaration rather than a script.
+/* ==========================================================================
+   THE BRIEF — columns 9 to 11
+   ========================================================================== */
 
-   222 is the line the reel page starts its brief on, so it is the line this one
-   wants too. But these two pages carry more copy than a reel does
-   — Trending This Week's four paragraphs come to about 700 units in a
-   three-column measure — and a page that cannot scroll has nowhere to put what
-   does not fit: copy pushed past the footer band would simply be gone.
+/* The right-hand column of the design, and it is the same column the bar's
+   LinkedIn link starts on: column 9. .brief in project-brief.css already sets the
+   block's width to three columns, so the span and the width agree by
+   construction and neither is a number typed twice.
 
-   So the box is the whole band between the bar and the footer, and the design's
-   offset is a SHRINKABLE SPACER at the top of it (see ::before). When the copy
-   is short the spacer stands at its full height and the title lands on 222, as
-   on every other project page. When the copy is long the spacer gives way,
-   exactly as far as it has to and no further, and the title rises toward the
-   bar. Nothing else in the brief moves: the title, the facts and the paragraphs
-   are all content-sized, so their automatic minimum floors them and the spacer
-   is the only thing with any give.
+   THE ONLY THING IN THE FLOW. Its top margin is the design's line and its height
+   is its copy's, so between them they are the document — which is what makes the
+   page scroll exactly as far as there is reading to do and not one unit further.
 
-   Absolute rather than in the flow, because the foot below is anchored to the
-   bottom of the same panel and the space between them is not a gap — it is
-   whatever the window leaves.
+   THE BOTTOM PADDING IS NOT AIR, it is clearance. The footer is pinned across the
+   foot of the window, so the last line of the brief would come to rest under it
+   at the end of the scroll. The padding is the band plus a gutter — the same
+   gutter the old spacer reserved, and for the same reason: REFLECTION landing ten
+   units off the copyright line reads as the copy having run out of page rather
+   than as the end of it.
 
-   THE BOTTOM IS THE FOOTER BAND PLUS A GUTTER, not the band alone. With the band
-   alone a brief long enough to use the whole box ends exactly on the band's top
-   edge, and the copyright line is centred in that band — so REFLECTION and the
-   line below it come within about ten units of touching, which reads as the copy
-   having run out of page rather than as the end of it. The gutter is the site's
-   own unit and costs nothing where there is room: the spacer above absorbs it,
-   and the title stays on 222. */
-.still__lead .brief {
-  position: absolute;
-  left: var(--grid-margin);
-  top: var(--nav-h);
-  bottom: calc(var(--still-foot-h) + var(--grid-gutter));
+   IT PAINTS OVER THE PINNED ROW, AND THAT IS THE SCROLL'S ONLY AFFORDANCE. The
+   copy runs down past the footer band and is cut by the bottom of the WINDOW,
+   mid-line, which is the ordinary way a page says there is more of it. It did not
+   before: the pinned pager carried paper across the same three columns, so the
+   column of prose ended on the band in a clean horizontal edge — which is what
+   the end of a text looks like, on a page that had given no other sign it could
+   move.
+
+   Nothing collides. The brief is columns 9 to 11 and the pager's links sit in 12,
+   36 clear of the copy's right edge; the copyright line is away at column 1. So
+   the band below the prose is empty paper and the copy simply continues into it.
+
+   z-index rather than source order, because source order is already spoken for: a
+   sticky element is a positioned one, so the footer and the pager would paint
+   above this block whatever order they were written in. The brief is the only
+   thing on either page that carries a z-index, and this is the whole of why.
+
+   The bar is the opposite case and keeps its paper. Copy travelling UP has to
+   disappear behind something, and behind the bar is where — .nav.is-over-paper in
+   styles.css already does it. */
+@media (min-width: 768px) {
+  .still__brief {
+    grid-column: 9 / span 3;
+    align-self: start;
+    position: relative;
+    z-index: 1;
+    margin-top: var(--still-brief-top);
+    padding-bottom: calc(var(--still-foot-h) + var(--grid-gutter));
+  }
 }
 
-/* The design's offset, as a spacer that can be taken back. Its basis is the 222
-   line less the bar it is measured from and less the 20 the brief keeps between
-   its own children — so the title's top edge lands on 222 exactly when nothing
-   shrinks. flex-shrink is 1 and flex-grow is 0: it gives way under pressure and
-   never takes space it was not given. */
-.still__lead .brief::before {
-  content: '';
-  flex: 0 1 calc(222rem - var(--nav-h) - 20rem);
-}
-
-/* Below 768 the two columns stack and the brief is in the flow: the band between
-   the bars with the content centred in it, which is the same trade the deck and
-   reel pages make down there. The spacer has no job here — the offset it carries
-   is a twelve-column number — so it is taken out rather than left to add 164 to
-   the top of a phone screen. */
+/* Below 768 the brief is the page's first screen: the band between the bars with
+   the content centred in it, which is the same trade the rail and reel pages make
+   down there. It takes the FULL MEASURE here rather than the three-of-four
+   columns .brief asks for — three of twelve is a column of prose beside the work,
+   three of four is a column of prose beside nothing, with a quarter of a phone
+   screen left blank at its right. */
 @media (max-width: 767px) {
-  .still__lead .brief {
-    position: static;
+  .still__brief {
     justify-content: center;
     min-height: 100dvh;
-    padding: var(--nav-h) var(--grid-margin) var(--still-foot-h);
+    width: 100%;
+    padding: var(--nav-h) 0 var(--still-foot-h);
   }
+}
 
-  .still__lead .brief::before {
+/* ==========================================================================
+   THE ACCENTS — the cyanotype squares
+   ========================================================================== */
+
+/* A square of cyanotype tucked BEHIND the artwork, straddling one of its edges by
+   a column. That is the whole rule, and it is what brings these back to pages
+   that had taken them off: they are not colour floating on a white sheet any more
+   — which is what did not work — but colour half-covered by the work, so the
+   artwork is the thing that holds them and the overlap is the composition.
+
+   Pinned with the artwork, because they are part of it. Each page sets --pin and
+   which cells the square takes; what is here is the box: square, filled edge to
+   edge, and no size of its own.
+
+   A background rather than an <img>, and an aria-hidden div rather than alt="" in
+   the markup: these are decoration in the strict sense. They carry no information
+   that is not in the photograph in front of them, and a square that is 40 per cent
+   covered by the work is not a picture anyone is being shown.
+
+   The plates are built by scripts/build-images.mjs at 685 square, which is 2x the
+   widest box either design draws. */
+.still__accent {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  aspect-ratio: 1;
+}
+
+/* The pale grade, drawn at full strength. Trending This Week's right-hand square
+   is the only one of the three that is. */
+.still__accent--wash {
+  background-image: url('/img/accent-wash.webp');
+}
+
+/* The leaf plate, which the earlier frames drew at three quarters over white —
+   node "image 750" on each. NOTHING IS FADED HERE and nothing should be: the
+   export carried the 75% in its own alpha, and the build composites it over white
+   once and delivers an opaque plate. A second three-quarters applied on the page
+   would land the square at 56% and read as a stain rather than a print; it did,
+   for one revision. Node 485:83 settles it by drawing the built file itself, at
+   full strength, with no wrapper at all. See ACCENTS in
+   scripts/build-images.mjs. */
+.still__accent--leaf {
+  background-image: url('/img/accent-leaf.webp');
+}
+
+/* Gone below 768, where there is no overlap for them to be half of. */
+@media (max-width: 767px) {
+  .still__accent {
     display: none;
   }
 }
@@ -197,19 +292,24 @@ body {
    THE FOOT
    ========================================================================== */
 
-/* Not the site's .foot — the same reduced row the reels carry, and for the same
-   reason: the stage covers everything right of the paper, so the five-column
-   grid the other pages use would be four hidden cells and one line. The pair
-   below 768 is not decoration; the bar cannot hold the mark, two words and a
-   20-character address on four columns, so it drops them and this is the only
-   other place they appear.
+/* Not the site's .foot — a reduced row, and the design's: one line on column 1,
+   in the footer band. The other pages spread the mark, two links and an address
+   across five cells; here the pager takes the right of the same band and the
+   design draws nothing in between.
 
-   Anchored to the bottom of the panel, so it sits on the floor of the window and
-   lands on the same baseline as the footer on every other page. */
+   PINNED TO THE FOOT OF THE WINDOW. align-self: end puts it at the bottom of the
+   row, which is the bottom of the document; `bottom: 0` holds it at the bottom of
+   the window on the way there. On a page whose brief fits, those are the same
+   place and the rule does nothing.
+
+   NO FILL. It briefly carried paper, to catch the copy travelling past it; the
+   brief paints above the pinned row now instead, so there is nothing to catch and
+   a fill here would only be paper on paper. The designs draw none either.
+
+   The pair below 768 is not decoration. The bar cannot hold the mark, two words
+   and a 20-character address on four columns, so it drops LinkedIn and the
+   address, and this is the only other place they appear. */
 .still__foot {
-  position: absolute;
-  left: var(--grid-margin);
-  bottom: 0;
   display: flex;
   align-items: center;
   gap: var(--grid-gutter);
@@ -218,6 +318,15 @@ body {
   font-size: 11rem;
   line-height: calc(13.75 / 11);
   color: var(--color-system-grey);
+}
+
+@media (min-width: 768px) {
+  .still__foot {
+    grid-column: 1 / span 4;
+    align-self: end;
+    position: sticky;
+    bottom: 0;
+  }
 }
 
 .still__foot-rule {
@@ -251,97 +360,39 @@ body {
 }
 
 /* ==========================================================================
-   THE STAGE — the work
+   THE PAGER
    ========================================================================== */
 
-/* The rest of the row, one screen tall, with the page's composition centred in
-   it. Centred rather than placed on a grid: the stage is what is left of the
-   window after the lead takes its 419.59, so it is not a whole number of
-   columns and there are no column lines on it to place against. What each page
-   has instead is a composition with its own internal relationships — two clips a
-   gutter apart and one step out of line, a plate cycling its frames — and those
-   are kept intact and hung in the middle.
+/* The other end of the footer band, pinned with it. The links run to the last
+   column's edge, which is the page's right margin — the same line the bar's
+   address ends on.
 
-   Paper, and it is the same paper the lead is: the two columns no longer differ
-   in colour, so the composition floats on the sheet and what marks the work off
-   from the copy is the air around it rather than a line down the middle.
+   IT SPANS 9 TO 12 AND RIGHT-ALIGNS ITS CONTENT rather than shrink-wrapping at
+   the end of the row. The two draw the same thing; the span says which part of
+   the band this is, and it is the placement that survives the links being renamed
+   or a third one appearing.
 
-   position: relative is kept although nothing on either page anchors to the
-   stage today. It costs nothing and it is what a page would need to place
-   anything against the stage rather than against its composition.
+   NO FILL, for the reason the footer has none: it carried paper for one revision
+   to mask the copy scrolling past, and the brief paints above it now. What the
+   copy is cut by is the window, which is the point — see THE BRIEF. The links sit
+   in column 12 and the prose stops at the end of 11, so the two never meet.
 
-   min-width: 0, or a composition wider than its share would push the lead
-   column narrower than its stated width instead of being capped itself. */
-.still__stage {
-  position: relative;
-  display: grid;
-  place-items: center;
-  background: var(--color-paper);
-}
-
+   It lights to graphite because this page is paper throughout; see .pager in
+   styles.css for the resting grey and the ease. */
 @media (min-width: 768px) {
-  .still__stage {
-    flex: 1;
-    min-width: 0;
-    height: 100dvh;
+  .still .pager {
+    grid-column: 9 / -1;
+    justify-content: flex-end;
+    align-self: end;
+    position: sticky;
+    bottom: 0;
+    height: var(--still-foot-h);
+    --pager-lit: var(--color-graphite);
   }
-}
-
-/* Below 768 the stage follows the paper down the page at the full measure, with
-   the margin as its padding and the gutter as its air. 40 either side of a 375
-   screen is a fifth of the width spent on nothing. */
-@media (max-width: 767px) {
-  .still__stage {
-    padding: var(--grid-gutter) var(--grid-margin);
-  }
-
-  :root {
-    --still-air: var(--grid-gutter);
-  }
-}
-
-/* ==========================================================================
-   THE ACCENTS — gone
-   ========================================================================== */
-
-/* There was a .still__accent here: a cyanotype square peeking out from behind
-   the artwork, one on Studio Edit 02 and two on Trending This Week, drawn from
-   the same two cyanotype plates the deck pages carried. Both squares and the dark
-   they sat on came off these two pages first.
-
-   They went TOGETHER and not one after the other, because they were one
-   decision. The squares were the piece of colour that made the dark panel read
-   as a composition rather than as an unlit half of the window; on paper they are
-   colour against a white sheet with nothing to hold them, and the plates are
-   graded for the dark besides — the print plate carries a one-pixel dark rim
-   that only disappears on charcoal. See the note on the two grades in
-   scripts/build-images.mjs.
-
-   Nothing is left to turn off: the rules, the markup and the placements in both
-   page stylesheets are removed, not hidden. THE PLATES THEMSELVES ARE GONE TOO
-   now — the deck pages were the last thing drawing them and both decks became
-   rails, so the build step and the two sources went with the template. See the
-   note at the head of scripts/build-images.mjs for how to bring them back. */
-
-/* THE PAGER, on the stage rather than in the lead — which is where the bottom
-   right of the WINDOW is on this page. .still__foot sits at the foot of the lead
-   column, and that column is 419.59 wide, so its right edge is nowhere near the
-   page's; the stage takes everything from there to the window's edge and is
-   already positioned, so the corner is its to give.
-
-   It lights to graphite, like .still__foot-link, because this page is paper
-   throughout — see .pager in styles.css for the resting grey and the ease. */
-.still__stage .pager {
-  position: absolute;
-  right: var(--grid-margin);
-  bottom: 0;
-  z-index: 2;
-  height: var(--still-foot-h);
-  --pager-lit: var(--color-graphite);
 }
 
 @media (max-width: 767px) {
-  .still__stage .pager {
+  .still .pager {
     display: none;
   }
 }
