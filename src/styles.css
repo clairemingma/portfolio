@@ -636,6 +636,52 @@ p {
   position: relative;
 }
 
+/* --- the mobile column header -------------------------------------------- */
+
+/* Sticks under the locked bar, and its parent is .projects__body — so it is
+   pinned for exactly the length of the list and releases with it, rather than
+   riding over the footer. `top` is the bar's own height, which is the custom
+   property main.js already maintains, so the two meet without a second number.
+
+   Opaque paper, because the covers pass UNDER it. An opacity or a blur here
+   would show the photographs through the type, which at 10 units is the
+   difference between a label and a smudge.
+
+   Grid, on the page's own columns, so the three labels land on the same
+   verticals the row beneath them uses: client at the left margin, the count
+   where the title starts, the year out at the right edge. */
+.index-head {
+  position: sticky;
+  top: var(--nav-h);
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: var(--grid-gutter);
+  padding: 10rem 0 9rem;
+  background: var(--color-paper);
+  font-family: var(--font-secondary);
+  font-size: 10rem;
+  line-height: 1.25;
+  /* Uppercased here rather than typed that way, which is the same thing
+     .index__client does to the row below: the label is set in caps, the markup
+     keeps the word readable. The count has no letters to transform. */
+  text-transform: uppercase;
+  color: var(--color-system-grey);
+}
+
+.index-head__label {
+  grid-column: 1;
+}
+
+.index-head__count {
+  grid-column: 2;
+}
+
+.index-head__year {
+  grid-column: 4;
+  text-align: right;
+}
+
 .index__row {
   border-bottom: 1px solid var(--color-index-grey);
 }
@@ -653,13 +699,39 @@ p {
    grey client line and the graphite title in their designed relationship — and
    it dims the type only: the rules hold the index together and stay at full
    strength throughout. */
+/* FULL STRENGTH ON MOBILE, dimmed on the pointer. The dim state is the resting
+   state of a list you hover, and below 768 there is nothing to hover: every row
+   but the seeded one sat at 0.3 permanently, which read as six disabled rows
+   and one live one. The dimming is re-asserted at 768 below, where the cursor
+   that justifies it exists. `.is-current` outranks it either way. */
 .index__link {
-  opacity: 0.3;
+  opacity: 1;
   transition: opacity var(--dur) var(--ease);
 }
 
 .index__row.is-current .index__link {
   opacity: 1;
+}
+
+/* THE COVER, which is a mobile row's own picture and nothing on the desktop —
+   there the one centred plate in .viewer does this job for all seven rows at
+   once, and the hover is what chooses between them.
+
+   No aspect-ratio and no box: the delivered file is already built to the
+   plate's leaf box, so its intrinsic ratio IS the ratio, and `height: auto`
+   takes it without a second copy of those numbers to keep in step.
+
+   data-src rather than src, so these are held behind the hero print exactly as
+   the plates are — see src/load-order.js, which promotes every img[data-src] on
+   the page once the print has decoded. The URL is the same one the matching
+   plate carries, so the two share a cache entry and the row costs no second
+   download. They do have to stay in step by hand; a slug that moves has to move
+   in both places, which is the note above .viewer in index.html. */
+.index__cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 14rem;
 }
 
 .index__link {
@@ -670,20 +742,40 @@ p {
   padding: 10rem 0 11rem;
 }
 
+/* Both of these name their ROW as well as their column. The year comes first in
+   the markup and sits last on the line, and placing only its column leaves the
+   auto-placement cursor past column 4 — so the caption, which wants 1-3, finds
+   nothing free behind it and drops to a second row. Naming row 1 twice pins
+   them side by side regardless of source order. */
 .index__year {
-  grid-column: 1;
-  padding-left: 16rem;
+  grid-column: 4;
+  grid-row: 1;
+  text-align: right;
   font-family: var(--font-secondary);
   font-size: 10rem;
   line-height: 1.25;
   color: var(--color-graphite);
 }
 
+/* ONE LINE ON MOBILE: client, then title, then the year out at the right edge,
+   sitting on a shared baseline — the Bureau Rouge index row, which is the model
+   this type scale already follows. The year is placed in the last column rather
+   than the first, so the line reads client / title / year across, and the two
+   bracketed labels bookend the serif title between them.
+
+   It is a flex row and not the grid the desktop uses, because the client and
+   the title are set at different sizes and have to meet on the baseline; a grid
+   gap would hold them apart at a fixed distance instead. Wrapping is allowed so
+   a long client and a long title fall onto two lines rather than squeezing the
+   year off the edge. */
 .index__caption {
-  display: grid;
-  gap: 3.5rem;
-  grid-column: 2 / -1;
-  text-align: right;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 8rem;
+  grid-column: 1 / 4;
+  grid-row: 1;
+  text-align: left;
 }
 
 .index__client {
@@ -701,9 +793,42 @@ p {
   color: var(--color-graphite);
 }
 
+/* --- the desktop row, which is the design's own and is unchanged ---------- */
+
 @media (min-width: 768px) {
+  /* The cover belongs to the mobile row only; up here the centred plate is the
+     picture, and seven of these stacked down the page would be a second index. */
+  .index__cover {
+    display: none;
+  }
+
+  /* So does the header. Up here the plate and the dimming already say which
+     project is current, and the two column labels would be naming columns the
+     eye can read at a glance across a 1440 row. src/index-header.js stops
+     measuring when this takes effect — it tests for an offsetParent. */
+  .index-head {
+    display: none;
+  }
+
+  /* Dimming comes back with the cursor that drives it. */
+  .index__link {
+    opacity: 0.3;
+  }
+
+  /* Year returns to column 1 at the left margin, caption to column 11, and the
+     caption goes back to being a two-line stack rather than a baseline row. */
+  .index__year {
+    grid-column: 1;
+    grid-row: auto;
+    padding-left: 16rem;
+    text-align: left;
+  }
+
   .index__caption {
+    display: grid;
+    gap: 3.5rem;
     grid-column: 11 / span 2;
+    grid-row: auto;
     /* Column 11 lands 5 units left of where the design sets the caption. */
     padding-left: 5rem;
     text-align: left;
@@ -719,13 +844,27 @@ p {
   display: none;
 }
 
+/* 808 IS SEVEN COLUMNS, and that is why it is not 744. The landscape plates
+   are a family by WIDTH — every one of them was drawn at 744 and they differ
+   only in height — so widening one means widening all five, and the number
+   they move to should be on the page's own grid rather than beside it:
+
+     col at 1440 = (1440 - 2*20 - 11*20) / 12 = 98.333
+     7 columns   = 7 * 98.333 + 6 * 20        = 808.33
+
+   The height does NOT move with it. Shop Every Store is the tallest of the
+   five at 4:3, and 808 * 3/4 is 606 exactly — the height this box already
+   had, which is the portrait plates' own height. So seven columns is the
+   widest the landscape family can go before the tallest of them needs a
+   taller window, and the vertical envelope is untouched. Eight columns would
+   be 926 and would put that plate at 695, 89 over the edge. */
 @media (min-width: 768px) {
   .viewer {
     display: block;
     position: absolute;
     left: 50%;
     top: 50%;
-    width: 744rem;
+    width: 808rem;
     height: 606rem;
     transform: translate(-50%, -50%);
     overflow: hidden;

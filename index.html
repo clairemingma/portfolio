@@ -146,6 +146,23 @@
              stacked in the middle of the list, in the channel the rows leave
              empty between the year and the title. -->
         <div class="projects__body">
+          <!-- THE COLUMN HEADER, and it is the mobile list's only chrome. It
+               names what the row beneath it is saying — client at the left,
+               year at the right — and holds the count of where you are in the
+               seven. It sticks under the locked bar for exactly as long as the
+               list is on screen, because its parent is the list's own box.
+
+               aria-hidden because it is a label for a layout, not content: the
+               rows already read "[Vera Wang] Huā Yǔ [2027]" in that order, so
+               announcing the headings as well would say everything twice — and
+               a counter that changes on every scroll tick is the worst possible
+               live region. The count is written by src/index-header.js. -->
+          <div class="index-head" data-index-head aria-hidden="true">
+            <span class="index-head__label">[Client]</span>
+            <span class="index-head__count" data-index-count>[1/7]</span>
+            <span class="index-head__label index-head__year">[Year]</span>
+          </div>
+
           <ol class="index" data-index>
             <!-- Seeded current: one project is always showing, and the design's
                resting state is the top one. project-viewer.js reads this rather
@@ -187,6 +204,13 @@
                  page itself, where there is room to say it properly. See the
                  [Client] fact in projects/hua-yu/index.html. -->
             <li class="index__row is-current" data-project="hua-yu">
+              <img
+                class="index__cover"
+                data-src="/img/projects/hua-yu.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
               <a class="index__link" href="/projects/hua-yu/">
                 <span class="index__year">[2027]</span>
                 <span class="index__caption">
@@ -196,6 +220,13 @@
               </a>
             </li>
             <li class="index__row" data-project="confidence-underneath">
+              <img
+                class="index__cover"
+                data-src="/img/projects/confidence-underneath.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
               <a class="index__link" href="/projects/confidence-underneath/">
                 <span class="index__year">[2026]</span>
                 <span class="index__caption">
@@ -205,6 +236,13 @@
               </a>
             </li>
             <li class="index__row" data-project="shop-every-store">
+              <img
+                class="index__cover"
+                data-src="/img/projects/shop-every-store.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
               <a class="index__link" href="/projects/shop-every-store/">
                 <span class="index__year">[2026]</span>
                 <span class="index__caption">
@@ -214,6 +252,13 @@
               </a>
             </li>
             <li class="index__row" data-project="studio-edit-02">
+              <img
+                class="index__cover"
+                data-src="/img/projects/studio-edit-02.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
               <a class="index__link" href="/projects/studio-edit-02/">
                 <span class="index__year">[2026]</span>
                 <span class="index__caption">
@@ -223,6 +268,13 @@
               </a>
             </li>
             <li class="index__row" data-project="trending-this-week">
+              <img
+                class="index__cover"
+                data-src="/img/projects/trending-this-week.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
               <a class="index__link" href="/projects/trending-this-week/">
                 <span class="index__year">[2025]</span>
                 <span class="index__caption">
@@ -232,6 +284,13 @@
               </a>
             </li>
             <li class="index__row" data-project="mfw-color-trends">
+              <img
+                class="index__cover"
+                data-src="/img/projects/mfw-color-trends.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
               <a class="index__link" href="/projects/mfw-color-trends/">
                 <span class="index__year">[2025]</span>
                 <span class="index__caption">
@@ -244,6 +303,13 @@
                  it. See Slugs are titles in the README — the same move
                  trend-authority and su26-drop-2 made. -->
             <li class="index__row" data-project="eight-immortals">
+              <img
+                class="index__cover"
+                data-src="/img/projects/eight-immortals.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
               <a class="index__link" href="/projects/eight-immortals/">
                 <span class="index__year">[2024]</span>
                 <span class="index__caption">
@@ -256,26 +322,45 @@
 
           <!-- Each plate carries the leaf box its Figma variant was drawn at,
                so the frame is sized to the image rather than the other way
-               round. --pv-w/--pv-h are design units on the 1440 artboard. -->
+               round. --pv-w/--pv-h are design units on the 1440 artboard.
+
+               The five LANDSCAPE plates were all drawn at 744 and are now 808,
+               which is seven columns — see the note above .viewer in
+               src/styles.css for why that number and not another. They moved
+               together because they are a family by width: the design gives
+               every one of them the same measure and lets the height follow
+               the picture, so one of them sitting 64 narrower than the rest
+               reads as a mistake rather than as a variant. Each new height is
+               its own old ratio carried across, which is why they are 455, 454
+               and 542 rather than one shared number.
+
+               The three portrait and square plates are untouched at 341, 455
+               and 606 wide: they are bounded by the 606 height, not by the
+               width, and widening them would crop the picture rather than show
+               more of it. -->
+          <!-- These numbers are PAIRED with PROJECTS in scripts/build-images.mjs,
+               which renders each preview at exactly twice the box below. Change
+               one and change the other, or the plate is delivered at a size the
+               layout does not ask for. -->
           <div class="viewer" data-viewer aria-hidden="true">
             <img
               class="viewer__plate is-active"
               data-plate="hua-yu"
-              style="--pv-w: 744; --pv-h: 419"
+              style="--pv-w: 808; --pv-h: 455"
               src="/img/projects/hua-yu.webp"
               alt=""
             />
             <img
               class="viewer__plate"
               data-plate="confidence-underneath"
-              style="--pv-w: 744; --pv-h: 418"
+              style="--pv-w: 808; --pv-h: 454"
               data-src="/img/projects/confidence-underneath.webp"
               alt=""
             />
             <img
               class="viewer__plate"
               data-plate="shop-every-store"
-              style="--pv-w: 744; --pv-h: 558"
+              style="--pv-w: 808; --pv-h: 606"
               data-src="/img/projects/shop-every-store.webp"
               alt=""
             />
@@ -398,14 +483,14 @@
             <img
               class="viewer__plate"
               data-plate="mfw-color-trends"
-              style="--pv-w: 744; --pv-h: 419"
+              style="--pv-w: 808; --pv-h: 455"
               data-src="/img/projects/mfw-color-trends.webp"
               alt=""
             />
             <img
               class="viewer__plate"
               data-plate="eight-immortals"
-              style="--pv-w: 744; --pv-h: 499"
+              style="--pv-w: 808; --pv-h: 542"
               data-src="/img/projects/eight-immortals.webp"
               alt=""
             />

@@ -154,6 +154,12 @@ const CLIP_POSTER = { w: 3 * 100.8333 + 2 * 20, ratio: 16 / 9 };
 // slug, then the leaf box in design units (1 unit == 1px on the 1440 artboard).
 // These match the per-variant frames in the Figma component set, which is why
 // they differ per project — the preview is sized to its image, not the reverse.
+//
+// THE LANDSCAPE BOXES ARE 808 WIDE, which is seven columns, where the Figma
+// variants are all drawn at 744. The width is the one thing those five share,
+// so they moved together and each kept its own ratio; the note above .viewer in
+// src/styles.css has the arithmetic and the reason the height stayed at 606.
+// These must agree with --pv-w/--pv-h on the plates in index.html.
 const PROJECTS = [
   // `src` NAMES the deck's own first slide instead of a preview.png beside it,
   // because the landing plate and the slide the rail opens on are the same
@@ -161,27 +167,28 @@ const PROJECTS = [
   // no new image, the same rule the clip posters follow above. It also means the
   // plate cannot drift: re-export the cover and the row updates with the deck.
   //
-  // The box is the slide's own shape (744x419 is 16:9 to within half a pixel),
+  // The box is the slide's own shape (808x455 is 16:9 to within half a pixel),
   // so `cover` crops nothing, and a 3840-wide source clears 2x outright.
   {
     slug: 'hua-yu',
-    w: 744,
-    h: 419,
+    w: 808,
+    h: 455,
     src: 'assets/projects/hua-yu/slides/1.webp',
   },
-  { slug: 'confidence-underneath', w: 744, h: 418 },
-  { slug: 'shop-every-store', w: 744, h: 558 },
+  { slug: 'confidence-underneath', w: 808, h: 454 },
+  { slug: 'shop-every-store', w: 808, h: 606 },
   { slug: 'studio-edit-02', w: 341, h: 606 },
   { slug: 'trending-this-week', w: 455, h: 606 },
-  { slug: 'mfw-color-trends', w: 744, h: 419 },
+  { slug: 'mfw-color-trends', w: 808, h: 455 },
   // 499 where its Figma variant is still drawn at 529, and the box follows the
   // PHOTOGRAPH. The variant carries the older of the two shots — box left, cup
   // right, at 1.406 — and the preview now shows the same frame the project page
   // opens on, which is 3220x2160, or 1.4907. Keeping 529 would have left `cover`
   // cropping 6% off the sides of a picture that has the cup at one edge and the
-  // box at the other. The design's 744 WIDTH is untouched; only the height moves,
-  // so the plate still sits in the row at the width every other preview uses.
-  { slug: 'eight-immortals', w: 744, h: 499 },
+  // box at the other. Only the RATIO is this entry's own; the width is the 808
+  // every landscape plate carries, so it still sits in the row at the measure
+  // every other preview uses.
+  { slug: 'eight-immortals', w: 808, h: 542 },
 ];
 
 // The project pages' decks: one directory of frames each, one plate per slide.
