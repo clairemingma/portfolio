@@ -18,6 +18,7 @@ const root = import.meta.dirname;
 // absence. Rollup errors on a missing input, so it has to be filtered here rather
 // than hoped about.
 const PROJECT_PAGES = [
+  'hua-yu',
   'confidence-underneath',
   'mfw-color-trends',
   'trending-this-week',

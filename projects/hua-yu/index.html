@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Huā Yǔ — Claire Ong</title>
+    <meta
+      name="description"
+      content="Huā Yǔ — Vera Wang Haute, 2027. A couture bridal wardrobe for Chinese American brides, told through the language of flowers. A project by Claire Ong."
+    />
+    <!-- The first slide, which is the one the markup lights and the only one
+         above the fold of the rail. Written by scripts/build-gallery.mjs from
+         what the image build emitted. -->
+    <link rel="preload" as="image" href="/img/projects/hua-yu/1.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Same pair as the landing page: Inter is the design's label face and is
+         exact; Spectral stands in for WT Kormelink TRIAL until those woff2 files
+         land in public/fonts. See the @font-face block in styles.css. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=La+Belle+Aurore&family=Spectral:ital,wght@0,400;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Linked rather than imported by the module, for the same reason the other
+         project pages link theirs: an imported stylesheet is injected by
+         JavaScript in dev, so the browser paints the raw HTML first and the page
+         flashes unstyled. Here that flash would be the brief and twenty-one
+         full-width slides in one column, before the lead exists to centre the
+         copy and the rail exists to lay the slides in a row. -->
+    <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="stylesheet" href="/src/project-brief.css" />
+    <link rel="stylesheet" href="/src/rail-page.css" />
+    <script type="module" src="/src/rail-page.js"></script>
+  </head>
+
+  <body>
+    <!-- ==================================================================
+         NAV — the landing page's bar, locked.
+
+         is-over-paper is set here rather than by a scroll frame because it is
+         true from the first frame and stays true: the bar is a paper strip
+         across the top of the window, and that strip is opaque, so the charcoal
+         passes UNDER it rather than changing it. The class is what gives the bar
+         both the paper ground and the graphite type.
+         ================================================================== -->
+    <header class="nav nav--locked is-over-paper">
+      <a class="nav__mark" href="/">Claire M Ong</a>
+      <a class="nav__link nav__link--projects" href="/#projects"
+        ><span class="nav__link-word">Projects</span>,</a
+      >
+      <a class="nav__link nav__link--about" href="/#about"
+        ><span class="nav__link-word">About</span>,</a
+      >
+      <a
+        class="nav__link nav__link--linkedin"
+        href="https://www.linkedin.com/in/clairemong/"
+        target="_blank"
+        rel="me noopener"
+        ><span class="nav__link-word">LinkedIn</span></a
+      >
+      <button
+        class="nav__link nav__link--mail"
+        type="button"
+        data-copy="mclaireong@gmail.com"
+      >
+        <span class="nav__link-word" data-copy-label>mclaireong@gmail.com</span>
+      </button>
+    </header>
+
+    <!-- ==================================================================
+         THE LEAD — paper, and the brief centred on it
+
+         The third rail page, and the same template as the other two rather than
+         a copy of either: src/rail-page.css and src/rail-page.js are shared, and
+         nothing on this page is placed by hand. See the head of
+         src/rail-page.css.
+         ================================================================== -->
+    <section class="lead">
+      <section class="brief" aria-label="Project details">
+        <h1 class="brief__title">Huā Yǔ</h1>
+
+        <!-- The client is a REAL HOUSE and this collection is not its work, so
+             the value says so on the same line rather than leaving the
+             disclaimer to the prose. A competition case names the brand it was
+             written for — that is the exercise — but a portfolio row that reads
+             "Vera Wang" and nothing else invites a recruiter to assume it was
+             commissioned, and the correction costs more than the word does.
+
+             [Case] where Confidence Underneath carries [Award]: that one placed
+             and this one is entered, and calling an entry an award would be the
+             same small lie the slug rule is about. Change the label when the
+             result lands. -->
+        <div class="brief__facts">
+          <span class="brief__label">[Client]</span>
+          <p class="brief__value">Vera Wang Haute (speculative)</p>
+
+          <span class="brief__label">[Discipline]</span>
+          <p class="brief__value">Brand Strategy</p>
+
+          <span class="brief__label">[Case]</span>
+          <p class="brief__value">2027 Fashion Scholarship Fund</p>
+        </div>
+
+        <!-- The order here is the argument, not the artwork: the segment, the
+             gap, the work I did, and only then the collection. Ten illustrated
+             gowns are the easiest thing on this page to look at and the least
+             useful thing to lead with — a marketing reader needs to know who
+             the customer is and why nobody is serving her before a dress means
+             anything. -->
+        <div class="brief__prose">
+          <p class="brief__text">
+            Chinese Americans are the largest Asian-origin group in the U.S.,
+            and Asian American women have held steady in marriage rates since
+            1990 while every other group declined. Yet for the moments that
+            honor her heritage, a bride’s options are traditional but limited,
+            or modern but poorly made and cut for a single body type. For the
+            2027 Fashion Scholarship Fund case, I built the segmentation,
+            competitive analysis, and revenue model behind Huā Yǔ — “the
+            language of flowers” — a ten-look Vera Wang Haute collection
+            carrying peony, lotus, plum blossom, and chrysanthemum through
+            couture technique. It brings a loyal, underserved customer into the
+            brand at a projected $4 million a year, so she never has to choose
+            between honoring her family and feeling like herself.
+          </p>
+        </div>
+      </section>
+    </section>
+
+    <!-- ==================================================================
+         THE RAIL — charcoal, and the presentation on it
+
+         The section is a TALL SPACER and the pin inside it is one window tall.
+         src/project-rail.js measures how far the track has to move, writes the
+         scroll the rail costs onto the section as its extra height, and
+         translates the track as that scroll is given up. So the pin stands still
+         against the window while the slides pass sideways, and when they are
+         spent the pin releases and the page carries on down to the footer.
+
+         WITHOUT THAT MODULE THIS IS STILL A PAGE: .rail__pin is an ordinary
+         overflow-x box in the base stylesheet, so the row can be swiped,
+         dragged and tabbed through.
+
+         The slides are GENERATED between the markers: run `npm run images` to
+         build them from assets/, then `npm run gallery` to write the elements in
+         here. Everything outside the markers is hand-written.
+         ================================================================== -->
+    <section class="rail" data-rail>
+      <div class="rail__pin" data-pin>
+        <div class="rail__track" data-track>
+          <!-- slides:start -->
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/1.webp"
+            alt="Huā Yǔ — slide 1 of 21."
+            fetchpriority="high"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/2.webp"
+            alt="Huā Yǔ — slide 2 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/3.webp"
+            alt="Huā Yǔ — slide 3 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/4.webp"
+            alt="Huā Yǔ — slide 4 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/5.webp"
+            alt="Huā Yǔ — slide 5 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/6.webp"
+            alt="Huā Yǔ — slide 6 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/7.webp"
+            alt="Huā Yǔ — slide 7 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/8.webp"
+            alt="Huā Yǔ — slide 8 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/9.webp"
+            alt="Huā Yǔ — slide 9 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/10.webp"
+            alt="Huā Yǔ — slide 10 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/11.webp"
+            alt="Huā Yǔ — slide 11 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/12.webp"
+            alt="Huā Yǔ — slide 12 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/13.webp"
+            alt="Huā Yǔ — slide 13 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/14.webp"
+            alt="Huā Yǔ — slide 14 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/15.webp"
+            alt="Huā Yǔ — slide 15 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/16.webp"
+            alt="Huā Yǔ — slide 16 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/17.webp"
+            alt="Huā Yǔ — slide 17 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/18.webp"
+            alt="Huā Yǔ — slide 18 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/19.webp"
+            alt="Huā Yǔ — slide 19 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/20.webp"
+            alt="Huā Yǔ — slide 20 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            class="rail__slide"
+            data-slide
+            src="/img/projects/hua-yu/21.webp"
+            alt="Huā Yǔ — slide 21 of 21."
+            loading="lazy"
+            decoding="async"
+          />
+          <!-- slides:end -->
+        </div>
+
+        <!-- ==================================================================
+             PROGRESS
+
+             Inside the pin, which is the whole of what the pin buys this row: it
+             is on screen exactly while the presentation is, and off it the rest
+             of the time, with no state to drive and nothing to fade.
+
+             The counter's seed is written by scripts/build-gallery.mjs and is
+             what shows if the module never runs.
+             ================================================================== -->
+        <div class="progress" data-progress>
+          <p class="progress__count" data-count aria-live="polite">[1/21]</p>
+          <!-- A plain div here on purpose. src/project-rail.js promotes it to a
+               real slider on mount — role, tab stop, values — because without
+               the module it cannot be dragged, and a page that announces a
+               slider it cannot move is worse than one that announces nothing. -->
+          <div class="progress__slider" data-scrub>
+            <div class="progress__track"></div>
+            <div class="progress__fill" data-fill></div>
+          </div>
+        </div>
+
+        <!-- The copyright, on the charcoal and in the band every other page puts
+             its footer in: left margin, bottom 0, 37.594 tall, centred in it —
+             the same geometry as .still__foot and .reel__foot, and the same
+             height the landing page's .foot row comes to. So the line lands
+             where the eye already expects a footer, below the progress bar
+             rather than on it.
+
+             Hidden below 768, where the paper footer under the rail carries it
+             instead — see .rail__rule in src/rail-page.css. -->
+        <p class="rail__rule">&copy; 2026 Claire Ong</p>
+
+        <!-- PREV / NEXT. Generated between the markers from the order the
+             landing page's index has its rows in — see scripts/build-gallery.mjs.
+             Do not hand-edit: the two hrefs are this page's neighbours in that
+             list, and a hand-kept copy is how one of them ends up pointing at a
+             project that has moved. -->
+        <!-- pager:start -->
+        <nav class="pager" aria-label="Projects">
+          <a class="pager__link" href="/projects/eight-immortals/" rel="prev">Prev</a>
+          <span class="pager__sep" aria-hidden="true">/</span>
+          <a class="pager__link" href="/projects/confidence-underneath/" rel="next">Next</a>
+        </nav>
+        <!-- pager:end -->
+      </div>
+    </section>
+
+    <!-- The site's footer row, below the rail and on paper — a thing a rail page
+         can have and the deck could not, because the deck had no vertical axis
+         to put a footer on. -->
+    <footer class="rail-foot">
+      <p class="rail-foot__rule">&copy; 2026 Claire Ong</p>
+      <a
+        class="rail-foot__link"
+        href="https://www.linkedin.com/in/clairemong/"
+        target="_blank"
+        rel="me noopener"
+        >LinkedIn</a
+      >
+      <button
+        class="rail-foot__link"
+        type="button"
+        data-copy="mclaireong@gmail.com"
+      >
+        <span data-copy-label>mclaireong@gmail.com</span>
+      </button>
+    </footer>
+  </body>
+</html>

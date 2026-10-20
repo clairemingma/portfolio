@@ -150,10 +150,14 @@
             <!-- Seeded current: one project is always showing, and the design's
                resting state is the top one. project-viewer.js reads this rather
                than deciding for itself. -->
-            <!-- A row's href is live only where the page behind it ships. Six
-                 of the seven do now — every one but Glowwie, which has no page
-                 yet and so rests on "#": a row pointing at a page that is not in
-                 the deploy is a dead link rather than a promise.
+            <!-- A row's href is live only where the page behind it ships, and
+                 every one of the seven does now. Glowwie used to be the
+                 exception — an index row and a preview plate resting on "#"
+                 with nothing to open — and it was removed rather than left,
+                 because a row that cannot be clicked is a promise the page
+                 keeps making and never keeps. Put it back when it has a page.
+                 That rule still holds for the next one: a row pointing at a
+                 page that is not in the deploy is a dead link, not a teaser.
 
                  EVERY SLUG IS ITS TITLE, kebab-cased, and that is the rule now:
                  the row's words and the URL say the same thing. Three of them
@@ -177,10 +181,21 @@
                  clips, the facts, the REFLECTION write-up — and the row is live,
                  because a page missing one paragraph is a page, and one that
                  cannot be reached is not. Add the paragraph when it is written. -->
-            <li
-              class="index__row is-current"
-              data-project="confidence-underneath"
-            >
+            <!-- The resting row, and the newest. Its client reads [Vera Wang]
+                 like every other row names its brand; that the collection is a
+                 competition case and not the house's own work is said on the
+                 page itself, where there is room to say it properly. See the
+                 [Client] fact in projects/hua-yu/index.html. -->
+            <li class="index__row is-current" data-project="hua-yu">
+              <a class="index__link" href="/projects/hua-yu/">
+                <span class="index__year">[2027]</span>
+                <span class="index__caption">
+                  <span class="index__client">[Vera Wang]</span>
+                  <span class="index__title">Huā Yǔ</span>
+                </span>
+              </a>
+            </li>
+            <li class="index__row" data-project="confidence-underneath">
               <a class="index__link" href="/projects/confidence-underneath/">
                 <span class="index__year">[2026]</span>
                 <span class="index__caption">
@@ -237,15 +252,6 @@
                 </span>
               </a>
             </li>
-            <li class="index__row" data-project="glowwie">
-              <a class="index__link" href="#">
-                <span class="index__year">[2024]</span>
-                <span class="index__caption">
-                  <span class="index__client">[Design for America]</span>
-                  <span class="index__title">Glowwie</span>
-                </span>
-              </a>
-            </li>
           </ol>
 
           <!-- Each plate carries the leaf box its Figma variant was drawn at,
@@ -254,9 +260,16 @@
           <div class="viewer" data-viewer aria-hidden="true">
             <img
               class="viewer__plate is-active"
+              data-plate="hua-yu"
+              style="--pv-w: 744; --pv-h: 419"
+              src="/img/projects/hua-yu.webp"
+              alt=""
+            />
+            <img
+              class="viewer__plate"
               data-plate="confidence-underneath"
               style="--pv-w: 744; --pv-h: 418"
-              src="/img/projects/confidence-underneath.webp"
+              data-src="/img/projects/confidence-underneath.webp"
               alt=""
             />
             <img
@@ -394,13 +407,6 @@
               data-plate="eight-immortals"
               style="--pv-w: 744; --pv-h: 499"
               data-src="/img/projects/eight-immortals.webp"
-              alt=""
-            />
-            <img
-              class="viewer__plate"
-              data-plate="glowwie"
-              style="--pv-w: 606; --pv-h: 606"
-              data-src="/img/projects/glowwie.webp"
               alt=""
             />
           </div>

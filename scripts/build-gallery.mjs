@@ -20,6 +20,13 @@ import { existsSync } from 'node:fs';
 // presentation is more likely than not.
 const PAGES = [
   {
+    manifest: 'scripts/.manifests/hua-yu.json',
+    html: 'projects/hua-yu/index.html',
+    title: 'Huā Yǔ',
+    cls: 'rail__slide',
+    indent: 10,
+  },
+  {
     manifest: 'scripts/.manifests/confidence-underneath.json',
     html: 'projects/confidence-underneath/index.html',
     title: 'Confidence Underneath',
@@ -154,10 +161,11 @@ function splice(html, name, body, indent = 8) {
 // viewer to match plates against, so the order is taken from the markup that
 // has to be right anyway for hovering a row to light the correct picture.
 //
-// A slug with no page directory is SKIPPED rather than linked: glowwie has an
-// index row and a preview plate but nothing to open yet, so it is in the list
-// and must not be in the loop. Its absence is the same fact every other build
-// step here treats it as.
+// A slug with no page directory is SKIPPED rather than linked. Every row in the
+// index has a page as of Glowwie's removal, so the filter below currently drops
+// nothing — it stays because the index is the source of order and a row can be
+// added before the page behind it is written. Its absence is the same fact every
+// other build step here treats it as.
 //
 // It WRAPS. The last project's next is the first, so no link is ever dead and
 // no page has to explain a greyed-out one.

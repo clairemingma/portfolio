@@ -824,7 +824,7 @@ ok(
 // checked from `base`, i.e. before anything has been hovered.
 ok(
   'a plate is showing before any interaction, and it is the top project',
-  base.litPlate === 'confidence-underneath' && base.litCount === 1,
+  base.litPlate === 'hua-yu' && base.litCount === 1,
   `lit ${base.litPlate} (${base.litCount})`,
 );
 ok(

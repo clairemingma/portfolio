@@ -10,7 +10,8 @@
 // slug the page directory, the delivered files and the markup all use — so a
 // source can be traced to the page it feeds without consulting this file:
 //
-//   assets/projects/<slug>/preview.png   the landing page's preview plate
+//   assets/projects/<slug>/preview.png   the landing page's preview plate,
+//                                        unless the entry names a `src` instead
 //   assets/projects/<slug>/slides/       a deck's slides, numbered
 //   assets/projects/<slug>/frames/       a reel's or a plate's frames, numbered
 //   assets/projects/studio-edit-02/clip-<slot>.mp4   and poster-2.png
@@ -154,6 +155,20 @@ const CLIP_POSTER = { w: 3 * 100.8333 + 2 * 20, ratio: 16 / 9 };
 // These match the per-variant frames in the Figma component set, which is why
 // they differ per project — the preview is sized to its image, not the reverse.
 const PROJECTS = [
+  // `src` NAMES the deck's own first slide instead of a preview.png beside it,
+  // because the landing plate and the slide the rail opens on are the same
+  // picture — and a copy of it would be two megabytes of permanent history for
+  // no new image, the same rule the clip posters follow above. It also means the
+  // plate cannot drift: re-export the cover and the row updates with the deck.
+  //
+  // The box is the slide's own shape (744x419 is 16:9 to within half a pixel),
+  // so `cover` crops nothing, and a 3840-wide source clears 2x outright.
+  {
+    slug: 'hua-yu',
+    w: 744,
+    h: 419,
+    src: 'assets/projects/hua-yu/slides/1.webp',
+  },
   { slug: 'confidence-underneath', w: 744, h: 418 },
   { slug: 'shop-every-store', w: 744, h: 558 },
   { slug: 'studio-edit-02', w: 341, h: 606 },
@@ -167,7 +182,6 @@ const PROJECTS = [
   // box at the other. The design's 744 WIDTH is untouched; only the height moves,
   // so the plate still sits in the row at the width every other preview uses.
   { slug: 'eight-immortals', w: 744, h: 499 },
-  { slug: 'glowwie', w: 606, h: 606 },
 ];
 
 // The project pages' decks: one directory of frames each, one plate per slide.
@@ -204,6 +218,11 @@ const PROJECTS = [
 const RAIL_STAGE = { w: 11 * 100.8333 + 10 * 20, h: ((11 * 100.8333 + 10 * 20) * 9) / 16 };
 
 const PAGES = [
+  {
+    slug: 'hua-yu',
+    dir: 'assets/projects/hua-yu/slides',
+    stage: RAIL_STAGE,
+  },
   {
     slug: 'confidence-underneath',
     dir: 'assets/projects/confidence-underneath/slides',
@@ -471,7 +490,7 @@ for (const accent of ACCENTS) {
 }
 
 for (const p of PROJECTS) {
-  await sharp(`assets/projects/${p.slug}/preview.png`)
+  await sharp(p.src ?? `assets/projects/${p.slug}/preview.png`)
     .resize({
       width: p.w * DPR,
       height: p.h * DPR,
