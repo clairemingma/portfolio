@@ -34,9 +34,9 @@ const PAGES = [
     indent: 10,
   },
   {
-    manifest: 'scripts/.manifests/mfw-color-trends.json',
-    html: 'projects/mfw-color-trends/index.html',
-    title: 'MFW Color Trends',
+    manifest: 'scripts/.manifests/color-trends.json',
+    html: 'projects/color-trends/index.html',
+    title: 'Color Trends',
     cls: 'rail__slide',
     indent: 10,
   },
@@ -92,6 +92,19 @@ const PLATES = [
       marker: 'preview-frames',
       indent: 14,
       cover: '/img/projects/trending-this-week.webp',
+    },
+
+    // And a THIRD copy of the same list, for the phone. The index row carries
+    // its own cover there — the desktop's one centred plate is display:none —
+    // so the carousel has to exist twice in that page: once in the viewer and
+    // once in the row. Generated for the same reason as the other two, from the
+    // same manifest, so all three can only ever say the same thing.
+    cover: {
+      html: 'index.html',
+      marker: 'cover-frames',
+      indent: 18,
+      cover: '/img/projects/trending-this-week.webp',
+      cls: 'cover__frame',
     },
   },
 ];
@@ -323,6 +336,35 @@ for (const plate of PLATES) {
     `${plate.html}: ${frames.length} frames (${first}..${frames.at(-1)})`,
   );
   touched++;
+
+  // The same cycle again, in the landing page's MOBILE ROW. Written before the
+  // preview block below because both splice into index.html and the later one
+  // has to read what the earlier one wrote.
+  if (plate.cover && existsSync(plate.cover.html)) {
+    const cv = plate.cover;
+    const cpad = ' '.repeat(cv.indent);
+    const coverFrames = frames
+      .map((name, i) =>
+        [
+          `${cpad}<img`,
+          `${cpad}  class="${cv.cls}${i === 0 ? ' is-current' : ''}"`,
+          `${cpad}  data-frame`,
+          i === 0
+            ? `${cpad}  src="${cv.cover}"`
+            : `${cpad}  data-src="${dir}/${name}.webp"`,
+          `${cpad}  alt=""`,
+          `${cpad}/>`,
+        ].join('\n'),
+      )
+      .join('\n');
+
+    await writeFile(
+      cv.html,
+      splice(await readFile(cv.html, 'utf8'), cv.marker, coverFrames),
+    );
+    console.log(`${cv.html}: ${frames.length} cover frames (${plate.slug ?? ''})`.replace('  ', ' '));
+    touched++;
+  }
 
   // The same cycle again, in the landing page's preview box. Skipped if that
   // page is not in the checkout, on the same rule as everything else here.

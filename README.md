@@ -730,7 +730,7 @@ charcoal and read sideways. `src/rail-page.css` is the template,
 `src/project-rail.js` is the lock, `src/rail-page.js` is the entry.
 
 **Both presentations are rails**, and they are the same layout twice — Confidence
-Underneath came first, MFW Color Trends followed, and `src/rail-page.css` and
+Underneath came first, Color Trends followed, and `src/rail-page.css` and
 `src/rail-page.js` are shared with nothing placed by hand on either.
 
 **Both used to be decks**, and the axis did not turn so much as the composition

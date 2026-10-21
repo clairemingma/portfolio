@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    {
+      "source": "/projects/mfw-color-trends",
+      "destination": "/projects/color-trends",
+      "permanent": true
+    },
+    {
+      "source": "/projects/mfw-color-trends/:path*",
+      "destination": "/projects/color-trends/:path*",
+      "permanent": true
+    }
+  ]
+}

@@ -20,7 +20,7 @@ const root = import.meta.dirname;
 const PROJECT_PAGES = [
   'hua-yu',
   'confidence-underneath',
-  'mfw-color-trends',
+  'color-trends',
   'trending-this-week',
   'studio-edit-02',
   'eight-immortals',

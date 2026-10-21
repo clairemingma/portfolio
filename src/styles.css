@@ -686,9 +686,11 @@ p {
   border-bottom: 1px solid var(--color-index-grey);
 }
 
-.index__row:first-child {
-  border-top: 1px solid var(--color-index-grey);
-}
+/* The top rule is a DESKTOP rule, and is in the media query below with the rest
+   of them. On the phone the sticky bar sits immediately above this row, and its
+   own bottom edge already closes the list off — a second line a few units under
+   the labels read as an underline on the header rather than as the top of the
+   index, and boxed the bar in against the cover beneath it. */
 
 /* One row is always current, because one plate is always up — so the dim state
    is the resting state, not a hover effect, and it is driven off .is-current
@@ -726,12 +728,50 @@ p {
    the page once the print has decoded. The URL is the same one the matching
    plate carries, so the two share a cache entry and the row costs no second
    download. They do have to stay in step by hand; a slug that moves has to move
-   in both places, which is the note above .viewer in index.html. */
+   in both places, which is the note above .viewer in index.html.
+
+   INSIDE THE LINK, and that is the point of it being there rather than beside
+   it: on a phone the picture is the biggest thing in the row and the obvious
+   thing to press, and a cover that is not the link is a cover that does
+   nothing. One <a> around the lot rather than a second one around the image —
+   two adjacent links to the same page is a thing a screen reader reads twice
+   and a keyboard stops at twice. */
 .index__cover {
   display: block;
   width: 100%;
   height: auto;
-  margin-top: 14rem;
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+/* THE CYCLING COVER is a stack and not a picture, so nothing in it would give
+   the box a height on its own. Frame 1 stays IN FLOW to do that — it is a real
+   <img> with a real src, so its own ratio sizes the container and no copy of
+   that ratio has to live here. The other nine lie over it.
+
+   visibility rather than display, because a hidden frame still has to hold its
+   decoded pixels ready for its turn; and because frame 1 keeps its space in the
+   flow even while hidden, which is what stops the row collapsing on every cut. */
+.index__cover[data-cover-cycle] {
+  position: relative;
+}
+
+.cover__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  visibility: hidden;
+}
+
+.cover__frame:first-child {
+  position: relative;
+  height: auto;
+}
+
+.cover__frame.is-current {
+  visibility: visible;
 }
 
 .index__link {
@@ -749,7 +789,7 @@ p {
    them side by side regardless of source order. */
 .index__year {
   grid-column: 4;
-  grid-row: 1;
+  grid-row: 2;
   text-align: right;
   font-family: var(--font-secondary);
   font-size: 10rem;
@@ -774,7 +814,7 @@ p {
   align-items: baseline;
   gap: 0 8rem;
   grid-column: 1 / 4;
-  grid-row: 1;
+  grid-row: 2;
   text-align: left;
 }
 
@@ -808,6 +848,11 @@ p {
      measuring when this takes effect — it tests for an offsetParent. */
   .index-head {
     display: none;
+  }
+
+  /* And with the bar gone, the list needs its own top edge back. */
+  .index__row:first-child {
+    border-top: 1px solid var(--color-index-grey);
   }
 
   /* Dimming comes back with the cursor that drives it. */

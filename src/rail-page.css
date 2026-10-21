@@ -8,7 +8,7 @@
      the rail   charcoal, the presentation on it, read SIDEWAYS
 
      projects/confidence-underneath/   17 slides
-     projects/mfw-color-trends/        12 slides
+     projects/color-trends/        12 slides
 
    BOTH PRESENTATIONS ARE RAILS, and they are the same layout twice: this file and
    src/rail-page.js are shared, and neither page places anything by hand.
@@ -227,7 +227,7 @@
   align-items: center;
 }
 
-/* TWO DESTINATIONS ARE A ROW ON THE FACTS' OWN LINES. MFW Color Trends has
+/* TWO DESTINATIONS ARE A ROW ON THE FACTS' OWN LINES. Color Trends has
    ANALYSIS and GITHUB, and they are set exactly as a fact's label and value are:
    two one-column tracks a gutter apart, the first right-aligned and the second
    left-aligned, the pair centred as a unit. So the whole centred lead — three

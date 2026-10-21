@@ -204,14 +204,14 @@
                  page itself, where there is room to say it properly. See the
                  [Client] fact in projects/hua-yu/index.html. -->
             <li class="index__row is-current" data-project="hua-yu">
-              <img
-                class="index__cover"
-                data-src="/img/projects/hua-yu.webp"
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
               <a class="index__link" href="/projects/hua-yu/">
+                <img
+                  class="index__cover"
+                  data-src="/img/projects/hua-yu.webp"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
                 <span class="index__year">[2027]</span>
                 <span class="index__caption">
                   <span class="index__client">[Vera Wang]</span>
@@ -220,14 +220,14 @@
               </a>
             </li>
             <li class="index__row" data-project="confidence-underneath">
-              <img
-                class="index__cover"
-                data-src="/img/projects/confidence-underneath.webp"
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
               <a class="index__link" href="/projects/confidence-underneath/">
+                <img
+                  class="index__cover"
+                  data-src="/img/projects/confidence-underneath.webp"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
                 <span class="index__year">[2026]</span>
                 <span class="index__caption">
                   <span class="index__client">[Dexcom x SKIMS]</span>
@@ -236,14 +236,14 @@
               </a>
             </li>
             <li class="index__row" data-project="shop-every-store">
-              <img
-                class="index__cover"
-                data-src="/img/projects/shop-every-store.webp"
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
               <a class="index__link" href="/projects/shop-every-store/">
+                <img
+                  class="index__cover"
+                  data-src="/img/projects/shop-every-store.webp"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
                 <span class="index__year">[2026]</span>
                 <span class="index__caption">
                   <span class="index__client">[Phia]</span>
@@ -252,14 +252,27 @@
               </a>
             </li>
             <li class="index__row" data-project="studio-edit-02">
-              <img
-                class="index__cover"
-                data-src="/img/projects/studio-edit-02.webp"
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
               <a class="index__link" href="/projects/studio-edit-02/">
+                <!-- THE COVER IS THE CLIP, not a still of it. The row above
+                     this one on the desktop is a <video> for the same reason:
+                     this project is two moving takes and a poster of either is
+                     a photograph of a mat. muted/loop/playsinline are attributes
+                     and have to be — a browser decides autoplay before any
+                     script runs, and on iOS one without playsinline takes over
+                     the whole screen. Held behind the print like every other
+                     cover, then driven by src/index-motion.js, which plays it
+                     only while it is on screen and only on the phone. -->
+                <video
+                  class="index__cover"
+                  data-cover-video
+                  poster="/img/projects/studio-edit-02.webp"
+                  data-src="/video/studio-edit-02.mp4"
+                  muted
+                  loop
+                  playsinline
+                  preload="none"
+                  aria-hidden="true"
+                ></video>
                 <span class="index__year">[2026]</span>
                 <span class="index__caption">
                   <span class="index__client">[NikeSKIMS]</span>
@@ -268,14 +281,80 @@
               </a>
             </li>
             <li class="index__row" data-project="trending-this-week">
-              <img
-                class="index__cover"
-                data-src="/img/projects/trending-this-week.webp"
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
               <a class="index__link" href="/projects/trending-this-week/">
+                <!-- THE COVER IS THE CAROUSEL, the same ten frames the
+                     project page cuts between and the same ones the desktop
+                     plate holds. Frame 1 is the preview plate this row already
+                     had, so the resting picture is unchanged and only 2..10 are
+                     new weight, deferred behind data-src like everything else.
+
+                     GENERATED between the markers by scripts/build-gallery.mjs
+                     from the plate manifest — the carousel is a folder and
+                     folders grow. Everything outside them is hand-written. -->
+                <div class="index__cover" data-cover-cycle aria-hidden="true">
+                  <!-- cover-frames:start -->
+                  <img
+                    class="cover__frame is-current"
+                    data-frame
+                    src="/img/projects/trending-this-week.webp"
+                    alt=""
+                  />
+                  <img
+                    class="cover__frame"
+                    data-frame
+                    data-src="/img/projects/trending-this-week/2.webp"
+                    alt=""
+                  />
+                  <img
+                    class="cover__frame"
+                    data-frame
+                    data-src="/img/projects/trending-this-week/3.webp"
+                    alt=""
+                  />
+                  <img
+                    class="cover__frame"
+                    data-frame
+                    data-src="/img/projects/trending-this-week/4.webp"
+                    alt=""
+                  />
+                  <img
+                    class="cover__frame"
+                    data-frame
+                    data-src="/img/projects/trending-this-week/5.webp"
+                    alt=""
+                  />
+                  <img
+                    class="cover__frame"
+                    data-frame
+                    data-src="/img/projects/trending-this-week/6.webp"
+                    alt=""
+                  />
+                  <img
+                    class="cover__frame"
+                    data-frame
+                    data-src="/img/projects/trending-this-week/7.webp"
+                    alt=""
+                  />
+                  <img
+                    class="cover__frame"
+                    data-frame
+                    data-src="/img/projects/trending-this-week/8.webp"
+                    alt=""
+                  />
+                  <img
+                    class="cover__frame"
+                    data-frame
+                    data-src="/img/projects/trending-this-week/9.webp"
+                    alt=""
+                  />
+                  <img
+                    class="cover__frame"
+                    data-frame
+                    data-src="/img/projects/trending-this-week/10.webp"
+                    alt=""
+                  />
+        <!-- cover-frames:end -->
+                </div>
                 <span class="index__year">[2025]</span>
                 <span class="index__caption">
                   <span class="index__client">[Phia]</span>
@@ -283,19 +362,19 @@
                 </span>
               </a>
             </li>
-            <li class="index__row" data-project="mfw-color-trends">
-              <img
-                class="index__cover"
-                data-src="/img/projects/mfw-color-trends.webp"
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
-              <a class="index__link" href="/projects/mfw-color-trends/">
+            <li class="index__row" data-project="color-trends">
+              <a class="index__link" href="/projects/color-trends/">
+                <img
+                  class="index__cover"
+                  data-src="/img/projects/color-trends.webp"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
                 <span class="index__year">[2025]</span>
                 <span class="index__caption">
-                  <span class="index__client">[University]</span>
-                  <span class="index__title">MFW Color Trends</span>
+                  <span class="index__client">[Milan Fashion Week]</span>
+                  <span class="index__title">Color Trends</span>
                 </span>
               </a>
             </li>
@@ -303,14 +382,14 @@
                  it. See Slugs are titles in the README — the same move
                  trend-authority and su26-drop-2 made. -->
             <li class="index__row" data-project="eight-immortals">
-              <img
-                class="index__cover"
-                data-src="/img/projects/eight-immortals.webp"
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
               <a class="index__link" href="/projects/eight-immortals/">
+                <img
+                  class="index__cover"
+                  data-src="/img/projects/eight-immortals.webp"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
                 <span class="index__year">[2024]</span>
                 <span class="index__caption">
                   <span class="index__client">[Shoukang]</span>
@@ -346,7 +425,7 @@
             <img
               class="viewer__plate is-active"
               data-plate="hua-yu"
-              style="--pv-w: 808; --pv-h: 455"
+              style="--pv-w: 455; --pv-h: 606"
               src="/img/projects/hua-yu.webp"
               alt=""
             />
@@ -482,9 +561,9 @@
             </div>
             <img
               class="viewer__plate"
-              data-plate="mfw-color-trends"
+              data-plate="color-trends"
               style="--pv-w: 808; --pv-h: 455"
-              data-src="/img/projects/mfw-color-trends.webp"
+              data-src="/img/projects/color-trends.webp"
               alt=""
             />
             <img

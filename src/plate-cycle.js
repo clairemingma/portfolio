@@ -22,11 +22,29 @@
    folders grow.
    ========================================================================== */
 
-/* 1.4s a frame. Slow for a gif and deliberately so: these are dense product
-   collages with type on them, and at the 100ms an animated gif tends to use they
-   would strobe rather than be read. Ten frames at this beat is a 14s loop, which
-   is about as long as the page holds attention. */
-const HOLD = 1400;
+/* TWO BEATS, because the same carousel is doing two different jobs.
+
+   1.4s a frame on the PROJECT PAGE. Slow for a gif and deliberately so: there
+   the plate is the work, it is the only thing on the screen, and these are dense
+   product collages with type on them — at the 100ms an animated gif tends to use
+   they would strobe rather than be read. Ten frames at this beat is a 14s loop,
+   which is about as long as the page holds attention.
+
+   0.6s a frame in the INDEX, at well under half that. There the plate is one
+   row of seven and nobody is reading it: it has to say "this one moves, there
+   is more than one picture here" inside the second or two a cursor rests on a
+   row, and at the page's beat a hover that short saw one cut or none at all and
+   the plate read as a still. On the phone it is the same argument for the same
+   reason — a cover scrolls past in about as long. Ten frames at this beat is a
+   6s loop.
+
+   AND NOT MUCH BELOW IT. WCAG 2.3.1 draws its line at three changes a second;
+   these are photographs cutting rather than a flash, so it is not the hazard
+   that rule is about, but there is no reason to walk toward it for a preview.
+   Reduce-motion is honoured either way — see run() below, which the preference
+   can stop at any point, not only at mount. */
+const HOLD_PAGE = 1400;
+const HOLD_INDEX = 600;
 
 const CURRENT = 'is-current';
 
@@ -49,7 +67,7 @@ const CURRENT = 'is-current';
    can change while the page is open and a loop that keeps running because it was
    allowed at mount is the failure those APIs exist to prevent. They resume only
    if the owner still wants them to. */
-export function createPlateCycle(plate) {
+export function createPlateCycle(plate, hold = HOLD_PAGE) {
   const frames = [...plate.querySelectorAll('[data-frame]')];
   if (frames.length < 2) return null;
 
@@ -79,7 +97,7 @@ export function createPlateCycle(plate) {
   // each on their own a reason not to have one.
   function run() {
     if (timer || !wanted || still.matches || document.hidden) return;
-    timer = setInterval(tick, HOLD);
+    timer = setInterval(tick, hold);
   }
 
   // A background tab is not watching, and browsers throttle timers there anyway
@@ -126,5 +144,9 @@ export function createPlateCycle(plate) {
 export function mountPlateCycle() {
   const plate = document.querySelector('[data-plate-cycle]');
   if (!plate) return;
-  createPlateCycle(plate)?.start();
+  createPlateCycle(plate, HOLD_PAGE)?.start();
 }
+
+/* The beat the index runs at, exported so its callers do not each carry a
+   number that has to agree with this file. */
+export { HOLD_INDEX };

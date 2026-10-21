@@ -17,7 +17,7 @@
    image.
    ========================================================================== */
 
-import { createPlateCycle } from './plate-cycle.js';
+import { createPlateCycle, HOLD_INDEX } from './plate-cycle.js';
 
 export function mountProjectViewer() {
   const index = document.querySelector('[data-index]');
@@ -60,7 +60,9 @@ export function mountProjectViewer() {
   const cycles = new Map();
   for (const [key, el] of plates) {
     if (!el.hasAttribute('data-plate-cycle')) continue;
-    const cycle = createPlateCycle(el);
+    // The index beat, not the project page's — see the two constants in
+    // plate-cycle.js for why a row cycles at twice the speed of a page.
+    const cycle = createPlateCycle(el, HOLD_INDEX);
     if (cycle) cycles.set(key, cycle);
   }
 

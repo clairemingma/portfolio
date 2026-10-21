@@ -161,25 +161,61 @@ const CLIP_POSTER = { w: 3 * 100.8333 + 2 * 20, ratio: 16 / 9 };
 // src/styles.css has the arithmetic and the reason the height stayed at 606.
 // These must agree with --pv-w/--pv-h on the plates in index.html.
 const PROJECTS = [
-  // `src` NAMES the deck's own first slide instead of a preview.png beside it,
-  // because the landing plate and the slide the rail opens on are the same
-  // picture — and a copy of it would be two megabytes of permanent history for
-  // no new image, the same rule the clip posters follow above. It also means the
-  // plate cannot drift: re-export the cover and the row updates with the deck.
+  // THE ONLY PORTRAIT LANDSCAPE-PROJECT, and the box follows the PICTURE rather
+  // than the family. This row used to name the deck's own first slide — the
+  // title card, 16:9, 808x455 like every other landscape plate. The cover is now
+  // its own photograph, the bride on the aisle, and that is 1856x2474: putting a
+  // 3:4 portrait through `cover` into a 16:9 box keeps a band across its middle
+  // and throws away both the head and the train, so the box turned instead.
   //
-  // The box is the slide's own shape (808x455 is 16:9 to within half a pixel),
-  // so `cover` crops nothing, and a 3840-wide source clears 2x outright.
+  // 455x606 is not a new size. It is the box Trending This Week is already
+  // drawn at, and 455/606 is 0.7508 against this picture's 0.7502 — so `cover`
+  // crops essentially nothing and the index keeps two plate shapes rather than
+  // gaining a third.
+  //
+  // `src` with a WEBP extension, not the preview.png the other six use, because
+  // this is a photograph and the rule at the top of this file is the reason: the
+  // same frame is 5.5 MB as a PNG and 471 KB here, and the difference is
+  // permanent history. The fallback path is still preview.png for everything
+  // that does not say otherwise.
   {
     slug: 'hua-yu',
-    w: 808,
-    h: 455,
-    src: 'assets/projects/hua-yu/slides/1.webp',
+    w: 455,
+    h: 606,
+    src: 'assets/projects/hua-yu/preview.webp',
   },
-  { slug: 'confidence-underneath', w: 808, h: 454 },
+  // Full bleed, where the old preview.png was the same three photographs as a
+  // framed triptych — white gutters between the panels and a white border round
+  // the lot. A plate is shown edge to edge in a box of its own, so a picture
+  // that draws its own frame inside that box reads as a picture of a layout.
+  // The replacement runs the three to the edges and the box is unchanged: both
+  // are 16:9 and 808x454 is what the design draws this row at.
+  //
+  // webp for the same reason hua-yu is: a photograph, 2.9 MB as the PNG it
+  // replaces and 267 KB here, at half again the resolution.
+  {
+    slug: 'confidence-underneath',
+    w: 808,
+    h: 454,
+    src: 'assets/projects/confidence-underneath/preview.webp',
+  },
   { slug: 'shop-every-store', w: 808, h: 606 },
   { slug: 'studio-edit-02', w: 341, h: 606 },
   { slug: 'trending-this-week', w: 455, h: 606 },
-  { slug: 'mfw-color-trends', w: 808, h: 455 },
+  // A runway finale where the old preview was a chart from the analysis. The
+  // project is the colour of these clothes read by machine, and the picture the
+  // row leads with should be the clothes rather than the output — the twelve
+  // slides behind it are all chart.
+  //
+  // Lossless webp, same as the two above: the build re-encodes every preview at
+  // q82, so a lossy source would be compressed twice and the second pass lands
+  // on exactly the edges that read as sharpness.
+  {
+    slug: 'color-trends',
+    w: 808,
+    h: 455,
+    src: 'assets/projects/color-trends/preview.webp',
+  },
   // 499 where its Figma variant is still drawn at 529, and the box follows the
   // PHOTOGRAPH. The variant carries the older of the two shots — box left, cup
   // right, at 1.406 — and the preview now shows the same frame the project page
@@ -236,8 +272,8 @@ const PAGES = [
     stage: RAIL_STAGE,
   },
   {
-    slug: 'mfw-color-trends',
-    dir: 'assets/projects/mfw-color-trends/slides',
+    slug: 'color-trends',
+    dir: 'assets/projects/color-trends/slides',
     stage: RAIL_STAGE,
   },
 ];
