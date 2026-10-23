@@ -332,6 +332,30 @@
   overflow: hidden;
 }
 
+/* THE HALVES, and the cursor is all there is of them. Click the right of the
+   window for the next slide and the left for the one before — the pin is the
+   whole window while the rail is running, so the two sides of it are the
+   biggest target the page has, and a deck is the one thing a reader already
+   expects to work this way.
+
+   Nothing is drawn. Arrows over the artwork would be chrome on top of the work
+   the page exists to show, and the directional cursor says the same thing at
+   the moment it is useful and never otherwise. src/project-rail.js puts these
+   classes on while the pointer is over a half, and takes them off over the
+   scrub, the pager and the copyright — those keep their own cursors because
+   they keep their own clicks.
+
+   Both come off with .is-pinned: below 768 the row is an ordinary swipeable
+   scroller, and a cursor promising a page turn would be describing something
+   that is no longer happening. */
+.rail.is-pinned .rail__pin.is-back {
+  cursor: w-resize;
+}
+
+.rail.is-pinned .rail__pin.is-next {
+  cursor: e-resize;
+}
+
 /* The row of slides. In the base state it is the scroller's content; in the
    pinned state the module translates it.
 

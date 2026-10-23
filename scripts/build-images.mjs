@@ -532,17 +532,48 @@ for (const accent of ACCENTS) {
   accentNotes.push(`${accent.name} ${side}px at ${scale.toFixed(2)}x`);
 }
 
+// WITHOUT ENLARGEMENT, and that is a correctness fix rather than a preference.
+//
+// The header above this file says no preview is ever upscaled. That was true by
+// luck and not by rule: every source happened to be big enough, and nothing here
+// enforced it. Without this flag a source short of 2x was quietly stretched to
+// fill the box, and the delivered file came out at exactly the size the layout
+// asked for — so it looked right everywhere it was checked. The landing plate
+// for Shop Every Store spent a while 8% upscaled on exactly that.
+//
+// It is also what makes the choreography check honest. That assertion compares
+// the DELIVERED file to the box it is drawn in, which can only catch a short
+// source if the build stops papering over one. With this flag the delivered file
+// comes out small, the check sees it, and the fault surfaces as a failure rather
+// than as a softness someone notices months later.
+//
+// The scale each preview actually achieved is reported below, per project, the
+// way the decks and the reels already report theirs.
+const previewNotes = [];
+
 for (const p of PROJECTS) {
-  await sharp(p.src ?? `assets/projects/${p.slug}/preview.png`)
+  const info = await sharp(p.src ?? `assets/projects/${p.slug}/preview.png`)
     .resize({
       width: p.w * DPR,
       height: p.h * DPR,
       fit: 'cover',
       position: 'centre',
+      withoutEnlargement: true,
     })
     .webp({ quality: 82 })
     .toFile(`${OUT}/projects/${p.slug}.webp`);
+
+  // Measured off what was written rather than off the source, so it is the
+  // scale the PAGE got and not the one the file could have supported.
+  const got = info.width / p.w;
+  previewNotes.push(
+    got >= DPR - 0.01
+      ? null
+      : `${p.slug} ${got.toFixed(2)}x SHORT of ${DPR}x — source is too small for ${p.w}x${p.h}`,
+  );
 }
+
+const thinPreviews = previewNotes.filter(Boolean);
 
 // Grouped by slug on the way out, so build-gallery.mjs is handed the slots a
 // page actually has and in the design's order.
@@ -779,7 +810,13 @@ for (const reel of REELS) {
 
 console.log(
   `built hero from ${W}x${H} scan` +
-    ` + ${PROJECTS.length} project previews at ${DPR}x` +
+    // Says what happened rather than what was asked for. This line used to
+    // read "at 2x" unconditionally — a claim, not a measurement, and the one
+    // place a short source would most obviously have shown itself.
+    ` + ${PROJECTS.length} project previews` +
+    (thinPreviews.length
+      ? ` — ${thinPreviews.length} SHORT: ${thinPreviews.join('; ')}`
+      : ` all at ${DPR}x`) +
     `, accents: ${accentNotes.join('; ')}` +
     `, clips: ${clipNotes.join('; ')}` +
     `, ${stageNotes.join('; ')}` +

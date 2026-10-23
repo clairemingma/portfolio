@@ -164,6 +164,11 @@ export function mountRail() {
     const p = at();
     const x = p * travel;
 
+    // The page has arrived where a click asked it to go, so the held intent is
+    // spent. Measured against the scroll rather than against `shown`, so it
+    // still clears on a page with no counter to update.
+    if (aim !== null && Math.abs(scrollY - top - aim * step) < 2) aim = null;
+
     track.style.transform = `translate3d(${-x}px, 0, 0)`;
 
     if (fill) fill.style.width = `${p * 100}%`;
@@ -201,6 +206,29 @@ export function mountRail() {
     });
   }
 
+  /* --- one slide, from wherever the ask came from -------------------------- */
+
+  // Three things now mean "one slide": an arrow key on the scrub, a click on the
+  // left or right of the pin, and nothing else yet. They share this rather than
+  // each doing the arithmetic, because the arithmetic has a subtlety in it.
+  //
+  // `aim` is that subtlety. A click scrolls SMOOTHLY, which takes a few hundred
+  // milliseconds, and `shown` only catches up as the frames land — so a second
+  // click arriving mid-flight would read the slide it is still leaving and ask
+  // for the same one twice. Holding the intended index means a quick triple
+  // click advances three, which is what someone clicking three times meant.
+  //
+  // It clears itself in paint() when the page has arrived, so a click, a scroll
+  // and a drag can never disagree about where the row has got to.
+  let aim = null;
+
+  function seekSlide(delta) {
+    if (!live || travel <= 0) return;
+    const from = aim ?? shown - 1;
+    aim = Math.min(slides.length - 1, Math.max(0, from + delta));
+    scrollTo({ top: top + Math.min(span, aim * step), behavior: 'smooth' });
+  }
+
   /* --- turning it on and off ----------------------------------------------- */
 
   // Everything the control needs — the role, the focus stop, the values — is
@@ -235,6 +263,12 @@ export function mountRail() {
     if (!live) return;
     live = false;
     rail.classList.remove('is-pinned');
+    // The halves go with it. Below 768 the row is an ordinary swipeable
+    // scroller and a directional cursor over it would be describing a thing
+    // that is no longer happening.
+    pin.classList.remove('is-back', 'is-next');
+    half = '';
+    aim = null;
     track.style.transform = '';
     rail.style.removeProperty('--rail-scroll');
   }
@@ -298,18 +332,72 @@ export function mountRail() {
         PageDown: 1,
         PageUp: -1,
       };
+      if (event.key in keys) {
+        event.preventDefault();
+        seekSlide(keys[event.key]);
+        return;
+      }
+      // Home and End are not a step, so they go straight to an end and drop any
+      // held intent with them.
       let to = null;
-      if (event.key in keys) to = (shown - 1 + keys[event.key]) * step;
-      else if (event.key === 'Home') to = 0;
+      if (event.key === 'Home') to = 0;
       else if (event.key === 'End') to = span;
       if (to === null) return;
       event.preventDefault();
-      scrollTo({
-        top: top + Math.min(span, Math.max(0, to)),
-        behavior: 'smooth',
-      });
+      aim = null;
+      scrollTo({ top: top + to, behavior: 'smooth' });
     });
   }
+
+  /* --- the halves ---------------------------------------------------------- */
+
+  // CLICK THE RIGHT OF THE SLIDE TO GO ON, THE LEFT TO GO BACK. The pin is the
+  // whole window while the rail is running, so the two halves of it are the
+  // largest target the page can offer, and a deck is the one thing everybody
+  // already expects to behave this way.
+  //
+  // WHAT IS NOT A HALF. The pin also holds the scrub, the pager and the
+  // copyright line, and a click that lands on any real control has to stay that
+  // control's. The scrub in particular already means something precise — press
+  // the band and the page goes to that point — so swallowing its clicks would
+  // break a thing that works in order to add one that duplicates it.
+  //
+  // A click that ends a text selection is also not a half. Dragging across a
+  // slide's caption to copy it ends with a click wherever the pointer stopped,
+  // and turning that into a page turn would make the text unselectable in
+  // practice.
+  const KEEP = 'a, button, input, select, textarea, [role="slider"], [data-scrub]';
+
+  pin.addEventListener('click', (event) => {
+    if (!live || travel <= 0) return;
+    if (event.target.closest(KEEP)) return;
+    if (!getSelection()?.isCollapsed) return;
+    const box = pin.getBoundingClientRect();
+    seekSlide(event.clientX - box.left < box.width / 2 ? -1 : 1);
+  });
+
+  // The only sign the halves are there. No chrome, no arrows drawn over the
+  // artwork — the cursor says which way this side goes, and says nothing at all
+  // over the controls or when the rail is not running. Classes rather than an
+  // inline style, so the cursors themselves stay in the stylesheet.
+  let half = '';
+  function wearCursor(next) {
+    if (next === half) return;
+    half = next;
+    pin.classList.toggle('is-back', next === 'back');
+    pin.classList.toggle('is-next', next === 'next');
+  }
+
+  pin.addEventListener('pointermove', (event) => {
+    if (!live || travel <= 0 || event.target.closest(KEEP)) {
+      wearCursor('');
+      return;
+    }
+    const box = pin.getBoundingClientRect();
+    wearCursor(event.clientX - box.left < box.width / 2 ? 'back' : 'next');
+  });
+
+  pin.addEventListener('pointerleave', () => wearCursor(''));
 
   /* --- the trackpad -------------------------------------------------------- */
 
