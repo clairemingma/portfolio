@@ -100,32 +100,23 @@
             <p class="brief__value"><time datetime="2026">2026</time></p>
           </div>
 
-          <!-- Two paragraphs, so they are wrapped: .brief__prose takes the
-               brief's 20 as ONE child, which keeps that air between the facts and
-               the copy, and sets the design's own 10 between the paragraphs
-               instead. The 10 is doing real work here — the rail zeroes the
-               first-line indent, because an indent on centred copy reads as a
-               typo, so without it the two paragraphs ran together with no break
-               of any kind. See .brief__prose in src/project-brief.css.
-
-               THE FIRST PARAGRAPH IS SHORT OF WHERE IT WAS GOING. The design's
-               own text ends mid-clause — "…In one click, Phia " — with the
-               sentence unwritten and a trailing space where the rest should be.
-               Its two complete sentences are set here and the dangling clause is
-               not, because a portfolio page that stops mid-sentence reads as
-               broken rather than as unfinished. Put the clause back the moment it
-               has an ending; nothing else here changes. -->
+          <!-- ONE paragraph now, where this page carried two, which is what
+               every other project page here does. The split existed because the
+               design's own copy broke in two and the first half ended mid-clause
+               — "…In one click, Phia " — with the sentence unwritten and a
+               trailing space where the rest should be. The opening line now
+               finishes its own thought, so there is nothing left to hold apart.
+               The wrapper stays: .brief__prose is what takes the brief's 20 as
+               one child and keeps the air between the facts and the copy. See
+               .brief__prose in src/project-brief.css. -->
           <div class="brief__prose">
             <p class="brief__text">
-              Shopping is fragmented. Phia is the end to end shopping discovery
-              platform.
-            </p>
-            <p class="brief__text">
-              I designed and shipped Shop, a dedicated marketplace page on
-              phia.com where users can browse product inventory through a
-              familiar catalog experience: search, filters, sort, and a product
-              grid. This page help users discover products before they land on
-              an individual Phia product page.
+              Shopping is fragmented across hundreds of stores, and Phia brings
+              it all into one end-to-end discovery platform. I designed and
+              shipped Shop, a dedicated marketplace page on phia.com where users
+              browse inventory through a familiar catalog experience of search,
+              filters, sort, and a product grid, so they can discover products
+              before landing on an individual Phia product page.
             </p>
           </div>
 
