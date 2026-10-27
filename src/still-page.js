@@ -12,8 +12,12 @@
    entry file and cannot forget to mount the address. */
 import { mountPlateCycle } from './plate-cycle.js';
 import { mountVideoAutoplay } from './video-autoplay.js';
+import { mountBriefSheet } from './brief-sheet.js';
 import { mountCopyAddress } from './copy-address.js';
 
 mountPlateCycle();
 mountVideoAutoplay();
+// Below 768 only, and it unmounts above it: the brief becomes a sheet across
+// the foot of the window, with [+] to open the copy. See src/brief-sheet.js.
+mountBriefSheet();
 mountCopyAddress();

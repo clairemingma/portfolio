@@ -109,33 +109,42 @@
                The wrapper stays: .brief__prose is what takes the brief's 20 as
                one child and keeps the air between the facts and the copy. See
                .brief__prose in src/project-brief.css. -->
-          <div class="brief__prose">
-            <p class="brief__text">
-              Shopping is fragmented across hundreds of stores, and Phia brings
-              it all into one end-to-end discovery platform. I designed and
-              shipped Shop, a dedicated marketplace page on phia.com where users
-              browse inventory through a familiar catalog experience of search,
-              filters, sort, and a product grid, so they can discover products
-              before landing on an individual Phia product page.
-            </p>
-          </div>
+          <!-- THE READING, which is everything past the facts: the prose and the
+               places to read more. It is one region because below 768 it is one
+               DISCLOSURE — the brief is a sheet across the foot of the window there,
+               showing the title and the facts, and [+] opens this. Above 768 the
+               wrapper is `display: contents` and the page is exactly what it was.
+               The collapse is src/brief-sheet.js's doing and only once it has run, so
+               without script every word of this is simply on the page. -->
+          <div class="brief__more" data-brief-more>
+            <div class="brief__prose">
+              <p class="brief__text">
+                Shopping is fragmented across hundreds of stores, and Phia brings
+                it all into one end-to-end discovery platform. I designed and
+                shipped Shop, a dedicated marketplace page on phia.com where users
+                browse inventory through a familiar catalog experience of search,
+                filters, sort, and a product grid, so they can discover products
+                before landing on an individual Phia product page.
+              </p>
+            </div>
 
-          <!-- One destination, and the label is the thing itself rather than a
-               heading over it — the same 10pt line the other project pages
-               carry. The work IS a page on phia.com, so the honest place to send
-               someone is that page.
+            <!-- One destination, and the label is the thing itself rather than a
+                 heading over it — the same 10pt line the other project pages
+                 carry. The work IS a page on phia.com, so the honest place to send
+                 someone is that page.
 
-               The address is the design's own rather than a guess: the browser
-               mockup in the first frame has phia.com/shop in its address bar,
-               and the paragraph above names the same site. -->
-          <div class="brief__source">
-            <a
-              class="brief__link"
-              href="https://phia.com/shop"
-              target="_blank"
-              rel="noopener"
-              >Shop</a
-            >
+                 The address is the design's own rather than a guess: the browser
+                 mockup in the first frame has phia.com/shop in its address bar,
+                 and the paragraph above names the same site. -->
+            <div class="brief__source">
+              <a
+                class="brief__link"
+                href="https://phia.com/shop"
+                target="_blank"
+                rel="noopener"
+                >Shop</a
+              >
+            </div>
           </div>
         </section>
 

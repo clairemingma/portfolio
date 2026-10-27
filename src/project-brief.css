@@ -166,6 +166,30 @@
   text-decoration-skip-ink: none;
 }
 
+/* THE READING — the prose and the places to read more, as one region.
+
+   IT IS NOT A LAYOUT BOX ABOVE 768 and must not become one: `display: contents`
+   takes the wrapper out and leaves its children as direct flex items of .brief,
+   which is what they were before this element existed. Every wide-window rule in
+   every template that reaches .brief__prose or .brief__source — the rail's
+   eight-column measure, the centred source grid — goes on working untouched,
+   because nothing about the box tree has changed.
+
+   Below 768 it IS a box, and it is the half of the brief that the sheet hides:
+   see THE SHEET at the foot of this file. The gap is .brief's own 20, restated
+   because a real box no longer inherits the parent's gap for its children. */
+.brief__more {
+  display: flex;
+  flex-direction: column;
+  gap: 20rem;
+}
+
+@media (min-width: 768px) {
+  .brief__more {
+    display: contents;
+  }
+}
+
 /* Both lines are 10 and graphite, and the type is set on the container so they
    cannot drift apart. That is the design: the pair is one label repeated, not a
    grey heading over a darker link — which is what it briefly was here, when the
@@ -187,4 +211,185 @@
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.28em;
+}
+
+/* ==========================================================================
+   NARROW
+   ========================================================================== */
+
+/* Below 768 the three templates stop being three templates. Each of them hands
+   the window to the work and puts the brief in A SHEET ACROSS THE FOOT OF IT, so
+   the block below is the same block on all six project pages and this is the one
+   place its narrow shape is stated. Each template says only where its own sheet
+   is anchored; see THE SHEET at the foot of this file.
+
+   THE MEASURE IS FOUR COLUMNS, not three. .brief is three columns wide because
+   on a twelve-column page that is a column of copy beside the work; on a
+   four-column page it is a column of copy beside nothing, with a quarter of a
+   phone screen left blank down one side. still-page.css and reel-page.css each
+   carried their own version of this override; both are gone.
+
+   THE TYPE COMES DOWN TO THE SCALE A 375 SCREEN READS AT. 1 unit is 1px there,
+   so the desktop sizes are also the phone's pixel sizes, and 16px of serif on a
+   343 measure is a 40-character line — short enough that the prose starts to
+   read as a column of fragments. 14 is the measure's size and 10 is the label's.
+   The value comes UP, from 12 to 14: on the wide pages it is a caption beside a
+   21pt title and down here it is one of the two things in a row, so it is set at
+   the same size as the copy it introduces, which is what the facts grid below
+   already assumes.
+
+   THE INDENT BECOMES ONE GRID STEP. 121.335 is a twelve-column number — a
+   column and its gutter at the 1470 artboard — and taken literally down here it
+   spends 35 per cent of a phone's measure before the first word. --col-step is
+   the same quantity read off the grid that is actually in force, which is 88.75
+   at 375, and it lands the first line on column 2 exactly as the wide pages land
+   it on their own column 2. */
+@media (max-width: 767px) {
+  .brief {
+    width: 100%;
+  }
+
+  /* LABEL ON COLUMN 1, VALUE ON 2 TO 4. The wide grid is one column and two;
+     this is one column and the three the label does not take, so the pair spans
+     the whole measure and a value as long as "Data Analytics & Content
+     Creation" has three columns to wrap in rather than two. */
+  .brief__facts {
+    width: 100%;
+    grid-template-columns: var(--col) minmax(0, 1fr);
+  }
+
+  .brief__label {
+    font-size: 10rem;
+    line-height: calc(12.5 / 10);
+  }
+
+  .brief__value {
+    font-size: 14rem;
+    line-height: calc(15.4 / 14);
+  }
+
+  .brief__text {
+    font-size: 14rem;
+  }
+
+  .brief__text:first-child {
+    text-indent: var(--col-step);
+  }
+}
+
+/* ==========================================================================
+   THE SHEET
+   ========================================================================== */
+
+/* Below 768 the brief is a PANEL OF PAPER ACROSS THE FOOT OF THE WINDOW, laid
+   over the work, and it does not scroll away. What it shows at rest is the
+   title and the facts — the two things a reader needs in order to know what
+   they are looking at — and [+] at its top right opens the rest.
+
+   WHY IT IS FIXED. The brief used to be the last block of a long document: you
+   saw the work, you scrolled, and somewhere past the end of it you found out
+   what the project was. On a phone that is the wrong way round — the images are
+   the thing you arrive for, and the caption is the thing you want beside them
+   rather than after them. Fixed, the two are on screen together and the work
+   keeps the whole of the rest of the window.
+
+   WHY IT COLLAPSES. The facts are four short rows; the prose is four
+   paragraphs. Showing both at once would take two thirds of a phone screen and
+   leave a strip for the work, which is the arrangement this is meant to
+   replace. So the sheet opens on request and shuts again.
+
+   EACH TEMPLATE ANCHORS ITS OWN. All three put the sheet directly on top of
+   their footer band — the same 37.594 every page of this site gives a footer —
+   so the copyright line and the pair of links stay where they are and the sheet
+   reads as resting on them. What is here is the sheet's own shape, which is the
+   same on all six pages.
+
+   NONE OF THIS HAPPENS WITHOUT SCRIPT. .is-sheet is added by
+   src/brief-sheet.js, which is also what injects the toggle — so the no-script
+   page is the one the markup describes, a brief with every word of it showing,
+   and the collapse never hides copy that cannot be got back. Same bargain the
+   rail's scrub makes: the affordance appears exactly when the behaviour does. */
+
+:root {
+  /* The footer band the sheet rests on. The site's, not a number this file
+     chose: .still__foot, .reel__foot and .rail-foot are all 37.594. */
+  --sheet-foot-h: 37.594rem;
+
+  /* How tall the sheet is at rest. src/brief-sheet.js measures it and rewrites
+     this on mount and on resize; what is here is the arithmetic for a four-fact
+     brief — two gutters of padding, a 21pt title, the block's own 20, and four
+     rows of 15.4 with 10 between them — and it is what the rail page lays itself
+     out against in the instant before script runs. */
+  --brief-sheet-h: 160rem;
+}
+
+@media (max-width: 767px) {
+  /* The panel. It is .brief itself rather than a wrapper, because the three
+     templates wrap it in three different things and only one of them (the
+     reel's lead) is a box this could have been put on. */
+  .brief.is-sheet {
+    position: relative;
+    z-index: 4;
+    width: 100%;
+    /* Never taller than the window leaves between the bar and the footer band.
+       Trending This Week's brief is four paragraphs and runs past that; what
+       overflows is scrolled, not clipped. */
+    max-height: calc(100dvh - var(--nav-h) - var(--sheet-foot-h));
+    padding: var(--grid-gutter) var(--grid-margin);
+    background: var(--color-paper);
+  }
+
+  /* THE SCROLL IS ON THE READING AND NOT ON THE SHEET, which is what keeps [+]
+     where it was put: the toggle is absolute against .brief, and if .brief were
+     the scroller the toggle would travel up out of the window with the first
+     paragraph. min-height: 0 is what lets a flex item shrink below its content
+     and therefore scroll at all. */
+  .brief.is-sheet .brief__more {
+    display: none;
+    min-height: 0;
+    overflow-y: auto;
+    /* The sheet is over a horizontal scroller on the rail pages and over a
+       snapping document on the reels. Without this, reaching the end of the
+       prose hands the gesture to whichever of those is underneath. */
+    overscroll-behavior: contain;
+  }
+
+  .brief.is-sheet.is-open .brief__more {
+    display: flex;
+  }
+
+  /* Room for the toggle at the end of the title's line. A column and a gutter,
+     which is the same step the facts put between a label and its value, so the
+     title stops on the line the values start on. */
+  .brief.is-sheet .brief__title {
+    padding-right: var(--col-step);
+  }
+
+  /* [+] / [–], in the brackets every small label on this site wears and in the
+     bar's own Inter. It is a 44-square touch target drawn as a 13-unit line:
+     the padding is negative space around the glyph, pulled back out again by
+     the offsets below so the bracket itself lands on the sheet's own corner
+     rather than a finger's width inside it. */
+  .brief__toggle {
+    position: absolute;
+    top: calc(var(--grid-gutter) - 12rem);
+    right: calc(var(--grid-margin) - 12rem);
+    z-index: 1;
+    padding: 12rem;
+    border: 0;
+    background: none;
+    font-family: var(--font-secondary);
+    font-size: 11rem;
+    line-height: calc(13.75 / 11);
+    letter-spacing: 0.03em;
+    color: var(--color-system-grey);
+    cursor: pointer;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .brief__toggle:hover,
+  .brief__toggle:focus-visible,
+  .brief.is-sheet.is-open .brief__toggle {
+    color: var(--color-graphite);
+  }
 }

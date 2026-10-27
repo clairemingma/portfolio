@@ -463,6 +463,34 @@ p {
   display: none;
 }
 
+/* --- the bar on a project page, below 768 --------------------------------- */
+
+/* PROJECTS AND ABOUT COME OUT, AND PREV / NEXT TAKES THE RIGHT END. The bar on
+   a phone is one row of four columns and it can hold the wordmark and one
+   other thing; what that thing should be depends on where you are. On the
+   landing page it is the two section links, because the sections are the page.
+   On a project page the useful move is to the NEXT PROJECT, and the two
+   section links were spending the bar's whole right half on a destination the
+   wordmark already reaches.
+
+   .nav--locked is the marker and it is the honest one: it is set on every
+   project page and on no other, because it means "this bar does not travel",
+   which is true of exactly the pages that are not the landing page.
+
+   WHAT THIS COSTS is the one-tap route to the index. The wordmark goes to `/`,
+   which is the top of the landing page, and the index is about one and a half
+   screens below it — so getting back to the full list is now a tap and a
+   scroll. The pager is what answers for it: six projects in a ring, Next from
+   any of them, and the index is a thing to go to rather than the only way
+   across. If that trade stops being worth it, pointing .nav__mark at
+   `/#projects` on these pages is the one-line version of having both. */
+@media (max-width: 767px) {
+  .nav--locked .nav__link--projects,
+  .nav--locked .nav__link--about {
+    display: none;
+  }
+}
+
 @media (min-width: 768px) {
   .nav__link--linkedin,
   .nav__link--mail {
@@ -1045,6 +1073,58 @@ p {
    is out of the accessibility tree and it never lights — staying at the resting
    grey while the links come up is what keeps it reading as punctuation rather
    than as a third thing that could be clicked. */
+
+/* --- THE PAIR IN THE BAR -------------------------------------------------- */
+
+/* BELOW 768 THE PAGER MOVES INTO THE BAR, at the right end, where PROJECTS and
+   ABOUT were. The rule above takes those two out on project pages; this puts
+   the pair in the space they leave, so the bar reads as mark at the left and
+   the way onward at the right — which is the same two things the wide bar's
+   two halves say, in the room a phone has for them.
+
+   It is stated here rather than three times over in rail-page.css,
+   reel-page.css and still-page.css, because it is the same placement on all
+   three templates. Each of those now states only its own --pager-lit and its
+   own wide-window placement, and each of those placements is scoped to
+   `min-width: 768px` so this one is not outranked by a two-class selector.
+
+   IT USED TO BE HIDDEN DOWN HERE ALTOGETHER. On a wide window the pair sits in
+   the footer band, which on a phone is taken by the copyright line and the two
+   contact links the bar cannot hold — so there was nowhere at the foot to put
+   it, and the way between projects was to go back to the index.
+
+   FIXED ALONGSIDE THE BAR RATHER THAN INSIDE IT, because the markup puts the
+   pager in the work: inside .rail__pin on the rails, in .reel and .still on the
+   others. Moving the element into the header would be a DOM move at a
+   breakpoint, undone at the same breakpoint, for a box that can simply be laid
+   over the band it belongs to. z-index 5 against the bar's 3, and the bar is
+   opaque paper on every project page, so the pair is over it rather than
+   behind.
+
+   THE BAND IS THE BAR'S OWN and the pair is centred in it, where the bar's own
+   links are baseline-aligned to the wordmark. The two land within a unit of
+   each other — close enough that nothing reads as off, and not something to
+   chase further without putting the element in the flex row that would settle
+   it. The links then stretch to the band's full height so the target is the
+   bar's 37.594 rather than a 14-unit line of type. */
+@media (max-width: 767px) {
+  .pager {
+    display: flex;
+    position: fixed;
+    top: 0;
+    right: var(--grid-margin);
+    left: auto;
+    bottom: auto;
+    z-index: 5;
+    height: var(--nav-h);
+  }
+
+  .pager__link {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+  }
+}
 
 /* ==========================================================================
    FOOT

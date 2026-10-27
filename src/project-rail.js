@@ -273,9 +273,102 @@ export function mountRail() {
     rail.style.removeProperty('--rail-scroll');
   }
 
+  /* --- the narrow counter --------------------------------------------------- */
+
+  // WHENEVER THE PIN IS A PLAIN SCROLLER, the counter is driven from its
+  // scrollLeft instead of from the page's scrollY. That is below 768, where the
+  // row is swiped, and it is also a wide window under prefers-reduced-motion —
+  // both are release()'d, and in both the row moves without the document
+  // moving, so the scroll handler above never fires and `[1/17]` sat there
+  // being wrong for as long as anyone swiped.
+  //
+  // It matters most on a phone. There is no scrollbar on the row, no pager and
+  // no cursor: the counter is the only thing on the screen saying the row is
+  // seventeen long and this is the second of them.
+  //
+  // The scrub is NOT promoted here and must not be. enhanceScrub gives it a
+  // role and a tab stop, and a slider that announces itself and then cannot be
+  // dragged is worse than a line that only reports. What this writes is the
+  // fill and the count, which are both read-only.
+  let following = false;
+  let swiped = 0;
+
+  function followPaint() {
+    if (!following) return;
+
+    // One slide plus one gap, read off the row rather than computed from the
+    // tokens, for the same reason measure() reads it: the slide's width is a
+    // min() of two caps and only the browser knows which one bound.
+    const [a, b] = slides;
+    const stride = b
+      ? b.getBoundingClientRect().left - a.getBoundingClientRect().left
+      : a.getBoundingClientRect().width;
+
+    const max = pin.scrollWidth - pin.clientWidth;
+    const p = max > 0 ? Math.min(1, Math.max(0, pin.scrollLeft / max)) : 0;
+    if (fill) fill.style.width = `${p * 100}%`;
+
+    // The track is padded by half the window's leftover at each end, so slide i
+    // is centred in the window exactly when scrollLeft is i strides. Which
+    // makes "which slide is nearest the middle" a division and nothing else.
+    if (count && stride > 0) {
+      const n = Math.min(
+        slides.length,
+        Math.max(1, Math.round(pin.scrollLeft / stride) + 1),
+      );
+      if (n !== swiped) {
+        swiped = n;
+        count.textContent = `[${n}/${slides.length}]`;
+      }
+    }
+  }
+
+  let followQueued = false;
+  pin.addEventListener(
+    'scroll',
+    () => {
+      if (!following || followQueued) return;
+      followQueued = true;
+      requestAnimationFrame(() => {
+        followQueued = false;
+        followPaint();
+      });
+    },
+    { passive: true },
+  );
+
+  function follow() {
+    if (following) return;
+    following = true;
+    swiped = 0;
+    followPaint();
+  }
+
+  function unfollow() {
+    if (!following) return;
+    following = false;
+    // The fill is the pinned state's to write from here on, and it writes it on
+    // the next frame. Left alone it would hold whatever the last swipe put
+    // there until then.
+    if (fill) fill.style.width = '0%';
+  }
+
+  // THE FULL-SCREEN OVERLAY COUNTS AS A REASON NOT TO PIN, alongside the
+  // narrow window and the reduced-motion preference. src/rail-expand.js lays a
+  // fixed box over the viewport and scrolls the row inside it; a phone turned
+  // sideways to read it is 844 wide, which is past this module's breakpoint, so
+  // without the third term `sync` would pin the rail on the turn and start
+  // translating the same track the overlay is scrolling. Two positions for one
+  // row, and the second one wins on alternate frames.
   function sync() {
-    if (wide.matches && !still.matches) engage();
-    else release();
+    const expanded = rail.classList.contains('is-expanded');
+    if (wide.matches && !still.matches && !expanded) {
+      unfollow();
+      engage();
+    } else {
+      release();
+      follow();
+    }
   }
 
   /* --- the scrub ----------------------------------------------------------- */
@@ -479,7 +572,13 @@ export function mountRail() {
   addEventListener(
     'resize',
     () => {
-      if (!live) return;
+      // The swiped row's stride is read per paint, so a resize only has to ask
+      // for one — but it has to ask, because the slide's width is capped
+      // against the window and a turned phone is a different window.
+      if (!live) {
+        followPaint();
+        return;
+      }
       measure();
       paint();
     },
@@ -488,6 +587,9 @@ export function mountRail() {
 
   wide.addEventListener('change', sync);
   still.addEventListener('change', sync);
+  // Opening or leaving the full screen changes the answer sync() gives — see
+  // the note on it. src/rail-expand.js fires this on the rail itself.
+  rail.addEventListener('rail:fullscreen', sync);
 
   sync();
 
@@ -496,7 +598,10 @@ export function mountRail() {
   // file. This is the belt on that: if anything does change the row's width after
   // layout settles, the travel is re-read once.
   addEventListener('load', () => {
-    if (!live) return;
+    if (!live) {
+      followPaint();
+      return;
+    }
     measure();
     paint();
   });

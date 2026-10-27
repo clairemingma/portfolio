@@ -120,38 +120,47 @@
              channels, which cannot be said in two sentences. The band has the
              room — see .still__brief::before in src/still-page.css, where the
              offset above the title is what gives way first. -->
-        <div class="brief__prose">
-          <p class="brief__text">
-            For Studio Edit 02, I sourced more than 25 creators across paid
-            partnerships, product seeding, and invitations to the Silver Springs
-            activation. With Pilates at the center of the drop, we needed
-            creators with a genuine practice, which meant looking past follower
-            counts for people who felt both aspirational and as trustworthy as a
-            friend. I vetted each one against three content pillars (narrative,
-            performance, and system of dress) so every creator could tell the
-            product’s story, show it credibly in motion, or demonstrate how to
-            style it. That shared standard kept the drop consistent across every
-            channel, from paid social to the in-person activation.
-          </p>
-        </div>
+        <!-- THE READING, which is everything past the facts: the prose and the
+             places to read more. It is one region because below 768 it is one
+             DISCLOSURE — the brief is a sheet across the foot of the window there,
+             showing the title and the facts, and [+] opens this. Above 768 the
+             wrapper is `display: contents` and the page is exactly what it was.
+             The collapse is src/brief-sheet.js's doing and only once it has run, so
+             without script every word of this is simply on the page. -->
+        <div class="brief__more" data-brief-more>
+          <div class="brief__prose">
+            <p class="brief__text">
+              For Studio Edit 02, I sourced more than 25 creators across paid
+              partnerships, product seeding, and invitations to the Silver Springs
+              activation. With Pilates at the center of the drop, we needed
+              creators with a genuine practice, which meant looking past follower
+              counts for people who felt both aspirational and as trustworthy as a
+              friend. I vetted each one against three content pillars (narrative,
+              performance, and system of dress) so every creator could tell the
+              product’s story, show it credibly in motion, or demonstrate how to
+              style it. That shared standard kept the drop consistent across every
+              channel, from paid social to the in-person activation.
+            </p>
+          </div>
 
-        <!-- One destination, and the label is the thing itself rather than a
-             heading over it — the same 10pt line the other project pages
-             carry.
+          <!-- One destination, and the label is the thing itself rather than a
+               heading over it — the same 10pt line the other project pages
+               carry.
 
-             The href is LinkedIn's own shortener rather than the post's full
-             URL, for the reason given on the other two: the expanded one
-             carries the share tracking LinkedIn appends when you copy a link
-             out of it (utm_source, utm_medium, rcm), and none of that belongs
-             in the markup. lnkd.in/p/e_4xBsrW 301s to the post either way. -->
-        <div class="brief__source">
-          <a
-            class="brief__link"
-            href="https://lnkd.in/p/e_4xBsrW"
-            target="_blank"
-            rel="noopener"
-            >Reflection</a
-          >
+               The href is LinkedIn's own shortener rather than the post's full
+               URL, for the reason given on the other two: the expanded one
+               carries the share tracking LinkedIn appends when you copy a link
+               out of it (utm_source, utm_medium, rcm), and none of that belongs
+               in the markup. lnkd.in/p/e_4xBsrW 301s to the post either way. -->
+          <div class="brief__source">
+            <a
+              class="brief__link"
+              href="https://lnkd.in/p/e_4xBsrW"
+              target="_blank"
+              rel="noopener"
+              >Reflection</a
+            >
+          </div>
         </div>
       </section>
 

@@ -630,47 +630,461 @@
    the whole page would be judged on. Swiping a row of slides sideways is what a
    phone is good at, so that is what it gets.
 
-   The module reads the same breakpoint and does not pin below it. */
+   The module reads the same breakpoint and does not pin below it; `release()`
+   takes the transform and --rail-scroll back off, so the rules below are
+   styling a plain scroller rather than fighting a live one. It does keep the
+   COUNTER running down here — see THE NARROW COUNTER in src/project-rail.js —
+   because a row with no scrollbar and no pager needs to say how long it is.
+
+   THE PAGE IS THREE BANDS AND IT DOES NOT SCROLL DOWN. The bar at the top, the
+   charcoal with the row in it, the brief's sheet and the footer across the
+   foot. Everything is on screen at once and the only gesture is sideways, which
+   is the one the work is actually read with. What the slides lose by it is
+   size: a 16:9 slide on four columns of a 390 screen is about 200 tall, and a
+   deck slide carries type. THE ENLARGE BUTTON IS THE ANSWER TO THAT and not a
+   decoration — see THE FULL SCREEN below. */
 @media (max-width: 767px) {
-  /* ELEVEN COLUMNS IS A TWELVE-COLUMN NUMBER, and down here the grid is FOUR —
-     --grid-columns changes at this same breakpoint in styles.css. Asking for
-     eleven of four columns is asking for 1005 on a 390 screen, which is what it
-     gave before this rule existed.
-     The full measure is what a narrow page gives any piece of artwork: four
-     columns and their gutters, which is the window less its two margins. */
   :root {
-    --rail-slide-w: calc(100vw - 2 * var(--grid-margin));
+    /* THE ROW THE ENLARGE BUTTON STANDS IN, under the bar at the right
+       margin. A TOUCH TARGET's height rather than a typographic one: 44 is the
+       size a thumb can be asked to find, and the button fills it exactly.
+
+       It is reserved above the slides so the artwork is never behind it. The
+       pager used to share this row at the left end; it is in the bar itself
+       now — see THE PAIR IN THE BAR in styles.css — so what is left here is
+       one control and the air around it. */
+    --rail-ctrl-row: 44rem;
+
+    /* THE BAND THE CHARCOAL GETS: the window, less the bar at the top and less
+       the two fixed paper strips at the foot. --brief-sheet-h is measured and
+       published by src/brief-sheet.js; project-brief.css carries the default
+       that holds until it runs. */
+    --rail-band: calc(
+      100dvh - var(--nav-h) - var(--brief-sheet-h) - var(--rail-foot-h)
+    );
+
+    /* ELEVEN COLUMNS IS A TWELVE-COLUMN NUMBER, and down here the grid is FOUR —
+       --grid-columns changes at this same breakpoint in styles.css. Asking for
+       eleven of four columns is asking for 1005 on a 390 screen.
+
+       The full measure is what a narrow page gives any piece of artwork: four
+       columns and their gutters, which is the window less its two margins. The
+       second cap is the band, less the two rows that stand in it — the controls
+       at the top and the progress at the floor — and a gutter above and below.
+       It does not bind on a phone held upright, where the width runs out first
+       by a long way, and it is what keeps a slide clear of both on a short
+       window. */
+    --rail-slide-w: min(
+      calc(100vw - 2 * var(--grid-margin)),
+      calc(
+        (
+            var(--rail-band) - var(--rail-ctrl-row) -
+              var(--rail-progress-row) - 2 * var(--grid-gutter)
+          ) * 16 / 9
+      )
+    );
   }
 
+  /* The charcoal is the band and nothing else: the sheet and the footer are
+     fixed over the foot of the window, so the document is this and the page has
+     no vertical travel at all.
+
+     Both states are given the same box here, so it does not matter whether the
+     module ran — .is-pinned is written and removed asynchronously and the
+     layout must not depend on which side of that we are on. */
+  .rail,
   .rail.is-pinned {
-    height: auto;
+    height: calc(var(--nav-h) + var(--rail-band));
   }
 
+  .rail__pin,
   .rail.is-pinned .rail__pin {
     position: static;
+    height: 100%;
+    /* The bar is an opaque paper strip and the charcoal runs under it; the
+       control row under that carries the pager and the enlarge button. The
+       padding is what keeps the slides clear of both, so the track centres
+       what is left rather than centring in the whole band and sliding the
+       artwork up behind them. */
+    padding-top: calc(var(--nav-h) + var(--rail-ctrl-row));
     overflow-x: auto;
+    overflow-y: hidden;
   }
 
+  /* transform: none is !important because the module writes the live one as an
+     inline style, and a stale inline transform on a row that is scrolled rather
+     than translated is an offset with nothing to offset.
+
+     The bottom padding is the progress row's: the track centres the slide in
+     what is left above it, rather than in the whole band with the row drawn
+     across the bottom of the picture. */
   .rail.is-pinned .rail__track {
     transform: none !important;
   }
 
-  .lead {
-    padding-top: calc(var(--nav-h) + 40rem);
+  .rail__track {
+    padding-bottom: var(--rail-progress-row);
   }
 
-  /* A column is 80.5 down here where it is 100.83 at 1470, and the tracks are
-     sized to the design's twelve-column figure. Content-sized instead, so a value
-     or a link that would not fit in a narrow column is not clipped to one. */
-  .lead .brief__facts,
+  /* On the floor of the band rather than one footer band up from it: down here
+     the footer band is a fixed strip of paper outside the charcoal, so there is
+     nothing for the row to stand clear of. .rail__pin is static at this width,
+     so the containing block is .rail — which is why this does not travel with
+     the row when it is swiped. */
+  .progress {
+    bottom: 0;
+  }
+
+  /* ========================================================================
+     THE SHEET
+     ======================================================================== */
+
+  /* The brief is a panel of paper across the foot of the window, over the
+     charcoal, resting on the footer band. See THE SHEET in project-brief.css
+     for what it is and why; this is only where this template anchors it.
+
+     .lead keeps nothing of its wide-window self here. It is the box that holds
+     the sheet in place, and the sheet's own padding and ground are the brief's.
+
+     BOTH ARE SCOPED TO .has-brief-sheet, which src/brief-sheet.js puts on the
+     document when it collapses the brief. Without script the brief is every
+     word of itself and is far taller than the strip these rules reserve for it,
+     so fixing it to the foot of the window unconditionally would pin a block
+     over the work with no way to get past it. Unscoped, the page is simply the
+     document the markup describes: charcoal, then the brief, then the footer. */
+  .has-brief-sheet .lead {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--rail-foot-h);
+    z-index: 4;
+    padding: 0;
+    background: none;
+  }
+
+  .has-brief-sheet .rail-foot {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 4;
+  }
+
+  .lead {
+    align-items: stretch;
+    text-align: left;
+  }
+
+  /* Everything above centres this block, because on a wide window it is a title
+     page over the work. In a sheet under the work it is a caption, and a caption
+     is read down its left edge: centred copy on a 343 measure gives every
+     paragraph a different left edge and a ragged four-line silhouette, and the
+     facts stop reading as a table the moment the rows are short.
+
+     So the whole block is unwound back to the left-aligned column
+     project-brief.css already describes, and takes the full four columns. */
+  .lead .brief {
+    align-items: stretch;
+    max-width: none;
+    text-align: left;
+  }
+
+  /* Label on column 1 and value on 2 to 4, which is the narrow grid
+     project-brief.css sets. What is undone here is the centring: the two fixed
+     one-column tracks, the right-aligned label and the `justify-content: center`
+     that holds the pair in the middle of the page. */
+  .lead .brief__facts {
+    justify-content: start;
+    width: 100%;
+    grid-template-columns: var(--col) minmax(0, 1fr);
+  }
+
+  .lead .brief__label {
+    text-align: left;
+  }
+
+  /* The nowrap goes with the centring. It exists so a long value runs past its
+     one-column track rather than putting a second line under one of four rows —
+     affordable at 1470, where the overflow is paper. On four columns it is a
+     value running off the right edge of the screen. */
+  .lead .brief__value {
+    text-align: left;
+    white-space: normal;
+  }
+
+  /* The eight-column measure is a centred-copy number and the full measure is
+     four columns, so there is nothing left for it to cap. The indent comes BACK
+     — it was taken off because an indent on centred copy shortens the first line
+     and reads as a typo, and the copy is not centred any more. One grid step,
+     the same one project-brief.css sets. */
+  .lead .brief__prose,
+  .lead .brief__text {
+    max-width: none;
+    text-align: left;
+  }
+
+  .lead .brief__text:first-child {
+    text-indent: var(--col-step);
+  }
+
+  /* Both shapes collapse to one row at the left. The two-destination grid is
+     two one-column tracks meeting in the middle of the page, which is the
+     centring again; ANALYSIS and GITHUB are two words and they sit beside each
+     other. */
+  .lead .brief__source,
   .lead .brief__source:has(> :nth-child(2)) {
-    grid-template-columns: auto auto;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: var(--grid-gutter);
+    width: auto;
+  }
+
+  .lead .brief__source:has(> :nth-child(2)) > :first-child,
+  .lead .brief__source:has(> :nth-child(2)) > :nth-child(2) {
+    text-align: left;
+  }
+
+}
+
+/* ==========================================================================
+   THE FULL SCREEN
+   ========================================================================== */
+
+/* A 16:9 slide on four columns of a phone held upright is about 200 units tall,
+   and these slides are DECK PAGES — they carry headings, body copy and chart
+   labels, set for a projector. At that size the pictures read and the words do
+   not, and no amount of layout fixes it: the shape of the artwork and the shape
+   of the window disagree by a quarter turn.
+
+   So the enlarge button hands the whole window to the row and says to turn the
+   phone. Sideways, 844 by 390 on the common handset, the slide comes out at 625
+   against the 357 it had upright — three times the area, and the type is
+   legible. This is the one place on the site that asks a reader to do something
+   with the device rather than with the page, and it is asked for exactly
+   because the alternative is artwork that cannot be read at all.
+
+   NONE OF THIS IS INSIDE THE NARROW QUERY, AND THAT IS THE WHOLE POINT. A phone
+   turned sideways is 844 wide, which is past 768 — so every rule written at
+   `max-width: 767px` switches off at the exact moment this feature asks for.
+   The overlay is keyed on .is-expanded alone and holds at any width; what stays
+   in the narrow query is the BUTTON THAT OPENS IT, because a wide window has no
+   use for it.
+
+   src/project-rail.js knows about the class for the same reason: crossing 768
+   is what makes it pin the rail, and a pinned rail translating its track
+   underneath a fixed overlay that is scrolling the same track is two positions
+   for one row. It stays released while this is up.
+
+   It is a CSS state and not the Fullscreen API, though src/rail-expand.js calls
+   that too where it exists. iOS Safari does not implement requestFullscreen for
+   anything but a <video>, and the phones this is for are mostly iPhones: a
+   fixed box over the viewport is the version that works everywhere, and the
+   real fullscreen is a bonus on the platforms that have it — one less strip of
+   browser chrome, and an orientation lock the module can then ask for.
+
+   The slide is sized against the window twice over and the smaller wins: the
+   width less a gutter at each side, or what the height allows once the progress
+   row has its band at the foot. In landscape the height binds; in portrait the
+   width does, which is the whole reason for the hint.
+
+   AFTER .rail.is-pinned, not before: the two are the same specificity and the
+   overlay has to win if the module has not yet let go of the pin. */
+.rail.is-expanded {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  height: auto;
+  --rail-slide-w: min(
+    calc(100vw - 2 * var(--grid-gutter)),
+    calc((100dvh - var(--rail-progress-row) - 2 * var(--grid-gutter)) * 16 / 9)
+  );
+  /* Both of these are derived from --rail-slide-w on :root, which means they
+     were resolved there against the value :root had. Redefining the width here
+     does not reach back into them, so they are restated. */
+  --rail-slide-h: calc(var(--rail-slide-w) * 9 / 16);
+  --rail-inset: calc((100vw - var(--rail-slide-w)) / 2);
+
+  /* THE GAP BECOMES THE INSET, and that is what makes this a full screen
+     rather than a large one. Three gutters is the wide rail's interval and it
+     leaves the next slide showing at the edge of the window — which is right
+     on a page where the row is plainly a row, and wrong here, where the point
+     is one slide and nothing else. Set to the inset, the neighbour's left edge
+     lands at exactly inset + slide + inset, which is the right edge of the
+     window: off the screen by construction, at every size, and still only one
+     swipe away. */
+  --rail-gap: var(--rail-inset);
+}
+
+.rail.is-expanded .rail__pin {
+  position: static;
+  height: 100dvh;
+  padding-top: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.rail.is-expanded .rail__track {
+  height: 100%;
+  padding-bottom: var(--rail-progress-row);
+  transform: none !important;
+}
+
+.rail.is-expanded .progress {
+  bottom: 0;
+}
+
+/* The page behind must not move while the overlay is up: a swipe that misses
+   the row would otherwise scroll the document underneath it. */
+.is-rail-expanded,
+.is-rail-expanded body {
+  overflow: hidden;
+}
+
+/* The overlay already paints over all of these — it is `inset: 0` at z-index 20
+   and the bar and the sheet are at 3 and 4. What `visibility: hidden` adds is
+   the part painting over them does not: it takes the bar's four links, the
+   sheet's [+], the footer's two and the pager out of the tab order, so Tab
+   inside the overlay cannot land on a control nobody can see. */
+.is-rail-expanded .nav,
+.is-rail-expanded .lead,
+.is-rail-expanded .rail-foot,
+.is-rail-expanded .rail__rule,
+.is-rail-expanded .pager {
+  visibility: hidden;
+}
+
+/* ==========================================================================
+   THE CONTROLS — enlarge, close, and the hint
+   ========================================================================== */
+
+/* Both buttons are injected by src/rail-expand.js and are children of .rail
+   rather than of the pin, so neither travels when the row is swiped. Each is a
+   44-square touch target drawn as a 16-unit mark: the padding is negative
+   space, pulled back out by the offsets so the icon lands on the corner it is
+   meant to be in rather than a finger's width inside it.
+
+   White on the charcoal, at the opacity .progress__track rests at, and full
+   strength when pressed. A control over artwork should be findable and should
+   not compete with it. */
+.rail__expand,
+.rail__close {
+  position: absolute;
+  z-index: 3;
+  display: none;
+  padding: 14rem;
+  border: 0;
+  background: none;
+  color: var(--color-white);
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.rail__expand:hover,
+.rail__expand:focus-visible,
+.rail__close:hover,
+.rail__close:focus-visible {
+  opacity: 1;
+}
+
+/* The ring is drawn INSIDE the target, which is the one place on this site it
+   is: the padding here is 14 units of empty space on every side, so the
+   browser's own ring lands a finger's width out from a 16-unit icon and reads
+   as a box in the corner of the artwork rather than as a focused control. A
+   negative offset puts it back around the mark. The colour is the reel's —
+   paper on the charcoal, which is the only ground either button is ever on. */
+.rail__expand:focus-visible,
+.rail__close:focus-visible {
+  outline: 2px solid var(--color-paper);
+  outline-offset: -6rem;
+}
+
+.rail__expand svg,
+.rail__close svg {
+  display: block;
+  width: 16rem;
+  height: 16rem;
+}
+
+/* THE ENLARGE BUTTON IS THE ONE CONTROL THAT BELONGS TO A WIDTH. It takes the
+   right end of the control row under the bar, opposite PREV / NEXT at the left
+   — the row is 44 tall and so is this, so the two fill it exactly and the pair
+   read as the row's two ends. A wide window has no use for it: the rail is
+   already the whole screen up there, pinned, with the pager and the scrub to
+   drive it.
+
+   Stated here rather than up in the narrow block so it lands after the
+   `display: none` above it rather than before. */
+@media (max-width: 767px) {
+  .rail__expand {
+    display: flex;
+    top: var(--nav-h);
+    right: calc(var(--grid-margin) - 14rem);
   }
 }
 
-/* THE PAGER, in the pin so it is on the charcoal and only while the rail holds
-   the screen. Opposite .rail__rule in the same footer band: copyright left,
-   prev/next right, both centred in the 37.594 the site gives a footer.
+/* Top right of the window, because inside the overlay there is no bar above it
+   and no margin either — the slide is centred on the whole of the glass. */
+.rail.is-expanded .rail__close {
+  display: flex;
+  top: calc(var(--grid-gutter) - 14rem);
+  right: calc(var(--grid-gutter) - 14rem);
+}
+
+/* The two are never up together: one opens the state the other leaves. */
+.rail.is-expanded .rail__expand {
+  display: none;
+}
+
+/* THE HINT, and it takes itself off. It is up only while the overlay is up AND
+   the phone is still upright — the moment it is turned, the thing it asked for
+   has happened and the sentence is in the way of the answer. An orientation
+   query rather than a timer or a tap, so it is the device's own state that
+   dismisses it and nothing has to be remembered.
+
+   Centred under the slide rather than over it: the hint is about the window,
+   not about the picture, and a line of type across the artwork is the kind of
+   chrome the rest of this page is built to avoid. */
+.rail__hint {
+  position: absolute;
+  left: var(--grid-margin);
+  right: var(--grid-margin);
+  bottom: calc(var(--rail-progress-row) + var(--grid-gutter));
+  z-index: 3;
+  display: none;
+  margin: 0;
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--color-system-grey);
+}
+
+.rail.is-expanded .rail__hint {
+  display: block;
+}
+
+@media (orientation: landscape) {
+  .rail.is-expanded .rail__hint {
+    display: none;
+  }
+}
+
+/* THE PAGER lights to white on both of this page's arrangements, because it is
+   on the charcoal in both: the footer band of the pinned rail above 768, and
+   the control row under the bar below it. The resting grey is .pager's own —
+   see styles.css, and see THE CONTROL ROW there for the narrow placement. */
+.rail__pin .pager {
+  --pager-lit: var(--color-white);
+}
+
+/* In the pin so it is on the charcoal and only while the rail holds the screen.
+   Opposite .rail__rule in the same footer band: copyright left, prev/next
+   right, both centred in the 37.594 the site gives a footer.
 
    Absolute against the pin rather than fixed to the window, because the half of
    this page above the rail is PAPER — a fixed pager would cross from one ground
@@ -678,20 +1092,20 @@
    In the pin it is only ever on the dark.
 
    It rests in the same system grey as the copyright beside it and lights to
-   white under the cursor — see .pager in styles.css. Resting alike and lighting
-   differently is the honest pairing: one of them is a live link and the other is
-   a line of fine print, and that only has to show when you go looking. */
-.rail__pin .pager {
-  position: absolute;
-  right: var(--grid-margin);
-  bottom: 0;
-  z-index: 2;
-  height: var(--rail-foot-h);
-  --pager-lit: var(--color-white);
-}
+   white under the cursor. Resting alike and lighting differently is the honest
+   pairing: one of them is a live link and the other is a line of fine print,
+   and that only has to show when you go looking.
 
-@media (max-width: 767px) {
+   SCOPED TO THE WIDE WINDOW, where it used not to be. Below 768 the pair is in
+   the control row under the bar instead, and that placement is shared by all
+   three templates and stated once in styles.css — which this would otherwise
+   outrank, being two classes deep to its one. */
+@media (min-width: 768px) {
   .rail__pin .pager {
-    display: none;
+    position: absolute;
+    right: var(--grid-margin);
+    bottom: 0;
+    z-index: 2;
+    height: var(--rail-foot-h);
   }
 }

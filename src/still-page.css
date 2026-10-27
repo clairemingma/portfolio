@@ -102,13 +102,25 @@ body {
    THE PAGE
    ========================================================================== */
 
-/* Below 768 it is a plain block and the children stack in source order: the
-   brief, then the work. The accents are taken out down here rather than stacked
-   — they are squares that exist to overlap something, and a page with nothing
-   beside anything has nothing for them to overlap. */
+/* Below 768 it is a plain column: the work, then the brief, then the footer.
+   The accents are taken out down here rather than stacked — they are squares
+   that exist to overlap something, and a page with nothing beside anything has
+   nothing for them to overlap.
+
+   A flex column rather than a block, which is what lets the brief be moved to
+   the end with `order` instead of the markup being rewritten — see
+   .still__brief. The work carries no order and so takes the default 0, which
+   puts every one of a page's boxes ahead of the brief in the order the markup
+   has them, however many of them there are. */
 .still {
   position: relative;
-  padding: 0 var(--grid-margin);
+  display: flex;
+  flex-direction: column;
+  /* The bar's band, and a gutter under it. The work is the first thing on the
+     page below 768; the pager rides in the bar itself rather than in a row of
+     its own — see THE PAIR IN THE BAR in styles.css — so there is nothing to
+     reserve between the two. */
+  padding: calc(var(--nav-h) + var(--grid-gutter)) var(--grid-margin) 0;
 }
 
 @media (min-width: 768px) {
@@ -130,6 +142,11 @@ body {
     grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
     grid-template-rows: minmax(100dvh, max-content);
     column-gap: var(--grid-gutter);
+    /* The bar's clearance is the narrow page's, where the work is the first
+       thing in a column. Up here the row is a viewport tall and every child
+       states its own offset down it, so the page starts at the top of the
+       window and the bar is simply over it. */
+    padding: 0 var(--grid-margin);
   }
 
   /* Stated once here rather than on each of the six or seven children. The
@@ -220,18 +237,58 @@ body {
   }
 }
 
-/* Below 768 the brief is the page's first screen: the band between the bars with
-   the content centred in it, which is the same trade the rail and reel pages make
-   down there. It takes the FULL MEASURE here rather than the three-of-four
-   columns .brief asks for — three of twelve is a column of prose beside the work,
-   three of four is a column of prose beside nothing, with a quarter of a phone
-   screen left blank at its right. */
+/* Below 768 the brief is A SHEET ACROSS THE FOOT OF THE WINDOW, laid over the
+   work, showing the title and the facts with [+] to open the rest. See THE
+   SHEET in src/project-brief.css for what it is and why; what is here is only
+   where this template anchors it.
+
+   The brief IS the sheet on this page — .still__brief and .brief are the same
+   element — so there is no box to put the anchoring on but this one, and the
+   footer is a separate strip fixed under it. The two are both paper and meet
+   on an edge, so they read as one panel: the brief, then the copyright line
+   and the pair of links the bar cannot hold at this width.
+
+   ORDER IS WHAT IS LEFT OF THE FLOW ARRANGEMENT, and it only matters without
+   script: the sheet is out of the flow, so the work is the only thing in it.
+   Unscripted, the brief is a block at the end of the document and `order` is
+   what puts it there — the markup's own order is the WIDE page's stacking
+   order, with the accents before the plate so the plate paints over them, and
+   that is not a thing a narrow rearrangement should get to rewrite. */
 @media (max-width: 767px) {
   .still__brief {
-    justify-content: center;
-    min-height: 100dvh;
-    width: 100%;
-    padding: var(--nav-h) 0 var(--still-foot-h);
+    order: 2;
+  }
+
+  .still__brief:not(.is-sheet) {
+    padding: var(--grid-gutter) 0;
+  }
+
+  .still__foot {
+    order: 3;
+  }
+
+  .has-brief-sheet .still__brief {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--still-foot-h);
+  }
+
+  .has-brief-sheet .still__foot {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 4;
+    padding: 0 var(--grid-margin);
+    background: var(--color-paper);
+  }
+
+  /* The work is laid out in the band the sheet leaves, so the page scrolls
+     through exactly its own pictures and stops. Without the clearance the last
+     of them ends underneath the panel. */
+  .has-brief-sheet .still {
+    padding-bottom: calc(var(--brief-sheet-h) + var(--still-foot-h));
   }
 }
 
@@ -377,8 +434,14 @@ body {
    copy is cut by is the window, which is the point — see THE BRIEF. The links sit
    in column 12 and the prose stops at the end of 11, so the two never meet.
 
-   It lights to graphite because this page is paper throughout; see .pager in
-   styles.css for the resting grey and the ease. */
+   It lights to graphite at both widths because this page is paper throughout —
+   the one template of the three whose pager is never on the dark. The resting
+   grey is .pager's own; see styles.css, and see THE CONTROL ROW there for the
+   narrow placement. */
+.still .pager {
+  --pager-lit: var(--color-graphite);
+}
+
 @media (min-width: 768px) {
   .still .pager {
     grid-column: 9 / -1;
@@ -387,12 +450,5 @@ body {
     position: sticky;
     bottom: 0;
     height: var(--still-foot-h);
-    --pager-lit: var(--color-graphite);
-  }
-}
-
-@media (max-width: 767px) {
-  .still .pager {
-    display: none;
   }
 }
