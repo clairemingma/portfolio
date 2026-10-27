@@ -168,6 +168,19 @@
   background: var(--color-index-grey);
 }
 
+/* Below 768 the plate is centred in the box every project page's work gets —
+   see .post in src/still-page.css — so HEIGHT is the binding dimension and the
+   3:4 gives the width back. The second cap is the measure, which takes over on
+   a wide short phone where the box is squarer than the plate. */
+@media (max-width: 767px) {
+  .plate {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    max-height: calc(var(--work-h) - 2 * var(--grid-gutter));
+  }
+}
+
 @media (min-width: 768px) {
   .plate {
     /* The group above carries the two derived lengths, and they already carry the

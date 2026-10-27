@@ -12,10 +12,15 @@
    Both of those mount and unmount with the breakpoint and do nothing above it. */
 import { mountRail } from './project-rail.js';
 import { mountRailExpand } from './rail-expand.js';
-import { mountBriefSheet } from './brief-sheet.js';
+import { mountMobileMenu } from './mobile-menu.js';
 import { mountCopyAddress } from './copy-address.js';
 
 mountRail();
 mountRailExpand();
-mountBriefSheet();
+// Below 768 only, and it unmounts above it. The bar keeps the wordmark and
+// gains [MENU]; the two sections, the address, LinkedIn and the copyright are
+// in the panel it opens. BEFORE mountCopyAddress, always: that module collects
+// every [data-copy] once, at mount, and the panel's address button is one of
+// them. See src/mobile-menu.js.
+mountMobileMenu();
 mountCopyAddress();

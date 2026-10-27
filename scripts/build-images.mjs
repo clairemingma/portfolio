@@ -313,46 +313,59 @@ const REELS = [
   // comes back at the size the node is DRAWN and will not render larger, so a
   // scripted pull can only ever get 1x. Re-exporting is manual if they change.
   //
-  // THE PHONE IS ITS EXPORT WHOLE; THE BROWSER IS CUT TO ITS WINDOW. That split is
-  // the point of this entry, and it comes from what the two canvases actually hold.
+  // THE PHONE IS ITS EXPORT WHOLE; THE BROWSER IS CUT DOWN. That split is the
+  // point of this entry, and it comes from what the two canvases actually hold.
   //
   //   2  692x1414, and 94% of it is device. Its box is its own half-size, 346x707,
   //      stated to the half unit so `scale` lands on exactly 2 and the resize is
   //      the identity — `cover` into a box of the source's own shape crops nothing.
   //
-  //   1  2163x2245, and only the top 1650x1174 of it is the browser window. The
-  //      rest is drop shadow falling away below and empty charcoal around it — 48%
-  //      of the canvas height carries no picture at all.
+  //   1  2232x2245, of which the browser window is 1650x1174 at (290, 54) and the
+  //      rest is its drop shadow and empty canvas. Delivered whole, the frame was
+  //      SMALL ON THE PAGE by arithmetic rather than by taste: reel-page.css caps
+  //      a frame at the window's height, so a canvas 1.9x as tall as its own
+  //      picture was fitted to the screen and the browser landed at about half the
+  //      height the design draws it.
   //
-  // Delivered whole, frame 1 was SMALL ON THE PAGE, and by arithmetic rather than
-  // by taste: reel-page.css caps a frame at the window's height, so the shadow was
-  // being fitted to the screen along with the window and the window itself landed
-  // at about half the height the design draws it. An earlier pass here kept the
-  // export whole on the principle that nothing should be cropped; the principle is
-  // right for a photograph, where every pixel is subject, and wrong for a mockup,
-  // where the shadow is padding that the page has no way to tell from picture.
+  // THE SHADOW IS PART OF THE PICTURE AND THE EMPTY CANVAS IS NOT, and telling
+  // those two apart is the whole of what `crops` and `feather` do here. An earlier
+  // pass cut frame 1 to the window exactly, which solved the size and threw the
+  // shadow away with the emptiness — the mockup sat on the page as a hard-edged
+  // rectangle. What the crop takes now is the window plus the shadow that reads:
+  // 100 either side and 250 below, which is where the falloff passes about 7% and
+  // stops being a thing the eye finds.
   //
-  // So `crop` below is an explicit extract, in SOURCE pixels, taken before the
-  // resize. Its origin is the window's own top-left corner, measured off the file
-  // — the first column and row that are window rather than background — and its
-  // size is exactly 2x the box the design draws the frame in, 825x587. Both
-  // together mean `scale` is again exactly 2 and the resize is again the identity:
-  // the crop IS the delivered plate, at full resolution, with nothing resampled.
+  // THE BUDGET FOR IT IS THE PAGE'S OWN SLACK, and that is why 250 and not more.
+  // The frame comes to 712 units tall against the 717 the design's 835-high window
+  // leaves between the bar and the air, so nothing is capped and the browser still
+  // renders at exactly the 825x587 it is drawn at. Ask for more shadow than that
+  // and the cap takes it back out of the window.
   //
-  // Measured rather than assumed, and it is the one number here that a re-export
-  // can silently invalidate — a mockup nudged inside its Figma frame moves this
-  // origin. If frame 1 ever comes back sliced or off-centre, re-measure the corner
-  // before changing anything else.
+  // `feather` IS WHAT MAKES THE CUT INVISIBLE. A soft shadow does not end, it
+  // fades — so cropping one at any threshold leaves a straight edge where it was
+  // still faintly inked, and on the paper ground the narrow page now uses that
+  // edge reads as a rectangle drawn around the mockup. The ramp below takes the
+  // alpha to zero over the last 120 units at the foot and 80 at the sides, so the
+  // crop ends where the shadow was already going.
+  //
+  // Measured rather than assumed, and the corner is the one number here that a
+  // re-export can silently invalidate. To re-measure: the device is the fully
+  // opaque region, so its box is the alpha >= 250 bounding box of the export. The
+  // check that it is right is that the window comes to 1650x1174 and no other
+  // number, because that is 2x the 825x587 the design draws it at.
   {
     slug: 'shop-every-store',
     dir: 'assets/projects/shop-every-store/frames',
     box: REEL_BOX,
     boxes: {
-      1: { w: 825, h: 587 },
+      1: { w: 925, h: 712 },
       2: { w: 346, h: 707 },
     },
     crops: {
-      1: { left: 290, top: 53, width: 1650, height: 1174 },
+      1: { left: 190, top: 54, width: 1850, height: 1424 },
+    },
+    feather: {
+      1: { bottom: 240, sides: 160 },
     },
   },
 ];
@@ -748,6 +761,41 @@ for (const plate of PLATES) {
 //
 // The consequence the page depends on: every delivered reel frame has its box's
 // ratio, so the markup only ever has to state a HEIGHT and the width follows.
+// Takes a cut edge back to nothing. A soft shadow does not end, it fades — so an
+// extract at any threshold leaves a straight line where it was still faintly
+// inked, and against paper that line reads as a rectangle drawn around the
+// picture. This multiplies the alpha by a linear ramp over the last N pixels of
+// whichever edges are named, so the crop finishes where the shadow was already
+// going.
+//
+// A raw round trip rather than a composited mask: the ramp is two comparisons
+// and a multiply per pixel, and a gradient PNG to do the same thing would be a
+// second image to generate, size, and keep in step with the crop.
+//
+// THE TOP IS NEVER FEATHERED and is not offered. On the one frame that uses this
+// the crop's top edge IS the picture's — the browser window's own — and a ramp
+// there would fade the chrome out.
+async function feather(input, { bottom = 0, sides = 0 }) {
+  const { data, info } = await input
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const { width, height, channels } = info;
+
+  for (let y = 0; y < height; y += 1) {
+    const fy = bottom ? Math.min(1, (height - 1 - y) / bottom) : 1;
+    for (let x = 0; x < width; x += 1) {
+      const fx = sides ? Math.min(1, x / sides, (width - 1 - x) / sides) : 1;
+      const f = Math.min(fy, fx);
+      if (f >= 1) continue;
+      const i = (y * width + x) * channels + 3;
+      data[i] = Math.round(data[i] * f);
+    }
+  }
+
+  return sharp(data, { raw: { width, height, channels } });
+}
+
 const reelNotes = [];
 for (const reel of REELS) {
   if (!existsSync(reel.dir)) {
@@ -768,8 +816,13 @@ for (const reel of REELS) {
     // scale below is measured against what is left rather than against the whole
     // canvas. Only a mockup ever needs one; see the note at Shop Every Store.
     const crop = reel.crops?.[frame.name];
-    const pipe = sharp(src);
+    let pipe = sharp(src);
     if (crop) pipe.extract(crop);
+    // The ramp that lets a cropped shadow end without an edge. After the extract
+    // and before the resize, so its distances are in source pixels like the
+    // crop's own. See the note at Shop Every Store.
+    const fade = reel.feather?.[frame.name];
+    if (fade) pipe = await feather(pipe, fade);
 
     const { width: sw, height: sh } = crop
       ? { width: crop.width, height: crop.height }

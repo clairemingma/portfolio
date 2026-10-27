@@ -1,18 +1,28 @@
-/* The entry for the reel project page, and it mounts one thing.
+/* The entry for the reel project pages.
 
-   The reel itself is not scripted: the frames snap because the CSS says
-   `scroll-snap-type`, and the brief stays put because it is `position: sticky`.
-   Neither needs a listener, and neither degrades if this file never loads.
+   THE WIDE PAGE IS STILL NOT SCRIPTED. The frames snap because the CSS says
+   `scroll-snap-type` and the brief stays put because it is `position: sticky`;
+   neither needs a listener and neither degrades if this file never loads.
 
-   What does need script is the brief below 768, where it is collapsed into a
-   sheet across the foot of the window with [+] to open the rest of it, and the
-   address in the bar, which is a copy button on every page of this site. That
-   is the whole of it — rail-page.js also mounts a pinned row and still-page.js
-   a plate and two videos, and this page has none of those, so it takes its own
-   entry rather than importing either and relying on a querySelector to come
-   back empty. */
-import { mountBriefSheet } from './brief-sheet.js';
+   All three mounts below belong to the NARROW page, where the frames are a
+   swipe row rather than a screen each: the counter that keeps up with it, the
+   menu the bar opens, and the address in that menu, which is a copy button on
+   every page of this site.
+
+   It takes its own entry rather than importing rail-page.js or still-page.js —
+   those mount a pinned row and a cycling plate, and this page has neither, so
+   sharing would be a querySelector per page for a thing that is not there. */
+import { mountReelCounter } from './reel-counter.js';
+import { mountMobileMenu } from './mobile-menu.js';
 import { mountCopyAddress } from './copy-address.js';
 
-mountBriefSheet();
+// Keeps [1/3] true as the row of frames is swiped, which it only is below
+// 768. See src/reel-counter.js.
+mountReelCounter();
+// Below 768 only, and it unmounts above it. The bar keeps the wordmark and
+// gains [MENU]; the two sections, the address, LinkedIn and the copyright are
+// in the panel it opens. BEFORE mountCopyAddress, always: that module collects
+// every [data-copy] once, at mount, and the panel's address button is one of
+// them. See src/mobile-menu.js.
+mountMobileMenu();
 mountCopyAddress();

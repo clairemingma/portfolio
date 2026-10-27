@@ -109,42 +109,33 @@
                The wrapper stays: .brief__prose is what takes the brief's 20 as
                one child and keeps the air between the facts and the copy. See
                .brief__prose in src/project-brief.css. -->
-          <!-- THE READING, which is everything past the facts: the prose and the
-               places to read more. It is one region because below 768 it is one
-               DISCLOSURE — the brief is a sheet across the foot of the window there,
-               showing the title and the facts, and [+] opens this. Above 768 the
-               wrapper is `display: contents` and the page is exactly what it was.
-               The collapse is src/brief-sheet.js's doing and only once it has run, so
-               without script every word of this is simply on the page. -->
-          <div class="brief__more" data-brief-more>
-            <div class="brief__prose">
-              <p class="brief__text">
-                Shopping is fragmented across hundreds of stores, and Phia brings
-                it all into one end-to-end discovery platform. I designed and
-                shipped Shop, a dedicated marketplace page on phia.com where users
-                browse inventory through a familiar catalog experience of search,
-                filters, sort, and a product grid, so they can discover products
-                before landing on an individual Phia product page.
-              </p>
-            </div>
+          <div class="brief__prose">
+            <p class="brief__text">
+              Shopping is fragmented across hundreds of stores, and Phia brings
+              it all into one end-to-end discovery platform. I designed and
+              shipped Shop, a dedicated marketplace page on phia.com where users
+              browse inventory through a familiar catalog experience of search,
+              filters, sort, and a product grid, so they can discover products
+              before landing on an individual Phia product page.
+            </p>
+          </div>
 
-            <!-- One destination, and the label is the thing itself rather than a
-                 heading over it — the same 10pt line the other project pages
-                 carry. The work IS a page on phia.com, so the honest place to send
-                 someone is that page.
+          <!-- One destination, and the label is the thing itself rather than a
+               heading over it — the same 10pt line the other project pages
+               carry. The work IS a page on phia.com, so the honest place to send
+               someone is that page.
 
-                 The address is the design's own rather than a guess: the browser
-                 mockup in the first frame has phia.com/shop in its address bar,
-                 and the paragraph above names the same site. -->
-            <div class="brief__source">
-              <a
-                class="brief__link"
-                href="https://phia.com/shop"
-                target="_blank"
-                rel="noopener"
-                >Shop</a
-              >
-            </div>
+               The address is the design's own rather than a guess: the browser
+               mockup in the first frame has phia.com/shop in its address bar,
+               and the paragraph above names the same site. -->
+          <div class="brief__source">
+            <a
+              class="brief__link"
+              href="https://phia.com/shop"
+              target="_blank"
+              rel="noopener"
+              >Shop</a
+            >
           </div>
         </section>
 
@@ -205,7 +196,7 @@
           >
             <img
               class="reel__shot"
-              style="--shot-h: 587"
+              style="--shot-h: 712"
               src="/img/projects/shop-every-store/1.webp"
               alt="Shop Every Store — frame 1 of 2."
               fetchpriority="high"
@@ -233,6 +224,17 @@
         </div>
         <!-- shots:end -->
       </div>
+      <!-- THE COUNTER. Below 768 the frames are a swipe row in a box of fixed
+           height — see the narrow block in src/reel-page.css — and a row with
+           no scrollbar needs to say how long it is. Above 768 it is not drawn:
+           up there the frames are a screen each down the page and the scroll
+           itself reports the position.
+
+           The seed is written by scripts/build-gallery.mjs from the manifest,
+           and it is what shows if src/reel-counter.js never runs. Matched on
+           data-count, the same hook the rail's counter uses. -->
+      <p class="reel__count" data-count aria-live="polite">[1/2]</p>
+
       <!-- PREV / NEXT. Generated between the markers from the order the
              landing page's index has its rows in — see scripts/build-gallery.mjs.
              Do not hand-edit: the two hrefs are this page's neighbours in that

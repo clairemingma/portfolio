@@ -12,12 +12,15 @@
    entry file and cannot forget to mount the address. */
 import { mountPlateCycle } from './plate-cycle.js';
 import { mountVideoAutoplay } from './video-autoplay.js';
-import { mountBriefSheet } from './brief-sheet.js';
+import { mountMobileMenu } from './mobile-menu.js';
 import { mountCopyAddress } from './copy-address.js';
 
 mountPlateCycle();
 mountVideoAutoplay();
-// Below 768 only, and it unmounts above it: the brief becomes a sheet across
-// the foot of the window, with [+] to open the copy. See src/brief-sheet.js.
-mountBriefSheet();
+// Below 768 only, and it unmounts above it. The bar keeps the wordmark and
+// gains [MENU]; the two sections, the address, LinkedIn and the copyright are
+// in the panel it opens. BEFORE mountCopyAddress, always: that module collects
+// every [data-copy] once, at mount, and the panel's address button is one of
+// them. See src/mobile-menu.js.
+mountMobileMenu();
 mountCopyAddress();

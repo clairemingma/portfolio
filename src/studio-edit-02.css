@@ -181,6 +181,36 @@
   }
 }
 
+/* ONE CLIP ON A PHONE, AND IT IS THE LEADING ONE. The composition up here is
+   two 9:16 clips staggered by a grid step — the stagger IS the composition,
+   and it needs them side by side. Stacked they are not a pair, they are the
+   same shot twice in a column, and at the box's height each would be about
+   half the width of the screen. So the narrow page shows clip 1, which is the
+   one the landing page already uses as this project's poster, and clip 2 is
+   taken off rather than shrunk.
+
+   display: none and not a markup change: the second take is the design at
+   every width that can draw it, and a phone is the exception rather than the
+   rule. src/video-autoplay.js walks the clips that are there; an element with
+   no box is one it starts and nobody sees, so it is skipped by the same
+   IntersectionObserver that holds the other back until it is on screen. */
+@media (max-width: 767px) {
+  .clip--2 {
+    display: none;
+  }
+
+  /* HEIGHT LEADS, as it does on the wide page: the clip is centred in the box
+     every project page's work gets — see .clips in src/still-page.css — and
+     9:16 gives the width back. A gutter above and below keeps it off the bar
+     and off the row beneath. */
+  .clip {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    max-height: calc(var(--work-h) - 2 * var(--grid-gutter));
+  }
+}
+
 /* The lower clip paints over the upper one where they meet, which is what the
    design draws: clip 2 is last in the source and both are in the same group, so
    source order is the stack and there is nothing to declare. They do not actually

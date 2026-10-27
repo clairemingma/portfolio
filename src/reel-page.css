@@ -146,95 +146,6 @@ body {
   top: 222rem;
 }
 
-/* Below 768 the brief is A SHEET ACROSS THE FOOT OF THE WINDOW, laid over the
-   frames, showing the title and the facts with [+] to open the rest. See THE
-   SHEET in src/project-brief.css for what it is and why; what is here is only
-   where this template anchors it.
-
-   THE LEAD IS THE SHEET'S BOX on this page, and it is the one template where
-   that falls out for free: .reel__lead already holds the brief AND the footer
-   line, which is exactly what the other two have to assemble out of two fixed
-   strips. Fixed to the bottom of the window, it carries both, and .reel__foot's
-   `bottom: 0` goes on meaning what it always meant.
-
-   The 222 offset and the sticky go with the wide window. 222 on a phone spends
-   a third of the screen before a word is set, and a panel that stays put is
-   what this now is by other means. */
-@media (max-width: 767px) {
-  .has-brief-sheet .reel__lead {
-    position: fixed;
-    left: 0;
-    right: 0;
-    /* `top: auto` is not tidying. The wide rule sticks this panel with
-       `top: 0`, and a fixed box with BOTH offsets set and `height: auto`
-       stretches to fill the gap between them — which is the whole window, with
-       a 246-unit sheet floating at the top of it. */
-    top: auto;
-    bottom: 0;
-    z-index: 4;
-    width: 100%;
-    height: auto;
-    min-height: 0;
-    /* It is not a snap stop any more. The document below it is the frames, and
-       a stop on a panel that never moves would be a screen the reel could come
-       to rest on with nothing in it. */
-    scroll-snap-align: none;
-  }
-
-  .reel__lead .brief {
-    position: static;
-  }
-
-  /* Without script the brief is its whole self at the top of its own screen,
-     which is the page the markup describes and the one this template carried
-     before the sheet existed. The top padding is the bar's band: the panel is
-     a snap stop in that state, so its top edge comes to rest against the top
-     of the window, which is where the bar is. */
-  .reel__lead .brief:not(.is-sheet) {
-    justify-content: flex-start;
-    padding: calc(var(--nav-h) + var(--grid-gutter)) var(--grid-margin)
-      37.594rem;
-  }
-
-  /* THE BOTTOM PADDING IS THE FOOTER'S BAND, and it is the one part of the
-     sheet's box this template has to state. .reel__foot is absolute at the
-     foot of the lead and the lead's height is the brief's, so without it the
-     last line of an open sheet grows under the copyright instead of above it.
-
-     A longhand after project-brief.css's shorthand, which is deliberate: the
-     other three sides are the sheet's and should go on being the sheet's.
-
-     The height cap then runs to the bottom of the window rather than stopping
-     a band short of it, because on this page the band is INSIDE the sheet. */
-  .reel__lead .brief.is-sheet {
-    /* The band, and a gutter above it — the same air the other two templates
-       get for free by having the sheet stop where the footer strip starts. */
-    padding-bottom: calc(37.594rem + var(--grid-gutter));
-    max-height: calc(100dvh - var(--nav-h));
-  }
-
-  /* ONE FRAME TO A SCREEN STILL, but the screen is now what the window leaves
-     above the sheet: a frame centred in the whole of it would sit half behind
-     the paper. The padding takes the bar off the top and the sheet off the
-     bottom, and `place-items: center` then centres the frame in the band that
-     is actually visible. Nothing is reserved for the pager — it is in the bar
-     on this page, not in a row of its own under it. */
-  .has-brief-sheet .reel__screen {
-    padding-top: var(--nav-h);
-    padding-bottom: calc(var(--brief-sheet-h) + 37.594rem);
-  }
-
-  .has-brief-sheet .reel__shot {
-    max-height: min(
-      calc(var(--shot-h) * 1rem),
-      calc(
-        100dvh - var(--nav-h) - var(--brief-sheet-h) - 37.594rem - 2 *
-          var(--shot-air)
-      )
-    );
-  }
-}
-
 /* ==========================================================================
    THE FOOT
    ========================================================================== */
@@ -403,20 +314,28 @@ body {
    NARROW
    ========================================================================== */
 
-/* Below 768 the row becomes a column: the frames come down it one to a screen,
-   still snapped, and the brief takes the last screen. The paper stops being
-   sticky because there is nothing beside it to stay next to — a panel stuck to
-   the top of a one-column page would sit on top of the work.
+/* Below 768 the frames become A SWIPE ROW IN A BOX OF FIXED HEIGHT, and the
+   brief follows it down the page as an ordinary block. That is the shape every
+   project page takes at this width — see THE WORK'S CONTAINER in
+   src/project-brief.css — and it is what makes the title land on the same line
+   on all seven of them.
 
-   THE WORK COMES FIRST AND THE WRITING LAST, which is the change all three
-   project templates now make. Beside the work the brief costs nothing to pass;
-   stacked above it on a phone it is a screen and a half of type between arriving
-   and seeing any of the project. `order` rather than `column-reverse`, because
-   the frames among themselves must stay in their own order and only the two
-   columns are being swapped.
+   THE AXIS TURNS BACK. Above 768 this template's whole idea is that the work
+   reads DOWNWARD, one frame to a screen, past a brief that stays put. Neither
+   half of that survives a phone: there is no column beside the frames for the
+   brief to stay put in, and a screen per frame means the writing is two or
+   three screens below the first picture. Sideways, the two or three frames are
+   one box, and the box ends where every other template's ends.
 
-   The air comes off to the gutter down here. 40 either side of a 375 screen is a
-   fifth of the width spent on margin, and these frames are wide pictures. */
+   `order` rather than `column-reverse`, because the frames among themselves
+   must stay in their own order and only the two columns are being swapped.
+
+   The air comes off to the gutter down here. 40 either side of a 375 screen is
+   a fifth of the width spent on margin, and these frames are wide pictures.
+
+   The 222 offset, the sticky, and the mandatory snap down the document all go
+   with the wide window. */
+
 @media (max-width: 767px) {
   .reel {
     flex-direction: column;
@@ -424,37 +343,145 @@ body {
 
   .reel__shots {
     order: 1;
-  }
-
-  .reel__lead {
-    order: 2;
-  }
-
-  /* relative, NOT static. The panel stops sticking down here — there is nothing
-     beside it to stay next to — but it must go on being a containing block, or
-     .reel__foot's `bottom: 0` resolves against the viewport instead and the
-     copyright line detaches from the paper it belongs to and rides the bottom of
-     the window over the photographs.
-
-     `start` rather than `center` for the snap: this screen is the only one whose
-     content can be TALLER than the window — the brief is a title, a facts grid,
-     two paragraphs and a link at a phone's measure — and centring something
-     taller than the viewport strands both of its ends out of reach. Aligning the
-     top means a long brief simply scrolls, which is what it should do. */
-  .reel__lead {
-    position: relative;
-    width: 100%;
-    height: auto;
-    min-height: 100dvh;
-    scroll-snap-align: start;
-  }
-
-  .reel__shots {
     width: 100%;
   }
 
   :root {
     --shot-air: var(--grid-gutter);
+  }
+
+  /* The box. It is .reel__shots rather than the lead, because down here the
+     lead is not a panel at all — it is the brief, in flow, under the work. */
+  .reel__shots {
+    /* flex: none UNDOES THE BASE'S `flex: 1`, and it is load-bearing. Up here
+       this column is a flex item of a ROW and `flex: 1` means "take the rest
+       of the width". Down here the row has become a column, so the same
+       declaration means "take the rest of the HEIGHT" — a flex-basis of 0 that
+       grows and shrinks, which the height below cannot win against. The box
+       came out 297 against the 357 it asks for, and nothing about that looked
+       like a flex-direction problem. */
+    flex: none;
+    /* The box, less the row that goes under it — the two together come to
+       --work-h, which is the height every project page's work takes. */
+    height: calc(var(--work-h) - var(--work-row));
+    margin-top: var(--nav-h);
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    /* Sideways instead of down. The document's own `y mandatory` is still set
+       on <html> for the wide page; on the row it would do nothing, so the row
+       states its own axis and keeps the frame-at-a-time reading the design is
+       built on. */
+    scroll-snap-type: x mandatory;
+  }
+
+  /* Each screen is one item of the row at the full measure, with the gutter of
+     air the design keeps around a frame. scroll-snap-stop: always is the
+     wide page's and is kept for the same reason: a reel of three is short
+     enough that a skipped frame is a third of the work missed. */
+  .reel__screen {
+    flex: none;
+    width: 100%;
+    height: 100%;
+    padding: 0 var(--grid-margin);
+    scroll-snap-align: center;
+  }
+
+  /* HEIGHT LEADS, as it does on the wide page, and the cap is now the box
+     rather than the window: the frames are device mockups of different
+     heights and what has to be true is that each one fits the box it shares
+     with the others. */
+  .reel__shot {
+    max-height: min(
+      calc(var(--shot-h) * 1rem),
+      calc(var(--work-h) - var(--work-row) - 2 * var(--shot-air))
+    );
+  }
+
+  /* THE ROW UNDER THE WORK, and on this template it carries one thing: the
+     counter. PREV / NEXT used to be here and is on the title's line now — see
+     THE PAIR ON THE TITLE'S LINE in styles.css.
+
+     .reel is a flex column down here, so the row is an item in it rather than
+     something positioned: the frames, then this, then the brief. align-self
+     because .reel is `align-items: flex-start` — which is what lets the wide
+     page's sticky lead work — so an item in this column shrinks to its content
+     unless it says otherwise.
+
+     THE REEL DID NOT HAVE A COUNTER UNTIL NOW, and it needed one the moment
+     the frames became a row: two or three device mockups side by side in a box
+     with no scrollbar, and nothing on the screen saying there is a second one.
+     The rail has had `[1/17]` since it was a rail. */
+  .reel__count {
+    order: 2;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    height: var(--work-row);
+    margin: 0;
+    padding: 0 var(--grid-margin);
+    font-family: var(--font-secondary);
+    font-size: 11rem;
+    line-height: calc(13.75 / 11);
+    font-variant-numeric: tabular-nums;
+    text-transform: uppercase;
+    color: var(--color-graphite);
+  }
+
+  /* The brief, in flow under the row. The 222 and the sticky are the wide
+     page's; what it takes here is the measure between the margins and a
+     gutter of air after the work.
+
+     relative, NOT static. The panel stops sticking down here, but it must go
+     on being a containing block: without script .reel__foot is still shown and
+     its `bottom: 0` would resolve against the viewport instead, detaching the
+     copyright from the paper it belongs to and riding it over the frames. */
+  .reel__lead {
+    order: 3;
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    scroll-snap-align: none;
+  }
+
+  .reel__lead .brief {
+    position: static;
+    justify-content: flex-start;
+    padding: var(--grid-gutter) var(--grid-margin);
+  }
+
+  /* Without script the copyright strip is still shown, absolute at the foot of
+     the lead, and the lead's height is the brief's — so the brief has to leave
+     it a band or the last line grows underneath it. With the menu mounted
+     there is nothing down there and nothing to reserve. */
+  html:not(.has-mobile-menu) .reel__lead .brief {
+    padding-bottom: 37.594rem;
+  }
+
+  /* The footer rides INSIDE the lead on this template rather than beside it,
+     which is the one way this page differs from the other two — so hiding it
+     is a rule here where they get it on their own footers. The menu carries
+     the copyright, the address and LinkedIn now; see src/mobile-menu.js. */
+  .has-mobile-menu .reel__foot {
+    display: none;
+  }
+
+  /* The document stops snapping. It snapped because every screen was a frame;
+     the frames are in a row of their own now and the page below them is a
+     brief to be read at whatever length it happens to be. */
+  html {
+    scroll-snap-type: none;
+  }
+
+  /* NO CHARCOAL ON A PHONE. body carries the dark on this template, because
+     above 768 the work occupies everything right of the paper column and the
+     two grounds are the composition. Down here there is one column and the
+     brief runs straight on under the frames, so the dark is a slab with a
+     mockup floating in it. Paper throughout, and the counter above is
+     graphite to match. */
+  body {
+    background: var(--color-paper);
   }
 }
 
@@ -472,8 +499,10 @@ body {
    charcoal at both: body carries that colour, not a panel. The resting grey is
    .pager's own — see styles.css, and see THE CONTROL ROW there for the narrow
    placement. */
-.reel .pager {
-  --pager-lit: var(--color-white);
+@media (min-width: 768px) {
+  .reel .pager {
+    --pager-lit: var(--color-white);
+  }
 }
 
 /* Fixed to the window. A reel is several screens tall and its right half is
@@ -496,5 +525,13 @@ body {
     bottom: 0;
     z-index: 2;
     height: 37.594rem;
+  }
+}
+
+/* The counter is a narrow-window thing: above 768 the frames are a screen each
+   down the page and the document's own scroll reports the position. */
+@media (min-width: 768px) {
+  .reel__count {
+    display: none;
   }
 }

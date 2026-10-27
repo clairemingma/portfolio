@@ -116,11 +116,13 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  /* The bar's band, and a gutter under it. The work is the first thing on the
-     page below 768; the pager rides in the bar itself rather than in a row of
-     its own — see THE PAIR IN THE BAR in styles.css — so there is nothing to
-     reserve between the two. */
-  padding: calc(var(--nav-h) + var(--grid-gutter)) var(--grid-margin) 0;
+  /* The bar's band, and NOT a unit more. The work is the first thing on the
+     page below 768, and its box starts where the rail's and the reel's start
+     — which is the whole point of the box: the title has to land on the same
+     line on all seven project pages, and a gutter of air here put these two
+     twelve units below the other five. The artwork is centred inside the box,
+     so it never touches the bar anyway. */
+  padding: var(--nav-h) var(--grid-margin) 0;
 }
 
 @media (min-width: 768px) {
@@ -255,11 +257,34 @@ body {
    order, with the accents before the plate so the plate paints over them, and
    that is not a thing a narrow rearrangement should get to rewrite. */
 @media (max-width: 767px) {
-  .still__brief {
-    order: 2;
+  /* The work, then the row that turns the page, then the brief. The order is
+     explicit because the markup's own is the WIDE page's stacking order — the
+     accents before the plate so the plate paints over them — and that is not a
+     thing a narrow rearrangement should get to rewrite.
+
+     .post and .clips are the two pages' work: Trending This Week's cycling
+     plate and Studio Edit 02's clips. Named rather than given a shared class,
+     because the two designs are the two files' own and this template has never
+     claimed to know what is in them. */
+  .still .post,
+  .still .clips {
+    order: 1;
+    /* THE BOX every project page gives its work — fixed height, the picture
+       centred in it — so the brief under it opens on the same line as every
+       other project. Each page's own file says how its artwork fits inside.
+       See THE WORK'S CONTAINER in src/project-brief.css. */
+    display: grid;
+    place-items: center;
+    /* THE WHOLE BOX, where the rail and the reel give a row of it back to a
+       counter. There is one picture on each of these pages, so there is
+       nothing to count and no row to keep clear — and the brief still opens
+       on the common line, because what that line is measured from is
+       --work-h and not what happens inside it. */
+    height: var(--work-h);
   }
 
-  .still__brief:not(.is-sheet) {
+  .still__brief {
+    order: 2;
     padding: var(--grid-gutter) 0;
   }
 
@@ -267,28 +292,11 @@ body {
     order: 3;
   }
 
-  .has-brief-sheet .still__brief {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: var(--still-foot-h);
-  }
-
-  .has-brief-sheet .still__foot {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 4;
-    padding: 0 var(--grid-margin);
-    background: var(--color-paper);
-  }
-
-  /* The work is laid out in the band the sheet leaves, so the page scrolls
-     through exactly its own pictures and stops. Without the clearance the last
-     of them ends underneath the panel. */
-  .has-brief-sheet .still {
-    padding-bottom: calc(var(--brief-sheet-h) + var(--still-foot-h));
+  /* The footer strip comes off. It carried the copyright and the two contact
+     links the bar cannot hold at this width, and all three are in the menu
+     now — see src/mobile-menu.js. */
+  .has-mobile-menu .still__foot {
+    display: none;
   }
 }
 

@@ -278,118 +278,56 @@
 }
 
 /* ==========================================================================
-   THE SHEET
+   THE WORK'S CONTAINER
    ========================================================================== */
 
-/* Below 768 the brief is a PANEL OF PAPER ACROSS THE FOOT OF THE WINDOW, laid
-   over the work, and it does not scroll away. What it shows at rest is the
-   title and the facts — the two things a reader needs in order to know what
-   they are looking at — and [+] at its top right opens the rest.
+/* BELOW 768 EVERY PROJECT PAGE IS THE SAME PAGE, and this is the measurement
+   that makes it one: a box of FIXED HEIGHT under the bar, with the work
+   centred in it, a row under that, and the brief in ordinary flow beneath.
+   Three templates, seven pages, one line where the writing starts.
 
-   WHY IT IS FIXED. The brief used to be the last block of a long document: you
-   saw the work, you scrolled, and somewhere past the end of it you found out
-   what the project was. On a phone that is the wrong way round — the images are
-   the thing you arrive for, and the caption is the thing you want beside them
-   rather than after them. Fixed, the two are on screen together and the work
-   keeps the whole of the rest of the window.
+   WHY A FIXED HEIGHT RATHER THAN THE WORK'S OWN. The seven pages carry 16:9
+   deck slides, a 3:4 plate, 9:16 clips and two device mockups, and sized to
+   themselves the title lands somewhere different on each — which is the thing
+   that makes a set of project pages read as six unrelated pages rather than
+   six of one. Fixed, the brief opens on the same line every time and moving
+   between them with PREV / NEXT does not move the type.
 
-   WHY IT COLLAPSES. The facts are four short rows; the prose is four
-   paragraphs. Showing both at once would take two thirds of a phone screen and
-   leave a strip for the work, which is the arrangement this is meant to
-   replace. So the sheet opens on request and shuts again.
+   THE BRIEF HAS TO OPEN IN THE FIRST SCREEN, which is what --brief-opening is
+   and why it is a sum rather than a round number. It is everything a reader
+   should see before they decide whether to scroll: the row under the work, the
+   title, four facts, and the first two lines of the copy. A page with three
+   facts simply shows more of the paragraph.
 
-   EACH TEMPLATE ANCHORS ITS OWN. All three put the sheet directly on top of
-   their footer band — the same 37.594 every page of this site gives a footer —
-   so the copyright line and the pair of links stay where they are and the sheet
-   reads as resting on them. What is here is the sheet's own shape, which is the
-   same on all six pages.
-
-   NONE OF THIS HAPPENS WITHOUT SCRIPT. .is-sheet is added by
-   src/brief-sheet.js, which is also what injects the toggle — so the no-script
-   page is the one the markup describes, a brief with every word of it showing,
-   and the collapse never hides copy that cannot be got back. Same bargain the
-   rail's scrub makes: the affordance appears exactly when the behaviour does. */
+   THE SHEET IS GONE, and this replaces it. The brief spent a revision as a
+   fixed panel across the foot of the window with [+] to open the copy; it kept
+   the title on screen but it put the writing behind a tap, and a project page
+   is a thing to read. What a reader gets now is the opening of it, with the
+   rest a scroll away — which is what the reference does and is the whole of
+   the difference. src/brief-sheet.js went out with it. */
 
 :root {
-  /* The footer band the sheet rests on. The site's, not a number this file
-     chose: .still__foot, .reel__foot and .rail-foot are all 37.594. */
-  --sheet-foot-h: 37.594rem;
+  /* The row under the work: the slide counter at its left on the rail pages,
+     PREV / NEXT at its right on all of them. Two gutters, which is the height
+     the rail's progress row has always been. */
+  --work-row: calc(2 * var(--grid-gutter));
 
-  /* How tall the sheet is at rest. src/brief-sheet.js measures it and rewrites
-     this on mount and on resize; what is here is the arithmetic for a four-fact
-     brief — two gutters of padding, a 21pt title, the block's own 20, and four
-     rows of 15.4 with 10 between them — and it is what the rail page lays itself
-     out against in the instant before script runs. */
-  --brief-sheet-h: 160rem;
-}
+  /* What is kept clear below the work, so the brief OPENS in the first screen.
+     Stated as the sum of what has to fit in it, so that changing any of those
+     sizes changes this with them rather than leaving a number behind:
 
-@media (max-width: 767px) {
-  /* The panel. It is .brief itself rather than a wrapper, because the three
-     templates wrap it in three different things and only one of them (the
-     reel's lead) is a box this could have been put on. */
-  .brief.is-sheet {
-    position: relative;
-    z-index: 4;
-    width: 100%;
-    /* Never taller than the window leaves between the bar and the footer band.
-       Trending This Week's brief is four paragraphs and runs past that; what
-       overflows is scrolled, not clipped. */
-    max-height: calc(100dvh - var(--nav-h) - var(--sheet-foot-h));
-    padding: var(--grid-gutter) var(--grid-margin);
-    background: var(--color-paper);
-  }
+       the row under the work, and a gutter of air after it
+       the title, at 21 on its 1.1
+       the block's 20, and four facts at 15.4 with 10 between them
+       the block's 20, and two lines of 14pt copy */
+  --brief-opening: calc(
+    var(--work-row) + var(--grid-gutter) + 23.1rem + 20rem + 91.6rem + 20rem +
+      34rem
+  );
 
-  /* THE SCROLL IS ON THE READING AND NOT ON THE SHEET, which is what keeps [+]
-     where it was put: the toggle is absolute against .brief, and if .brief were
-     the scroller the toggle would travel up out of the window with the first
-     paragraph. min-height: 0 is what lets a flex item shrink below its content
-     and therefore scroll at all. */
-  .brief.is-sheet .brief__more {
-    display: none;
-    min-height: 0;
-    overflow-y: auto;
-    /* The sheet is over a horizontal scroller on the rail pages and over a
-       snapping document on the reels. Without this, reaching the end of the
-       prose hands the gesture to whichever of those is underneath. */
-    overscroll-behavior: contain;
-  }
-
-  .brief.is-sheet.is-open .brief__more {
-    display: flex;
-  }
-
-  /* Room for the toggle at the end of the title's line. A column and a gutter,
-     which is the same step the facts put between a label and its value, so the
-     title stops on the line the values start on. */
-  .brief.is-sheet .brief__title {
-    padding-right: var(--col-step);
-  }
-
-  /* [+] / [–], in the brackets every small label on this site wears and in the
-     bar's own Inter. It is a 44-square touch target drawn as a 13-unit line:
-     the padding is negative space around the glyph, pulled back out again by
-     the offsets below so the bracket itself lands on the sheet's own corner
-     rather than a finger's width inside it. */
-  .brief__toggle {
-    position: absolute;
-    top: calc(var(--grid-gutter) - 12rem);
-    right: calc(var(--grid-margin) - 12rem);
-    z-index: 1;
-    padding: 12rem;
-    border: 0;
-    background: none;
-    font-family: var(--font-secondary);
-    font-size: 11rem;
-    line-height: calc(13.75 / 11);
-    letter-spacing: 0.03em;
-    color: var(--color-system-grey);
-    cursor: pointer;
-    transition: color var(--dur) var(--ease);
-  }
-
-  .brief__toggle:hover,
-  .brief__toggle:focus-visible,
-  .brief.is-sheet.is-open .brief__toggle {
-    color: var(--color-graphite);
-  }
+  /* THE BOX. The window, less the bar and less that opening. The floor is for
+     a short window — below about 540 the arithmetic would start taking the box
+     away altogether, and a page with no picture on it is worse than a brief
+     that opens half a line lower. */
+  --work-h: max(240rem, calc(100dvh - var(--nav-h) - var(--brief-opening)));
 }

@@ -43,34 +43,25 @@
    enter. Same bargain the scrub and the brief's sheet make.
    ========================================================================== */
 
-// The four corners, out and in. Drawn rather than set, because the site's one
-// label face is Inter and the arrows this would need are not reliably in it —
-// a tofu box in the corner of the artwork is worse than no button.
-const OUT = 'M1 6V1h5M15 10v5h-5M10 1h5v5M6 15H1v-5';
-const IN = 'M6 1v5H1M10 15v-5h5M15 6h-5V1M1 10h5v5';
+// THE TWO MARKS ARE TYPE, NOT DRAWING. They were an SVG of the four corner
+// arrows, which is the conventional icon for this and was the wrong thing on
+// this page: every other mark on the site is set in Inter inside square
+// brackets — [CLIENT], [1/12], [MENU] — and a stroked glyph among them reads
+// as something borrowed out of another interface.
+//
+// `<>` points outward and `><` points in, which is the instruction the corner
+// arrows were giving, in two characters the label face certainly has. They are
+// the brackets' own content rather than chevrons set beside them, so the mark
+// is one object at a glance and exactly as wide in both states.
+const OUT = '[<>]';
+const IN = '[><]';
 
-function icon(path) {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 16 16');
-  svg.setAttribute('aria-hidden', 'true');
-  svg.setAttribute('focusable', 'false');
-
-  const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  line.setAttribute('d', path);
-  line.setAttribute('fill', 'none');
-  line.setAttribute('stroke', 'currentColor');
-  line.setAttribute('stroke-width', '1.5');
-
-  svg.append(line);
-  return svg;
-}
-
-function button(className, path, label) {
+function button(className, text, label) {
   const el = document.createElement('button');
   el.type = 'button';
   el.className = className;
+  el.textContent = text;
   el.setAttribute('aria-label', label);
-  el.append(icon(path));
   return el;
 }
 

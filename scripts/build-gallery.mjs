@@ -519,6 +519,14 @@ for (const reel of REELS) {
   let html = await readFile(reel.html, 'utf8');
   html = splice(html, 'shots', imgs, 8);
 
+  // The counter's seed, exactly as the decks get theirs: the reels grew one
+  // when their frames became a swipe row below 768, and a hand-kept `[1/3]` on
+  // a page whose manifest has four frames is the reason it is written here.
+  html = html.replace(
+    /(<p class="[^"]*" data-count aria-live="polite">)\[[^\]]*\]/,
+    `$1[1/${frames.length}]`,
+  );
+
   html = html.replace(
     /(<link\s+rel="preload"\s+as="image"\s+href=")[^"]*(")/,
     `$1${dir}/${first.name}.webp$2`,

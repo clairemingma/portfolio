@@ -102,58 +102,49 @@
                centred copy reads as a typo, so without it the two paragraphs ran
                together with no break of any kind. See .brief__prose in
                src/project-brief.css and the indent note in src/rail-page.css. -->
-          <!-- THE READING, which is everything past the facts: the prose and the
-               places to read more. It is one region because below 768 it is one
-               DISCLOSURE — the brief is a sheet across the foot of the window there,
-               showing the title and the facts, and [+] opens this. Above 768 the
-               wrapper is `display: contents` and the page is exactly what it was.
-               The collapse is src/brief-sheet.js's doing and only once it has run, so
-               without script every word of this is simply on the page. -->
-          <div class="brief__more" data-brief-more>
-            <div class="brief__prose">
-              <p class="brief__text">
-                In Chinese mythology, the Eight Immortals are symbolic guardians of
-                health and well-being, believed to have passed down the knowledge
-                of healing herbs and methods that grounds traditional Chinese
-                medicine. I used their story as a vehicle for carrying ancient
-                practice to a modern, mainstream audience for Shoukang’s herbal tea
-                line.
-              </p>
-              <!-- <cite>, not an <em> or a span set in italic. It is the title of a
-                   work, which is the one thing <cite> is for, and it comes out
-                   italic on its own — the serif's italic face is declared in
-                   styles.css and the Spectral standing in for it is loaded with its
-                   italic in the <head> above. Nothing here sets font-style. -->
-              <p class="brief__text">
-                I designed tea boxes and sachets for six blends. Each box carries
-                an Immortal’s symbol paired with a quote from
-                <cite>The Yellow Emperor’s Classic of Medicine</cite>, so each
-                blend speaks to a different kind of healing, held together by one
-                visual hand. This design tells a story of health, healing, and the
-                transmission of ancient knowledge, inviting the audience to
-                participate in ritual and ancient practice.
-              </p>
-            </div>
+          <div class="brief__prose">
+            <p class="brief__text">
+              In Chinese mythology, the Eight Immortals are symbolic guardians of
+              health and well-being, believed to have passed down the knowledge
+              of healing herbs and methods that grounds traditional Chinese
+              medicine. I used their story as a vehicle for carrying ancient
+              practice to a modern, mainstream audience for Shoukang’s herbal tea
+              line.
+            </p>
+            <!-- <cite>, not an <em> or a span set in italic. It is the title of a
+                 work, which is the one thing <cite> is for, and it comes out
+                 italic on its own — the serif's italic face is declared in
+                 styles.css and the Spectral standing in for it is loaded with its
+                 italic in the <head> above. Nothing here sets font-style. -->
+            <p class="brief__text">
+              I designed tea boxes and sachets for six blends. Each box carries
+              an Immortal’s symbol paired with a quote from
+              <cite>The Yellow Emperor’s Classic of Medicine</cite>, so each
+              blend speaks to a different kind of healing, held together by one
+              visual hand. This design tells a story of health, healing, and the
+              transmission of ancient knowledge, inviting the audience to
+              participate in ritual and ancient practice.
+            </p>
+          </div>
 
-            <!-- One destination, and the label is the thing itself rather than a
-                 heading over it — the same 10pt line the other project pages
-                 carry. Where they point at a write-up, this points at the shelf:
-                 the work is packaging, so the honest place to send someone is the
-                 product it wraps.
+          <!-- One destination, and the label is the thing itself rather than a
+               heading over it — the same 10pt line the other project pages
+               carry. Where they point at a write-up, this points at the shelf:
+               the work is packaging, so the honest place to send someone is the
+               product it wraps.
 
-                 The collection rather than the storefront. /collections/herbal-tea-bags
-                 is the line this project IS — six blends in boxes and sachets —
-                 and shoukanghealth.com alone would land on a homepage that may not
-                 be showing any of it. -->
-            <div class="brief__source">
-              <a
-                class="brief__link"
-                href="https://shoukanghealth.com/collections/herbal-tea-bags"
-                target="_blank"
-                rel="noopener"
-                >Shop</a
-              >
-            </div>
+               The collection rather than the storefront. /collections/herbal-tea-bags
+               is the line this project IS — six blends in boxes and sachets —
+               and shoukanghealth.com alone would land on a homepage that may not
+               be showing any of it. -->
+          <div class="brief__source">
+            <a
+              class="brief__link"
+              href="https://shoukanghealth.com/collections/herbal-tea-bags"
+              target="_blank"
+              rel="noopener"
+              >Shop</a
+            >
           </div>
         </section>
 
@@ -228,6 +219,17 @@
         </div>
         <!-- shots:end -->
       </div>
+      <!-- THE COUNTER. Below 768 the frames are a swipe row in a box of fixed
+           height — see the narrow block in src/reel-page.css — and a row with
+           no scrollbar needs to say how long it is. Above 768 it is not drawn:
+           up there the frames are a screen each down the page and the scroll
+           itself reports the position.
+
+           The seed is written by scripts/build-gallery.mjs from the manifest,
+           and it is what shows if src/reel-counter.js never runs. Matched on
+           data-count, the same hook the rail's counter uses. -->
+      <p class="reel__count" data-count aria-live="polite">[1/3]</p>
+
       <!-- PREV / NEXT. Generated between the markers from the order the
              landing page's index has its rows in — see scripts/build-gallery.mjs.
              Do not hand-edit: the two hrefs are this page's neighbours in that

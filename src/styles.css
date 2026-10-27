@@ -463,31 +463,261 @@ p {
   display: none;
 }
 
-/* --- the bar on a project page, below 768 --------------------------------- */
+/* --- the bar below 768, and the menu behind it ---------------------------- */
 
-/* PROJECTS AND ABOUT COME OUT, AND PREV / NEXT TAKES THE RIGHT END. The bar on
-   a phone is one row of four columns and it can hold the wordmark and one
-   other thing; what that thing should be depends on where you are. On the
-   landing page it is the two section links, because the sections are the page.
-   On a project page the useful move is to the NEXT PROJECT, and the two
-   section links were spending the bar's whole right half on a destination the
-   wordmark already reaches.
+/* PROJECTS AND ABOUT COME OUT OF THE BAR AND GO INTO THE PANEL. Four columns
+   hold the wordmark and one other thing — the bar has always known it, which
+   is why LINKEDIN and the address are already gone at this width — and the one
+   other thing is now [MENU], which is where all four of them live.
 
-   .nav--locked is the marker and it is the honest one: it is set on every
-   project page and on no other, because it means "this bar does not travel",
-   which is true of exactly the pages that are not the landing page.
-
-   WHAT THIS COSTS is the one-tap route to the index. The wordmark goes to `/`,
-   which is the top of the landing page, and the index is about one and a half
-   screens below it — so getting back to the full list is now a tap and a
-   scroll. The pager is what answers for it: six projects in a ring, Next from
-   any of them, and the index is a thing to go to rather than the only way
-   across. If that trade stops being worth it, pointing .nav__mark at
-   `/#projects` on these pages is the one-line version of having both. */
+   Scoped to .has-mobile-menu, which src/mobile-menu.js adds. Without script
+   there is no panel to have put them in, so they stay in the bar and the page
+   is exactly what it always was. */
 @media (max-width: 767px) {
-  .nav--locked .nav__link--projects,
-  .nav--locked .nav__link--about {
+  .has-mobile-menu .nav__link--projects,
+  .has-mobile-menu .nav__link--about {
     display: none;
+  }
+}
+
+/* The trigger, in the bar's own type and taking its colour from it — the bar
+   is white over the landing page's print and graphite once it is on paper, and
+   this has to change with it rather than against it. The negative margins pull
+   a 44-square touch target back onto the line the wordmark sits on. */
+.nav__menu {
+  margin: -14rem calc(-1 * 14rem) -14rem 0;
+  padding: 14rem;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .nav__menu {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   THE MENU
+   ========================================================================== */
+
+/* A panel of paper over the right of the window, with the page still showing
+   down its left edge. One column of the grid is what stays visible — enough
+   that the panel reads as laid OVER the page rather than as a second page, and
+   enough to make it obvious there is something to go back to.
+
+   Built and mounted by src/mobile-menu.js, below 768 only.
+
+   THE SCRIM IS CHARCOAL AND NOT PAPER. The reference veils its page in white,
+   which works because every page it has is white; two of the three templates
+   here are charcoal behind the panel and a white veil over charcoal reads as
+   fog rather than as something set back. Charcoal at 40 per cent darkens the
+   paper pages and deepens the dark ones, which is the same instruction on both
+   grounds.
+
+   VISIBILITY IS WHAT CARRIES THE CLOSED STATE, not display, so the panel has a
+   box to slide out of. Its own transition is delayed by the duration of the
+   slide so the panel is still on screen while it leaves, and undelayed on the
+   way in. display: none would take the links out of the tab order a frame
+   before they had finished moving. */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  visibility: hidden;
+  transition: visibility 0s linear var(--dur);
+}
+
+.menu.is-open {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.menu__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 26, 26, 0.4);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.menu.is-open .menu__scrim {
+  opacity: 1;
+}
+
+/* The panel's top padding is the bar's own 10, so [MENU] lands on the line the
+   wordmark is on and the panel reads as having opened out of the bar rather
+   than over it. It scrolls if it has to — nothing in it should ever be that
+   tall, but a panel is a bad place to discover a 400-unit phone. */
+.menu__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: calc(100vw - var(--col-step));
+  padding: 10rem var(--grid-margin) var(--grid-gutter);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-paper);
+  transform: translateX(100%);
+  transition: transform var(--dur) var(--ease);
+}
+
+.menu.is-open .menu__panel {
+  transform: none;
+}
+
+/* The bar's row, repeated: 17.594 with the label and the close on its ends. */
+.menu__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 17.594rem;
+  margin-bottom: 40rem;
+}
+
+.menu__label {
+  margin: 0;
+  font-family: var(--font-secondary);
+  font-size: 10rem;
+  line-height: calc(12.5 / 10);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-system-grey);
+}
+
+/* The head's label is the bar's 11 where the two below are the brief's 10.
+   It is on the bar's row and reads as part of it; [CONTACT] and [SOCIAL] are
+   captions inside the panel and belong with .brief__label. */
+.menu__head .menu__label {
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+}
+
+/* 44 square again, pulled back onto the row by its own padding so the bracket
+   lands on the panel's margin and not a finger's width inside it. */
+.menu__close {
+  margin: -14rem calc(-1 * 14rem) -14rem 0;
+  padding: 14rem;
+  border: 0;
+  background: none;
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-system-grey);
+  cursor: pointer;
+  transition: color var(--dur) var(--ease);
+}
+
+.menu__close:hover,
+.menu__close:focus-visible {
+  color: var(--color-graphite);
+}
+
+/* THE SECTIONS ARE THE ONLY LARGE TYPE IN HERE, and they are the brief's title
+   size — 21, the largest this site sets anything at on a phone. A menu is read
+   at arm's length and pressed with a thumb; these are the two destinations it
+   exists for, and everything under them is a detail by comparison. */
+.menu__list {
+  display: flex;
+  flex-direction: column;
+  gap: 14rem;
+  /* A floor on the gap to the block below, which is otherwise `auto`. */
+  margin-bottom: 40rem;
+}
+
+.menu__link {
+  display: block;
+  font-family: var(--font-primary);
+  font-size: 21rem;
+  line-height: calc(23.1 / 21);
+  color: var(--color-graphite);
+}
+
+.menu__link:hover,
+.menu__link:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+}
+
+/* The address and LinkedIn, below a rule. They are what the footer strip used
+   to carry and they are set as that strip set them: the site's 11pt uppercase
+   Inter, graphite because they are live where the labels above them are not.
+
+   `margin-top: auto` IS THE WHOLE COMPOSITION. It pushes this block and the
+   copyright under it to the floor of the panel, so the two sections sit high
+   under the bar's own line and the fine print sits where fine print sits on
+   every other page of this site, with the empty paper between them. The 40 is
+   a floor on that gap for a short window where `auto` resolves to nothing. */
+.menu__reach {
+  display: flex;
+  flex-direction: column;
+  gap: 10rem;
+  margin-top: auto;
+  padding-top: var(--grid-gutter);
+  border-top: 1px solid var(--color-index-grey);
+}
+
+.menu__reach .menu__label:not(:first-child) {
+  margin-top: 10rem;
+}
+
+.menu__reach-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  letter-spacing: 0.03em;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--color-graphite);
+  cursor: pointer;
+}
+
+.menu__reach-link:hover,
+.menu__reach-link:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+}
+
+.menu__rule {
+  margin: 40rem 0 0;
+  font-family: var(--font-secondary);
+  font-size: 11rem;
+  line-height: calc(13.75 / 11);
+  color: var(--color-system-grey);
+}
+
+/* The page behind must not scroll while the panel is over it. */
+.is-menu-open,
+.is-menu-open body {
+  overflow: hidden;
+}
+
+/* The slide is the panel arriving from off the right edge, which is motion
+   this preference is precisely about. The states are kept and the travel is
+   not: the panel appears where it belongs and the scrim comes up with it. */
+@media (prefers-reduced-motion: reduce) {
+  .menu__panel {
+    transform: none;
+    transition: none;
+  }
+
+  .menu__scrim {
+    transition: none;
   }
 }
 
@@ -1074,55 +1304,45 @@ p {
    grey while the links come up is what keeps it reading as punctuation rather
    than as a third thing that could be clicked. */
 
-/* --- THE PAIR IN THE BAR -------------------------------------------------- */
+/* --- THE PAIR ON THE TITLE'S LINE ----------------------------------------- */
 
-/* BELOW 768 THE PAGER MOVES INTO THE BAR, at the right end, where PROJECTS and
-   ABOUT were. The rule above takes those two out on project pages; this puts
-   the pair in the space they leave, so the bar reads as mark at the left and
-   the way onward at the right — which is the same two things the wide bar's
-   two halves say, in the room a phone has for them.
+/* BELOW 768 THE PAGER SITS AT THE TOP RIGHT OF THE BRIEF, on the title's own
+   line. The writing is where a reader's attention lands once the picture has
+   been looked at, and the way to the next project belongs at the end of that
+   line rather than in the band under the artwork, where it was competing with
+   the slide counter for the same row.
 
-   It is stated here rather than three times over in rail-page.css,
-   reel-page.css and still-page.css, because it is the same placement on all
-   three templates. Each of those now states only its own --pager-lit and its
-   own wide-window placement, and each of those placements is scoped to
-   `min-width: 768px` so this one is not outranked by a two-class selector.
+   IT IS PLACED BY ARITHMETIC AND NOT BY THE FLOW, which needs saying because
+   it looks like it should be a flex item. It is not one anywhere: the markup
+   puts the pager inside .rail__pin on the rails, beside .reel__lead on the
+   reels and beside .still__brief on the still pages, and in none of the three
+   is it a sibling of the brief. Moving it into the brief would be a DOM move
+   at a breakpoint, undone at the same breakpoint.
 
-   IT USED TO BE HIDDEN DOWN HERE ALTOGETHER. On a wide window the pair sits in
-   the footer band, which on a phone is taken by the copyright line and the two
-   contact links the bar cannot hold — so there was nowhere at the foot to put
-   it, and the way between projects was to go back to the index.
+   What makes the arithmetic exact is the thing the whole narrow layout is
+   built on: the work is a box of fixed height, so the brief's top edge is
+   `--nav-h + --work-h` from the top of the page on every project page, and
+   the title is one gutter below that. See THE WORK'S CONTAINER in
+   project-brief.css.
 
-   FIXED ALONGSIDE THE BAR RATHER THAN INSIDE IT, because the markup puts the
-   pager in the work: inside .rail__pin on the rails, in .reel and .still on the
-   others. Moving the element into the header would be a DOM move at a
-   breakpoint, undone at the same breakpoint, for a box that can simply be laid
-   over the band it belongs to. z-index 5 against the bar's 3, and the bar is
-   opaque paper on every project page, so the pair is over it rather than
-   behind.
+   Each template makes its own root the containing block — .rail, .reel and
+   .still are all `position: relative` and all start at y 0, the bar being
+   fixed — so one `top` here is the same line on all three.
 
-   THE BAND IS THE BAR'S OWN and the pair is centred in it, where the bar's own
-   links are baseline-aligned to the wordmark. The two land within a unit of
-   each other — close enough that nothing reads as off, and not something to
-   chase further without putting the element in the flex row that would settle
-   it. The links then stretch to the band's full height so the target is the
-   bar's 37.594 rather than a 14-unit line of type. */
+   The box is the title's own line rather than a touch target's 44: a bigger
+   one would either push the title down or overlap the facts under it, and the
+   two words are a wide target across even if they are a short one down. */
 @media (max-width: 767px) {
   .pager {
     display: flex;
-    position: fixed;
-    top: 0;
+    position: absolute;
+    top: calc(var(--nav-h) + var(--work-h) + var(--grid-gutter));
     right: var(--grid-margin);
     left: auto;
     bottom: auto;
-    z-index: 5;
-    height: var(--nav-h);
-  }
-
-  .pager__link {
-    display: flex;
-    align-items: center;
-    align-self: stretch;
+    z-index: 2;
+    height: 23.1rem;
+    --pager-lit: var(--color-graphite);
   }
 }
 

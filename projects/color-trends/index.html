@@ -116,48 +116,39 @@
           <p class="brief__value"><time datetime="2025">2025</time></p>
         </div>
 
-        <!-- THE READING, which is everything past the facts: the prose and the
-             places to read more. It is one region because below 768 it is one
-             DISCLOSURE — the brief is a sheet across the foot of the window there,
-             showing the title and the facts, and [+] opens this. Above 768 the
-             wrapper is `display: contents` and the page is exactly what it was.
-             The collapse is src/brief-sheet.js's doing and only once it has run, so
-             without script every word of this is simply on the page. -->
-        <div class="brief__more" data-brief-more>
-          <div class="brief__prose">
-            <p class="brief__text">
-              As seasons change, so do our clothes, but data never goes out of
-              style. I analyzed a decade of Milan Fashion Week runway colors using
-              computer vision, uncovering seasonal patterns and dominant shades to
-              explore trend forecasting.
-            </p>
-          </div>
+        <div class="brief__prose">
+          <p class="brief__text">
+            As seasons change, so do our clothes, but data never goes out of
+            style. I analyzed a decade of Milan Fashion Week runway colors using
+            computer vision, uncovering seasonal patterns and dominant shades to
+            explore trend forecasting.
+          </p>
+        </div>
 
-          <!-- Two destinations, not a heading and a link. They are two lines of
-               the same 10pt label because that is exactly what they are: the
-               analysis is the notebook rendered out with its charts and tables,
-               and the repository is the code and data underneath it. "Source
-               Code" named neither — it read as a heading over the Github line,
-               and it was the wrong word for something you go and READ.
+        <!-- Two destinations, not a heading and a link. They are two lines of
+             the same 10pt label because that is exactly what they are: the
+             analysis is the notebook rendered out with its charts and tables,
+             and the repository is the code and data underneath it. "Source
+             Code" named neither — it read as a heading over the Github line,
+             and it was the wrong word for something you go and READ.
 
-               Centred as a pair rather than flush left, which is this page's own
-               need: see .lead .brief__source in src/rail-page.css. -->
-          <div class="brief__source">
-            <a
-              class="brief__link"
-              href="https://nbviewer.org/github/clairemingma/fashion-color-trends/blob/main/fashion-color-trends.ipynb"
-              target="_blank"
-              rel="noopener"
-              >Analysis</a
-            >
-            <a
-              class="brief__link"
-              href="https://github.com/clairemingma/fashion-color-trends"
-              target="_blank"
-              rel="noopener"
-              >Github</a
-            >
-          </div>
+             Centred as a pair rather than flush left, which is this page's own
+             need: see .lead .brief__source in src/rail-page.css. -->
+        <div class="brief__source">
+          <a
+            class="brief__link"
+            href="https://nbviewer.org/github/clairemingma/fashion-color-trends/blob/main/fashion-color-trends.ipynb"
+            target="_blank"
+            rel="noopener"
+            >Analysis</a
+          >
+          <a
+            class="brief__link"
+            href="https://github.com/clairemingma/fashion-color-trends"
+            target="_blank"
+            rel="noopener"
+            >Github</a
+          >
         </div>
       </section>
     </section>
