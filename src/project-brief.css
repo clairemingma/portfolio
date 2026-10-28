@@ -316,13 +316,28 @@
      Stated as the sum of what has to fit in it, so that changing any of those
      sizes changes this with them rather than leaving a number behind:
 
-       the row under the work, and a gutter of air after it
+       a gutter of air under the work
        the title, at 21 on its 1.1
        the block's 20, and four facts at 15.4 with 10 between them
-       the block's 20, and two lines of 14pt copy */
+
+     WHAT IT NO LONGER RESERVES IS THE COPY, and that is the whole of what makes
+     the picture the size it is. It used to keep the block's 20 and two lines of
+     14pt back as well — 54 more units — so that the paragraph began above the
+     fold. Measured against the reference on the same 390x698 phone, that was
+     the difference between a 400 picture and a 500 one: it reserves 139 there
+     where this reserved 235, because its facts are two rows and it has no title
+     line of its own. The copy begins just under the fold now and the title and
+     the four facts are what a reader arrives on.
+
+     AND IT NO LONGER COUNTS THE ROW, which was a double count rather than a
+     choice. The counter sits INSIDE --work-h on the two templates that draw one
+     — the rail puts it at the floor of its box and the reel gives it the last
+     --work-row of theirs — so reserving it here took it out of the picture a
+     second time, and took it out of the still pages too, which have one image
+     and nothing to count. That alone is 24 units of the 78 this change
+     recovers. */
   --brief-opening: calc(
-    var(--work-row) + var(--grid-gutter) + 23.1rem + 20rem + 91.6rem + 20rem +
-      34rem
+    var(--grid-gutter) + 23.1rem + 20rem + 91.6rem
   );
 
   /* THE BOX. The window, less the bar and less that opening. The floor is for
