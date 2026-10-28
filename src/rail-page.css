@@ -312,6 +312,16 @@
   overflow-x: auto;
   overflow-y: hidden;
   background: var(--color-charcoal);
+  /* NO BAR UNDER THE ROW. This is a scroller whose content is the artwork
+     edge to edge, so a native bar is drawn across the foot of a slide rather
+     than beside it — and on a classic-scrollbar platform it also TAKES 12 of
+     the row's height, which the slides are then fitted into. The counter is
+     what reports the position here; see .progress. */
+  scrollbar-width: none;
+}
+
+.rail__pin::-webkit-scrollbar {
+  display: none;
 }
 
 /* THE PINNED STATE, which src/rail-page.js turns on. .rail grows to one window
@@ -726,6 +736,11 @@
        screen by construction at every size, and still one swipe away. The
        full-screen overlay does the same thing for the same reason. */
     --rail-gap: var(--rail-inset);
+
+    /* ONE SLIDE AND ONE GAP, which is what a page turn moves the row by. The
+       track is driven by an INDEX below 768 rather than by a scroll — see
+       THE PAGE below — and this is the distance that index is multiplied by. */
+    --rail-stride: calc(var(--rail-slide-w) + var(--rail-gap));
   }
 
   /* The charcoal is the box, and the bar's band on top of it because the bar
@@ -747,8 +762,13 @@
        the slides clear of both, so the track centres what is left rather than
        centring in the whole box and sliding the artwork up behind them. */
     padding-top: calc(var(--nav-h) + var(--rail-ctrl-row));
-    overflow-x: auto;
-    overflow-y: hidden;
+    /* NOT A SCROLLER DOWN HERE, which is the change the full screen made
+       necessary. The row was swipeable in place: a reader could drag through
+       seventeen deck slides at 200 units tall, reading none of them, and the
+       button that makes them legible was one more thing on the screen rather
+       than the way through. The slides move only inside the full screen now,
+       and this is one picture with a tap on it. */
+    overflow: hidden;
   }
 
   /* transform: none is !important because the module writes the live one as an
@@ -758,7 +778,7 @@
      The bottom padding is the counter row's: the track centres the slide in
      what is left above it, rather than in the whole box with the row drawn
      across the bottom of the picture. */
-  .rail.is-pinned .rail__track {
+  .rail.is-pinned:not(.is-expanded) .rail__track {
     transform: none !important;
   }
 
@@ -941,51 +961,195 @@
    real fullscreen is a bonus on the platforms that have it — one less strip of
    browser chrome, and an orientation lock the module can then ask for.
 
-   The slide is sized against the window twice over and the smaller wins: the
-   width less a gutter at each side, or what the height allows once the progress
-   row has its band at the foot. In landscape the height binds; in portrait the
-   width does, which is the whole reason for the hint.
+   The slide is sized against the STAGE twice over and the smaller wins: its
+   width less a gutter at each side, or what its height allows once the counter
+   row has its band at the foot. The stage is already landscape either way, so
+   which of the two binds is now a property of the slide's ratio rather than of
+   how the reader happens to be holding the phone.
 
    AFTER .rail.is-pinned, not before: the two are the same specificity and the
    overlay has to win if the module has not yet let go of the pin. */
+/* THE STAGE IS THE SCREEN TURNED SIDEWAYS, which is the whole of what this
+   state is for and what it took three revisions to get right. A 16:9 slide in
+   a portrait window is 200 units tall whatever else is done to the layout —
+   the artwork's shape and the window's disagree by a quarter turn, and no
+   amount of giving it the full width closes that. Earlier passes handed it the
+   whole window and asked the reader to turn the phone; the ones with rotation
+   locked got a bigger small picture and a sentence telling them to do
+   something their device had been told not to do.
+
+   So the stage rotates instead, the way a video does when it goes full screen
+   on a phone: the box is the window's dimensions SWAPPED — as wide as the
+   screen is tall — and turned a quarter turn about its own centre. On a 390 by
+   844 handset that is an 844 by 390 stage, and the slide in it is 608 wide
+   against the 357 it had upright. Nearly three times the area, and the deck's
+   own type is legible at last.
+
+   `translate(-50%, -50%)` before the rotation and `top/left: 50%` under it is
+   the ordinary way to turn a box about its own centre when its dimensions are
+   not the parent's; the transform applies right to left, so the rotation
+   happens first and the centring second.
+
+   AND IN LANDSCAPE IT DOES NOT ROTATE. A reader whose device rotation is free
+   turns the phone and the window becomes landscape on its own — the stage is
+   then already the right shape and a quarter turn would put it back on its
+   side. The orientation query is what tells the two apart, and it is the one
+   thing here that cannot be expressed as a width: a 390 by 844 window and an
+   844 by 390 one are both phones, and only one of them needs turning. */
 .rail.is-expanded {
   position: fixed;
   inset: 0;
   z-index: 20;
   height: auto;
+  overflow: hidden;
+
+  /* The stage, in the orientation the slides want. Portrait swaps them. */
+  --rail-stage-w: 100svh;
+  --rail-stage-h: 100svw;
+
   --rail-slide-w: min(
-    calc(100vw - 2 * var(--grid-gutter)),
-    calc((100dvh - var(--rail-progress-row) - 2 * var(--grid-gutter)) * 16 / 9)
+    calc(var(--rail-stage-w) - 2 * var(--grid-gutter)),
+    calc(
+      (
+          var(--rail-stage-h) - var(--rail-progress-row) - 2 *
+            var(--grid-gutter)
+        ) * 16 / 9
+    )
   );
   /* Both of these are derived from --rail-slide-w on :root, which means they
      were resolved there against the value :root had. Redefining the width here
      does not reach back into them, so they are restated. */
   --rail-slide-h: calc(var(--rail-slide-w) * 9 / 16);
-  --rail-inset: calc((100vw - var(--rail-slide-w)) / 2);
+  --rail-inset: calc((var(--rail-stage-w) - var(--rail-slide-w)) / 2);
 
   /* THE GAP BECOMES THE INSET, and that is what makes this a full screen
      rather than a large one. Three gutters is the wide rail's interval and it
-     leaves the next slide showing at the edge of the window — which is right
+     leaves the next slide showing at the edge of the stage — which is right
      on a page where the row is plainly a row, and wrong here, where the point
      is one slide and nothing else. Set to the inset, the neighbour's left edge
      lands at exactly inset + slide + inset, which is the right edge of the
-     window: off the screen by construction, at every size, and still only one
-     swipe away. */
+     stage: off it by construction, at every size, and still one swipe away. */
   --rail-gap: var(--rail-inset);
+  --rail-stride: calc(var(--rail-slide-w) + var(--rail-gap));
+}
+
+@media (orientation: landscape) {
+  .rail.is-expanded {
+    --rail-stage-w: 100svw;
+    --rail-stage-h: 100svh;
+  }
 }
 
 .rail.is-expanded .rail__pin {
-  position: static;
-  height: 100dvh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--rail-stage-w);
+  height: var(--rail-stage-h);
   padding-top: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
+  transform: translate(-50%, -50%) rotate(90deg);
+  /* No native scroll in here. The row is paged by an index — see THE PAGE —
+     because a scroller inside a rotated box asks the reader to drag along an
+     axis the browser and the eye disagree about. */
+  overflow: hidden;
+}
+
+@media (orientation: landscape) {
+  .rail.is-expanded .rail__pin {
+    transform: translate(-50%, -50%);
+  }
 }
 
 .rail.is-expanded .rail__track {
   height: 100%;
   padding-bottom: var(--rail-progress-row);
-  transform: none !important;
+}
+
+/* ==========================================================================
+   THE PAGE
+   ========================================================================== */
+
+/* THE ROW IS DRIVEN BY AN INDEX AND NOT BY A SCROLL, below 768 and in the full
+   screen at any width. --rail-page is a whole number written by
+   src/rail-expand.js; the stride is one slide and one gap, so the arithmetic
+   lands every slide dead centre of the stage for the same reason the wide
+   rail's does — see THE INSET at the head of this file.
+
+   It replaces a native scroller, and three things made that worth doing. The
+   row is not swipeable at all until the full screen is open, so there is no
+   scroller to be had in the collapsed state. Inside the full screen the stage
+   is ROTATED, and a scroller in a rotated box is dragged along an axis the eye
+   reads as the other one. And a page turn should land on a slide rather than
+   anywhere between two, which a scroller only does with snap points.
+
+   The collapsed row takes the same transform, so closing the full screen
+   leaves the page you left on rather than rewinding to the first — one number
+   describes both states, and the stride differs between them exactly as the
+   slide does. */
+@media (max-width: 767px) {
+  .rail__track {
+    transform: translate3d(
+      calc(-1 * var(--rail-page, 0) * var(--rail-stride)),
+      0,
+      0
+    );
+    transition: transform var(--dur) var(--ease);
+  }
+}
+
+.rail.is-expanded .rail__track {
+  transform: translate3d(
+    calc(-1 * var(--rail-page, 0) * var(--rail-stride)),
+    0,
+    0
+  );
+  transition: transform var(--dur) var(--ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail__track {
+    transition: none;
+  }
+}
+
+/* THE TWO HALVES, and they are inside the pin on purpose: the pin is the box
+   that rotates, so a tap on what the reader sees as the right-hand side lands
+   on the right-hand half whichever way the stage is turned. Doing the same
+   arithmetic by hand would mean mapping every touch point back through the
+   rotation.
+
+   Transparent and unlabelled. The slide is the whole of the screen and these
+   are its two sides; drawing anything on them would be chrome over the work.
+   They are <button>s so the keyboard and a screen reader get the same two
+   moves, which is where their names live. */
+.rail__half {
+  position: absolute;
+  top: 0;
+  bottom: var(--rail-progress-row);
+  z-index: 2;
+  display: none;
+  width: 50%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.rail.is-expanded .rail__half {
+  display: block;
+}
+
+.rail__half--prev {
+  left: 0;
+}
+
+.rail__half--next {
+  right: 0;
+}
+
+.rail__half:focus-visible {
+  outline: 2px solid var(--color-graphite);
+  outline-offset: -4rem;
 }
 
 /* THE OVERLAY IS PAPER TOO. It inherits .rail's ground, and that is charcoal
@@ -1032,7 +1196,7 @@
 }
 
 /* ==========================================================================
-   THE CONTROLS — enlarge, close, and the hint
+   THE CONTROLS — enlarge, close, and the two halves
    ========================================================================== */
 
 /* Both buttons are injected by src/rail-expand.js and are children of .rail
@@ -1117,44 +1281,6 @@
   display: none;
 }
 
-/* THE HINT, and it takes itself off. It is up only while the overlay is up AND
-   the phone is still upright — the moment it is turned, the thing it asked for
-   has happened and the sentence is in the way of the answer. An orientation
-   query rather than a timer or a tap, so it is the device's own state that
-   dismisses it and nothing has to be remembered.
-
-   Centred under the slide rather than over it: the hint is about the window,
-   not about the picture, and a line of type across the artwork is the kind of
-   chrome the rest of this page is built to avoid. */
-.rail__hint {
-  position: absolute;
-  left: var(--grid-margin);
-  right: var(--grid-margin);
-  bottom: calc(var(--rail-progress-row) + var(--grid-gutter));
-  z-index: 3;
-  display: none;
-  margin: 0;
-  font-family: var(--font-secondary);
-  font-size: 11rem;
-  line-height: calc(13.75 / 11);
-  letter-spacing: 0.03em;
-  text-align: center;
-  text-transform: uppercase;
-  /* Graphite, not the labels' grey. This is an instruction and it has to be
-     read at a glance; the grey is 3.09:1 on paper, which is a colour for fine
-     print rather than for the one line on the screen asking for something. */
-  color: var(--color-graphite);
-}
-
-.rail.is-expanded .rail__hint {
-  display: block;
-}
-
-@media (orientation: landscape) {
-  .rail.is-expanded .rail__hint {
-    display: none;
-  }
-}
 
 /* THE PAGER lights to white on both of this page's arrangements, because it is
    on the charcoal in both: the footer band of the pinned rail above 768, and

@@ -343,6 +343,22 @@
   /* THE BOX. The window, less the bar and less that opening. The floor is for
      a short window — below about 540 the arithmetic would start taking the box
      away altogether, and a page with no picture on it is worse than a brief
-     that opens half a line lower. */
-  --work-h: max(240rem, calc(100dvh - var(--nav-h) - var(--brief-opening)));
+     that opens half a line lower.
+
+     svh AND NOT dvh, AND THAT IS THE WHOLE OF WHY THE PAGE HOLDS STILL. dvh is
+     the viewport as it is RIGHT NOW, so on a phone it grows the moment the
+     address bar slides away and shrinks when it comes back — and every picture
+     on every narrow project page is sized off this one number. A reader
+     scrolling the brief was watching the artwork above it breathe in and out
+     and everything below it shift by the same amount, several times a gesture.
+     It is not a jitter in one rule; it is the layout being asked a question
+     whose answer changes mid-scroll.
+
+     svh is the SMALL viewport — the window as it is with the browser's chrome
+     SHOWN — and it is a constant for the life of the page. The box is therefore
+     laid out for the worst case and never relaid. What it costs is a band of
+     paper at the foot once the bar retracts, which is a page that shows
+     slightly more of itself than it promised; what dvh costs is the picture
+     changing size while you look at it. */
+  --work-h: max(240rem, calc(100svh - var(--nav-h) - var(--brief-opening)));
 }

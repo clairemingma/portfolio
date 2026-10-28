@@ -146,6 +146,37 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ==========================================================================
+   NO SCROLLBARS BELOW 768
+   ========================================================================== */
+
+/* The reel pages have hidden the document's bar at every width since they were
+   built, and the note there is the one that applies here too: a native bar down
+   the right edge of a page whose content runs to both margins reads as a seam
+   rather than as a control. On a phone it is worse than that — the bar is drawn
+   OVER the artwork, not beside it, because the viewport has no room to give.
+
+   Below 768 only. The wide pages keep theirs: the still pages scroll through a
+   long brief and the bar is the only thing on the screen that says how far, and
+   up there it has a margin of its own to sit in.
+
+   WHAT REPLACES IT is what the page was already doing — the copy is cut
+   mid-line by the bottom of the window, which is the ordinary way a page says
+   there is more of it, and the counter says how long a swipe row is.
+
+   Two declarations, because the two engines spell it differently and neither
+   understands the other's. The horizontal scrollers each state it again on
+   themselves; see .rail__pin and .reel__shots. */
+@media (max-width: 767px) {
+  html {
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 body {
   margin: 0;
   font-family: var(--font-primary);
@@ -565,9 +596,14 @@ p {
   padding: 10rem var(--grid-margin) var(--grid-gutter);
   overflow-y: auto;
   overscroll-behavior: contain;
+  scrollbar-width: none;
   background: var(--color-paper);
   transform: translateX(100%);
   transition: transform var(--dur) var(--ease);
+}
+
+.menu__panel::-webkit-scrollbar {
+  display: none;
 }
 
 .menu.is-open .menu__panel {

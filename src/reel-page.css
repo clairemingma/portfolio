@@ -368,6 +368,12 @@ body {
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
+    /* The document's own bar is hidden at the head of this file and below 768
+       in styles.css; this is the row's. It is not only an appearance: a
+       classic bar takes 12 off the bottom of the box and the frames are then
+       fitted to what is left, which is how this came to be 285 tall in a 297
+       box while it was still showing one. */
+    scrollbar-width: none;
     /* Sideways instead of down. The document's own `y mandatory` is still set
        on <html> for the wide page; on the row it would do nothing, so the row
        states its own axis and keeps the frame-at-a-time reading the design is
@@ -379,6 +385,10 @@ body {
      air the design keeps around a frame. scroll-snap-stop: always is the
      wide page's and is kept for the same reason: a reel of three is short
      enough that a skipped frame is a third of the work missed. */
+  .reel__shots::-webkit-scrollbar {
+    display: none;
+  }
+
   .reel__screen {
     flex: none;
     width: 100%;

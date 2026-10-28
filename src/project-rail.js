@@ -355,19 +355,32 @@ export function mountRail() {
 
   // THE FULL-SCREEN OVERLAY COUNTS AS A REASON NOT TO PIN, alongside the
   // narrow window and the reduced-motion preference. src/rail-expand.js lays a
-  // fixed box over the viewport and scrolls the row inside it; a phone turned
+  // fixed box over the viewport and pages the row inside it; a phone turned
   // sideways to read it is 844 wide, which is past this module's breakpoint, so
-  // without the third term `sync` would pin the rail on the turn and start
-  // translating the same track the overlay is scrolling. Two positions for one
+  // without that term `sync` would pin the rail on the turn and start
+  // translating the same track the overlay is paging. Two positions for one
   // row, and the second one wins on alternate frames.
+  //
+  // AND IT DOES NOT FOLLOW A SCROLLER BELOW 768, because there is no longer
+  // one to follow: the narrow row is not swipeable until the full screen is
+  // open, and inside it the row is moved by an index rather than a
+  // scrollLeft. src/rail-expand.js owns --rail-page and the counter down
+  // there; following would only write `[1/17]` over whatever page it had set.
+  //
+  // What is left for follow() is the one case it was written for and the one
+  // it is still right for: a WIDE window under prefers-reduced-motion, where
+  // the pin is released and is a plain horizontal scroller.
   function sync() {
     const expanded = rail.classList.contains('is-expanded');
     if (wide.matches && !still.matches && !expanded) {
       unfollow();
       engage();
-    } else {
+    } else if (wide.matches && !expanded) {
       release();
       follow();
+    } else {
+      release();
+      unfollow();
     }
   }
 
