@@ -312,6 +312,29 @@
      the rail's progress row has always been. */
   --work-row: calc(2 * var(--grid-gutter));
 
+  /* THE BOX THE ARTWORK IS FITTED INTO, and the point of it is that there is
+     ONE of them. --work-h is the band every project page gives its work, and
+     each template used to carve its own figure out of that band before
+     fitting a picture in it: the rail took off a control row, a counter row
+     and a gutter at each end and fitted its slide into 432; the reel took off
+     a counter row and a band of air at each end and fitted its shots into
+     478; the still pages took a gutter at each end and fitted theirs into
+     503. Three templates, three windows, and nothing saying they should be
+     three.
+
+     They are one now. The band less the row at its foot is what every page
+     gives its picture, which is the still pages' 503 — the largest of the
+     three, so no page's artwork got smaller to make them agree.
+
+     WHAT GOES IN IT KEEPS ITS OWN SHAPE. Each picture scales until it meets
+     the box on one axis and stops; nothing is cropped and nothing is
+     stretched, so a 9:16 clip meets the height and a 16:9 slide meets the
+     width. The windows match even where the pictures in them cannot: an
+     artwork that is 390 wide at most cannot be 503 tall unless it is a tall
+     shape to begin with, and cutting a deck slide down to a strip to make the
+     numbers agree would be making the page lie about what is on it. */
+  --work-art: calc(var(--work-h) - var(--work-row));
+
   /* What is kept clear below the work, so the brief OPENS in the first screen.
      Stated as the sum of what has to fit in it, so that changing any of those
      sizes changes this with them rather than leaving a number behind:

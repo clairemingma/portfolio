@@ -177,7 +177,10 @@
     width: auto;
     height: 100%;
     max-width: 100%;
-    max-height: calc(var(--work-h) - 2 * var(--grid-gutter));
+    /* The box every project page gives its picture, read from the shared
+       token rather than restated — see THE BOX THE ARTWORK IS FITTED INTO in
+       project-brief.css. Same figure this always resolved to. */
+    max-height: var(--work-art);
   }
 }
 

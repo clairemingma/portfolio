@@ -706,15 +706,14 @@
   }
 
   :root {
-    /* THE AIR BETWEEN THE BAR AND THE WORK. It was the row the enlarge button
-       stood in — 44, a touch target's height rather than a typographic one,
-       because that is the size a thumb can be asked to find — and the button
-       is gone. The 44 is not: the design keeps the same distance from the rule
-       under the bar to the top of the picture, and what was a container is
-       simply the air it always looked like. Kept at its own name rather than
-       folded into the padding below, because it is still one quantity with one
-       reason, and the reason is now the design's spacing. */
-    --rail-ctrl-row: 44rem;
+    /* THE CONTROL ROW IS GONE FROM THE ARITHMETIC. It was 44 — a touch
+       target's height — reserved under the bar for the enlarge button, and it
+       outlived the button by one revision as air. What retired it is that the
+       box is shared now: --work-art is the same figure on all three templates
+       and a band this template alone took off the top of it is exactly the
+       kind of private carve-out that made the three windows disagree. The
+       slide is centred in the box, so the air above it is what the box and
+       the slide's own shape leave over — 151 on a phone, where it was 174. */
 
     /* ELEVEN COLUMNS IS A TWELVE-COLUMN NUMBER, and down here the grid is FOUR —
        --grid-columns changes at this same breakpoint in styles.css. Asking for
@@ -722,19 +721,22 @@
 
        The full measure is what a narrow page gives any piece of artwork: four
        columns and their gutters, which is the window less its two margins. The
-       second cap is the box, less the two rows that stand in it — the enlarge
-       button at the top and the counter at the floor — and a gutter above and
-       below. It does not bind on a phone held upright, where the width runs
-       out first by a long way, and it is what keeps a slide clear of both on a
-       short window. */
+       second cap is --work-art, the box every project page gives its picture —
+       see THE BOX THE ARTWORK IS FITTED INTO in project-brief.css. It used to
+       be that box less a control row, less the counter row and less a gutter
+       at each end, which fitted a slide into 432 where the still pages fitted
+       theirs into 503: three templates each carving a different figure out of
+       the same band.
+
+       WHICH OF THE TWO BINDS IS THE SLIDE'S OWN SHAPE, and on a phone held
+       upright it is always the width. A 16:9 slide on a 390 screen is 357 by
+       201 and the box is 503 — it meets the measure and stops, with the air
+       above and below it. That is the whole of what a locked ratio costs, and
+       it is the right cost: the alternative is scaling the slide to 895 wide
+       so it fills the height, and showing the middle 390 of it. */
     --rail-slide-w: min(
       calc(100vw - 2 * var(--grid-margin)),
-      calc(
-        (
-            var(--work-h) - var(--rail-ctrl-row) - var(--work-row) - 2 *
-              var(--grid-gutter)
-          ) * 16 / 9
-      )
+      calc(var(--work-art) * 16 / 9)
     );
 
     /* THE GAP BECOMES THE INSET, and it is the ground change that made this
@@ -772,10 +774,11 @@
   .rail.is-pinned .rail__pin {
     position: static;
     height: 100%;
-    /* The bar's band, and the control row under it. The padding is what keeps
-       the slides clear of both, so the track centres what is left rather than
-       centring in the whole box and sliding the artwork up behind them. */
-    padding-top: calc(var(--nav-h) + var(--rail-ctrl-row));
+    /* The bar's band, and nothing else now that the control row is gone. What
+       is left under it is --work-art plus the counter row at the foot, which
+       the track's own bottom padding keeps clear — so the box the slide is
+       centred in is the box every other template gives its picture. */
+    padding-top: var(--nav-h);
     /* NOT A SCROLLER DOWN HERE, which is the change the full screen made
        necessary. The row was swipeable in place: a reader could drag through
        seventeen deck slides at 200 units tall, reading none of them, and the

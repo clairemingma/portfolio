@@ -200,14 +200,19 @@
   }
 
   /* HEIGHT LEADS, as it does on the wide page: the clip is centred in the box
-     every project page's work gets — see .clips in src/still-page.css — and
-     9:16 gives the width back. A gutter above and below keeps it off the bar
-     and off the row beneath. */
+     every project page's work gets — --work-art, see THE BOX THE ARTWORK IS
+     FITTED INTO in project-brief.css — and 9:16 gives the width back.
+
+     The figure is unchanged; what changed is that it is now READ from the
+     shared token rather than restated here as --work-h less two gutters. It
+     was the same arithmetic, which is how this page came to be the one whose
+     window the other two are matched to: 9:16 in a 503 box meets the height,
+     so this is the page where the box is fully spent and therefore visible. */
   .clip {
     width: auto;
     height: 100%;
     max-width: 100%;
-    max-height: calc(var(--work-h) - 2 * var(--grid-gutter));
+    max-height: var(--work-art);
   }
 }
 

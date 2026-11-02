@@ -346,9 +346,13 @@ body {
     width: 100%;
   }
 
-  :root {
-    --shot-air: var(--grid-gutter);
-  }
+  /* --shot-air USED TO BE REDECLARED HERE, down from the wide page's 40 to a
+     gutter, and it is gone because nothing below reads it any more. It was the
+     band the shot was held clear of its box by, on both axes; the box states
+     where the artwork stops now and the picture fills it. Every narrow rule
+     that consumed it — the two width caps and the height cap — is overridden
+     at THE SHOT below, so leaving the declaration would have been a token with
+     a value and no reader. The wide page keeps its 40. */
 
   /* The box. It is .reel__shots rather than the lead, because down here the
      lead is not a panel at all — it is the brief, in flow, under the work. */
@@ -362,8 +366,11 @@ body {
        like a flex-direction problem. */
     flex: none;
     /* The box, less the row that goes under it — the two together come to
-       --work-h, which is the height every project page's work takes. */
-    height: calc(var(--work-h) - var(--work-row));
+       --work-art, the box every project page gives its picture — see THE BOX
+       THE ARTWORK IS FITTED INTO in project-brief.css. This already resolved
+       to exactly that figure; it reads it from the token now, so the box and
+       the cap on the shot inside it cannot drift apart. */
+    height: var(--work-art);
     margin-top: var(--nav-h);
     display: flex;
     overflow-x: auto;
@@ -397,15 +404,41 @@ body {
     scroll-snap-align: center;
   }
 
-  /* HEIGHT LEADS, as it does on the wide page, and the cap is now the box
-     rather than the window: the frames are device mockups of different
-     heights and what has to be true is that each one fits the box it shares
-     with the others. */
+  /* HEIGHT LEADS, as it does on the wide page, and the cap is the box every
+     project page gives its picture — see THE BOX THE ARTWORK IS FITTED INTO
+     in project-brief.css. The frames are device mockups of different heights
+     and what has to be true is that each one fits the box it shares with the
+     others, and that the box is the one the other two templates use.
+
+     THE BAND OF AIR AT EACH END IS GONE WITH IT, on both axes. --shot-air
+     held the shot 12 clear of the box top and bottom and 12 clear of each
+     margin, which is a frame drawn inside a frame: the box already states
+     where the artwork stops, and insetting the picture from it by a gutter
+     left a shot that filled neither. On a 390 screen these are landscape
+     mockups and the WIDTH binds, so what the inset actually cost was height —
+     Eight Immortals comes out at 357 by 239 where it was 332 by 222, and Shop
+     Every Store at 357 by 274 where it was 332 by 255.
+
+     --shot-h still caps it, and that is the design's own height for each
+     frame: a mockup drawn at 553 is not scaled past 553 to fill a box. Fill
+     the box where the artwork has it to give, and stop at the size it was
+     drawn.
+
+     AND THE ANCHOR HAS TO GIVE UP THE SAME INSET, which is the half of this
+     that is easy to miss. The frames on a reel whose work is a live place are
+     wrapped in .reel__link, and the base stylesheet moves the width cap UP to
+     that anchor — see the note on it above — so a picture inside one takes
+     100% of an anchor that is itself inset by a gutter at each side. Shop
+     Every Store's frames are wrapped and Eight Immortals' are bare, so
+     relaxing only .reel__shot moved one page and left the other exactly where
+     it was. */
+  .reel__shot,
+  .reel__link {
+    max-width: 100%;
+  }
+
   .reel__shot {
-    max-height: min(
-      calc(var(--shot-h) * 1rem),
-      calc(var(--work-h) - var(--work-row) - 2 * var(--shot-air))
-    );
+    max-height: min(calc(var(--shot-h) * 1rem), var(--work-art));
   }
 
   /* THE ROW UNDER THE WORK, and on this template it carries one thing: the
