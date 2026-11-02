@@ -691,8 +691,18 @@
     order: 2;
   }
 
-  .rail-foot {
+  /* PREV / NEXT, moved here out of the pin by src/rail-expand.js — see the
+     note on placePager there. As a child of body it is simply the last row of
+     the page, under the brief, which is where the other two templates order
+     theirs to. */
+  .pager {
     order: 3;
+    justify-content: flex-end;
+    padding: 0 var(--grid-margin) var(--grid-gutter);
+  }
+
+  .rail-foot {
+    order: 4;
   }
 
   :root {
@@ -802,11 +812,45 @@
   .progress {
     bottom: 0;
     height: var(--work-row);
-    color: var(--color-graphite);
+    /* THE LIGHTEST GREY THE SITE HAS, which is the reference's own for this
+       one mark: #c8c8c8 against the #919191 it sets its labels in and the
+       #404040 of the copy. The counter is the quietest thing on the page —
+       it is a position, not a label and not a control — and the step down
+       from the labels is what says so. */
+    color: var(--color-index-grey);
   }
 
   .progress__slider {
     display: none;
+  }
+
+  /* THE WAY ON, at the other end of the counter's row. The reference draws
+     exactly this — `[1/6]` at the left and `Next` at the right, under the
+     picture — and it is what the row needed once the slides stopped being
+     swipeable in place: a reader who does not want the full screen still has
+     to be able to reach slide two.
+
+     It lights the way every other control on this site does and rests in the
+     labels' grey rather than the counter's, because it is a thing to press
+     and the number beside it is not. */
+  .progress__next {
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--font-secondary);
+    font-size: 11rem;
+    line-height: calc(13.75 / 11);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--color-system-grey);
+    cursor: pointer;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .progress__next:hover,
+  .progress__next:focus-visible {
+    color: var(--color-graphite);
   }
 
   /* ========================================================================
@@ -1168,10 +1212,11 @@
    this page. */
 .rail.is-expanded .progress {
   bottom: 0;
-  color: var(--color-graphite);
+  color: var(--color-index-grey);
 }
 
-.rail.is-expanded .progress__slider {
+.rail.is-expanded .progress__slider,
+.rail.is-expanded .progress__next {
   display: none;
 }
 
@@ -1281,6 +1326,17 @@
   display: none;
 }
 
+/* AND NEXT IS A NARROW CONTROL, whose styling lives in the narrow block — so
+   left alone above 768 it draws what an unstyled <button> draws: a grey box
+   with a border, in the middle of the progress row. It did. The wide rail is
+   driven by the scroll, the scrub and the two click halves and has no use for
+   it; the overlay has the halves, which are the whole screen. */
+@media (min-width: 768px) {
+  .progress__next {
+    display: none;
+  }
+}
+
 
 /* THE PAGER lights to white on both of this page's arrangements, because it is
    on the charcoal in both: the footer band of the pinned rail above 768, and
@@ -1296,14 +1352,10 @@
    Absolute against .rail, like .progress beside it and for the same reason:
    .rail__pin is static at this width, so neither travels with the row when it
    is swiped. */
-@media (max-width: 767px) {
-  .rail__pin .pager {
-    position: absolute;
-    right: var(--grid-margin);
-    bottom: 0;
-    z-index: 2;
-  }
-}
+/* BELOW 768 THE PAIR IS NOT IN THE PIN AT ALL — src/rail-expand.js moves it to
+   the end of body and back. The placement itself is in the narrow block above,
+   and the note on why it has to be a move rather than a rule is with the code
+   that does it. */
 
 /* In the pin so it is on the charcoal and only while the rail holds the screen.
    Opposite .rail__rule in the same footer band: copyright left, prev/next

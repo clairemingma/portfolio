@@ -34,6 +34,33 @@ export function mountReelCounter() {
 
   let shown = 1;
 
+  /* --- the way on ---------------------------------------------------------- */
+
+  // NEXT at the other end of the counter's row, which is what the reference
+  // draws under a gallery and what this row was missing: the frames are a
+  // swipe row and a swipe is the only thing that moved them.
+  //
+  // It scrolls rather than setting a position, so the row's own snap does the
+  // landing and the counter updates from the scroll like any other — one
+  // source of truth for where the row is, which is the rule the rail's module
+  // follows too.
+  //
+  // It wraps. Two or three frames is short enough that returning to the first
+  // reads as the set repeating, and a control that dies on the last frame is
+  // one a reader has to notice has died.
+  const next = document.createElement('button');
+  next.type = 'button';
+  next.className = 'reel__next';
+  next.textContent = 'Next';
+  next.setAttribute('aria-label', 'Next frame');
+  next.addEventListener('click', () => {
+    const step = shots.clientWidth;
+    const at = Math.round(shots.scrollLeft / step);
+    const to = at >= frames.length - 1 ? 0 : at + 1;
+    shots.scrollTo({ left: to * step, behavior: 'smooth' });
+  });
+  count.closest('.reel__count')?.append(next);
+
   function paint() {
     // Each screen is one item of the row at the full measure, so the frame in
     // the window is simply how many widths along the scroll has got. Read off

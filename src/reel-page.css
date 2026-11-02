@@ -435,6 +435,32 @@ body {
     line-height: calc(13.75 / 11);
     font-variant-numeric: tabular-nums;
     text-transform: uppercase;
+    /* The lightest grey the site has, which is the reference's for a counter.
+       See .progress in src/rail-page.css. */
+    color: var(--color-index-grey);
+  }
+
+  /* THE WAY ON, at the other end of the row — the reference's own arrangement.
+     The frames are a swipe row here and this is the control for a reader who
+     does not swipe. In the labels' grey, not the counter's: it is a thing to
+     press. */
+  .reel__next {
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--font-secondary);
+    font-size: 11rem;
+    line-height: calc(13.75 / 11);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--color-system-grey);
+    cursor: pointer;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .reel__next:hover,
+  .reel__next:focus-visible {
     color: var(--color-graphite);
   }
 
@@ -446,6 +472,15 @@ body {
      on being a containing block: without script .reel__foot is still shown and
      its `bottom: 0` would resolve against the viewport instead, detaching the
      copyright from the paper it belongs to and riding it over the frames. */
+  /* Last in the column, under the copy — see THE PAIR AT THE END OF THE PAGE
+     in styles.css. */
+  .reel .pager {
+    order: 4;
+    align-self: stretch;
+    justify-content: flex-end;
+    padding: 0 var(--grid-margin) var(--grid-gutter);
+  }
+
   .reel__lead {
     order: 3;
     position: relative;

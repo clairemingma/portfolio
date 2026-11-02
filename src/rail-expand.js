@@ -98,6 +98,7 @@ export function mountRailExpand() {
   const close = button('rail__close', IN, 'Leave full screen');
   const prevHalf = button('rail__half rail__half--prev', '', 'Previous slide');
   const nextHalf = button('rail__half rail__half--next', '', 'Next slide');
+  const next = button('progress__next', 'Next', 'Next slide');
 
   let open = false;
 
@@ -110,10 +111,16 @@ export function mountRailExpand() {
   // inside of.
   let page = 0;
 
+  // IT WRAPS, which is what makes NEXT worth having at the foot of the row: a
+  // control that stops working on the last slide is one a reader has to notice
+  // has stopped. Twelve and seventeen slides are short enough that coming back
+  // round to the first reads as the deck repeating rather than as a mistake,
+  // and the counter says plainly which one you are on.
   function setPage(n) {
-    const next = Math.min(slides.length - 1, Math.max(0, n));
-    if (next === page) return;
-    page = next;
+    const last = slides.length - 1;
+    const to = n < 0 ? last : n > last ? 0 : n;
+    if (to === page) return;
+    page = to;
     rail.style.setProperty('--rail-page', String(page));
     if (count) count.textContent = `[${page + 1}/${slides.length}]`;
   }
@@ -168,6 +175,7 @@ export function mountRailExpand() {
 
   prevHalf.addEventListener('click', () => setPage(page - 1));
   nextHalf.addEventListener('click', () => setPage(page + 1));
+  next.addEventListener('click', () => setPage(page + 1));
 
   // TAP THE PICTURE TO OPEN IT. The button in the corner is the one a screen
   // reader and a keyboard get, and it is 44 square against a slide that is
@@ -257,4 +265,43 @@ export function mountRailExpand() {
   // and has no corner of its own to sit in.
   rail.append(expand);
   pin.append(close, prevHalf, nextHalf);
+
+  // NEXT goes in the counter's row, at the other end from the number — the
+  // reference's own arrangement, and the reason it is injected rather than
+  // written into the markup is the reason every control here is: without this
+  // module the row cannot move, so a button offering to move it would be
+  // offering something the page cannot do.
+  const progress = rail.querySelector('[data-progress]');
+  if (progress) progress.append(next);
+
+  /* --- where PREV / NEXT lives --------------------------------------------- */
+
+  // THIS IS A DOM MOVE AT A BREAKPOINT, which this project otherwise refuses
+  // to do, and the reason it is unavoidable here is a containing block.
+  //
+  // Above 768 the pair belongs in the pin: the pin is `position: sticky` while
+  // the rail is running, so an absolute box inside it sits in the charcoal's
+  // footer band and stays there for the whole of the presentation. That is why
+  // the markup puts it there.
+  //
+  // Below 768 it belongs at the END OF THE PAGE, under the brief. It cannot
+  // get there by `order`, because order only sorts siblings and the pager's
+  // siblings are inside the pin. It cannot get there by `position: absolute`
+  // either: .rail is `position: relative` and is an ancestor, so it — not body
+  // — is the containing block, and `bottom: 0` lands the pair at the foot of
+  // the charcoal rather than the foot of the document. .rail cannot stop being
+  // positioned, because .progress is anchored to it.
+  //
+  // So the element moves. It is one node, it moves back, and the two homes are
+  // the two the design actually has.
+  const pager = rail.querySelector('.pager');
+
+  function placePager() {
+    if (!pager) return;
+    if (narrow.matches) document.body.append(pager);
+    else pin.append(pager);
+  }
+
+  placePager();
+  narrow.addEventListener('change', placePager);
 }

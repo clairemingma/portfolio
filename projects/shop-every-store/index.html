@@ -230,10 +230,17 @@
            up there the frames are a screen each down the page and the scroll
            itself reports the position.
 
+           The number is in a span of its own because the row has a second
+           thing in it: src/reel-counter.js appends NEXT at the other end, and
+           the module rewrites the count by setting textContent — which would
+           take the button with it if the two shared an element.
+
            The seed is written by scripts/build-gallery.mjs from the manifest,
-           and it is what shows if src/reel-counter.js never runs. Matched on
+           and it is what shows if that module never runs. Matched on
            data-count, the same hook the rail's counter uses. -->
-      <p class="reel__count" data-count aria-live="polite">[1/2]</p>
+      <p class="reel__count">
+        <span data-count aria-live="polite">[1/2]</span>
+      </p>
 
       <!-- PREV / NEXT. Generated between the markers from the order the
              landing page's index has its rows in — see scripts/build-gallery.mjs.

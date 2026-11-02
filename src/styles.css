@@ -1340,43 +1340,33 @@ p {
    grey while the links come up is what keeps it reading as punctuation rather
    than as a third thing that could be clicked. */
 
-/* --- THE PAIR ON THE TITLE'S LINE ----------------------------------------- */
+/* --- THE PAIR AT THE END OF THE PAGE -------------------------------------- */
 
-/* BELOW 768 THE PAGER SITS AT THE TOP RIGHT OF THE BRIEF, on the title's own
-   line. The writing is where a reader's attention lands once the picture has
-   been looked at, and the way to the next project belongs at the end of that
-   line rather than in the band under the artwork, where it was competing with
-   the slide counter for the same row.
+/* BELOW 768 PREV / NEXT IS THE LAST THING ON THE PAGE, under the copy. It has
+   moved three times and each move was the layout telling it where it did not
+   belong: the bar's right end while the footer strip still had the bottom
+   corner, the foot of the window while the brief was a fixed sheet with a band
+   kept clear for it, and the title's line once the page began to scroll. On
+   the title's line it was competing with the one thing a reader has come for.
 
-   IT IS PLACED BY ARITHMETIC AND NOT BY THE FLOW, which needs saying because
-   it looks like it should be a flex item. It is not one anywhere: the markup
-   puts the pager inside .rail__pin on the rails, beside .reel__lead on the
-   reels and beside .still__brief on the still pages, and in none of the three
-   is it a sibling of the brief. Moving it into the brief would be a DOM move
-   at a breakpoint, undone at the same breakpoint.
+   The end of the copy is where moving on actually belongs: you read the brief,
+   and the next project is the next thing. It is also the only placement that
+   costs the first screen nothing.
 
-   What makes the arithmetic exact is the thing the whole narrow layout is
-   built on: the work is a box of fixed height, so the brief's top edge is
-   `--nav-h + --work-h` from the top of the page on every project page, and
-   the title is one gutter below that. See THE WORK'S CONTAINER in
-   project-brief.css.
+   TWO MECHANISMS, because the markup puts the pager in three different places
+   and only two of them are a sibling of the brief. The reel and the still
+   pages order it to the end of their own flex column; the rail page cannot,
+   because its pager is inside .rail__pin, so it is taken out of the flow and
+   hung off the foot of the document instead. Each template states its own; all
+   three are stated at this width, and what is here is only what the pair looks
+   like.
 
-   Each template makes its own root the containing block — .rail, .reel and
-   .still are all `position: relative` and all start at y 0, the bar being
-   fixed — so one `top` here is the same line on all three.
-
-   The box is the title's own line rather than a touch target's 44: a bigger
-   one would either push the title down or overlap the facts under it, and the
-   two words are a wide target across even if they are a short one down. */
+   IT LIGHTS TO GRAPHITE because the ground is paper on all three down here. */
 @media (max-width: 767px) {
   .pager {
     display: flex;
-    position: absolute;
-    top: calc(var(--nav-h) + var(--work-h) + var(--grid-gutter));
-    right: var(--grid-margin);
-    left: auto;
+    top: auto;
     bottom: auto;
-    z-index: 2;
     height: 23.1rem;
     --pager-lit: var(--color-graphite);
   }

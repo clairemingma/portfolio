@@ -267,7 +267,7 @@ for (const page of PAGES) {
   // Matched on data-count rather than the class, so the hook is the behaviour
   // rather than the styling.
   html = html.replace(
-    /(<p class="[^"]*" data-count aria-live="polite">)\[[^\]]*\]/,
+    /(data-count aria-live="polite">)\[[^\]]*\]/,
     `$1[1/${frames.length}]`,
   );
 
@@ -523,7 +523,7 @@ for (const reel of REELS) {
   // when their frames became a swipe row below 768, and a hand-kept `[1/3]` on
   // a page whose manifest has four frames is the reason it is written here.
   html = html.replace(
-    /(<p class="[^"]*" data-count aria-live="polite">)\[[^\]]*\]/,
+    /(data-count aria-live="polite">)\[[^\]]*\]/,
     `$1[1/${frames.length}]`,
   );
 

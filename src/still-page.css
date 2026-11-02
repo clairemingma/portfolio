@@ -292,6 +292,14 @@ body {
     order: 3;
   }
 
+  /* Last in the column, under the copy — see THE PAIR AT THE END OF THE PAGE
+     in styles.css. The bottom padding is the page's own air after it. */
+  .still .pager {
+    order: 4;
+    justify-content: flex-end;
+    padding-bottom: var(--grid-gutter);
+  }
+
   /* The footer strip comes off. It carried the copyright and the two contact
      links the bar cannot hold at this width, and all three are in the menu
      now — see src/mobile-menu.js. */
