@@ -318,7 +318,7 @@
 
        a gutter of air under the work
        the title, at 21 on its 1.1
-       the block's 20, and four facts at 15.4 with 10 between them
+       four facts at 15.4 with 10 between them
 
      WHAT IT NO LONGER RESERVES IS THE COPY, and that is the whole of what makes
      the picture the size it is. It used to keep the block's 20 and two lines of
@@ -334,11 +334,31 @@
      — the rail puts it at the floor of its box and the reel gives it the last
      --work-row of theirs — so reserving it here took it out of the picture a
      second time, and took it out of the still pages too, which have one image
-     and nothing to count. That alone is 24 units of the 78 this change
-     recovers. */
-  --brief-opening: calc(
-    var(--grid-gutter) + 23.1rem + 20rem + 91.6rem
-  );
+     and nothing to count. That alone is 24 units of the 78 that change
+     recovered.
+
+     AND NOW THE BLOCK'S 20 GOES TOO, which is the last 20 this sum had to give
+     and the one that closes the gap to the reference. Measured off the same
+     iPhone, both at 390 by 844: the reference's picture is 503 tall and ours
+     was 482. That 21 is this term, almost exactly.
+
+     It is the gap BETWEEN the title and the facts — .brief's own 20 — and it
+     is air between two things this sum already counts in full. What reserving
+     it bought was slack rather than anything a reader sees; what it cost was
+     20 units off every picture on every project page.
+
+     WHAT IT COSTS, MEASURED AND NOT ESTIMATED. On the same 390 by 844 phone
+     the fold sits at 698.7 and the four fact rows ended at 615.7, 645, 671.7
+     and 695. Everything moves down 20.9, so the first three still clear it and
+     THE FOURTH NOW FALLS ABOUT 17 BELOW — five of the seven pages carry four
+     facts, so on those the last row is the first thing a reader scrolls to
+     rather than the last thing they arrive on. A three-fact page is unchanged:
+     it ends at 692.6, still inside the screen.
+
+     That is the whole of the trade, and it is deliberate rather than a
+     rounding error: one row of a label and a value, against 20 units on the
+     artwork on every page of the site. */
+  --brief-opening: calc(var(--grid-gutter) + 23.1rem + 91.6rem);
 
   /* THE BOX. The window, less the bar and less that opening. The floor is for
      a short window — below about 540 the arithmetic would start taking the box
