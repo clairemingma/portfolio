@@ -451,6 +451,37 @@ p {
   background: var(--color-paper);
 }
 
+/* THE RULE UNDER THE BAR, which is a phone's rule and not the page's. Above 768
+   the bar is four labels spread across twelve columns with the whole width of
+   the window between them, and it reads as a bar without being drawn as one.
+   Below it there are two marks — the wordmark and [+] — at opposite ends of a
+   375 measure, with paper above and paper below and nothing saying which of the
+   two they belong to. The reference rules the same line for the same reason.
+
+   ONLY OVER THE PAPER. On the landing page the bar rests in the middle of the
+   print and rides up to the top as the page is scrolled; a hairline under it
+   while it is over the artwork is a rule drawn across a photograph. The class
+   that says the paper has covered the bar's band is already the one that turns
+   the type graphite, so the rule arrives with the colour and for the same
+   reason. On the project pages, where the bar is locked over paper from the
+   first frame, that is every frame.
+
+   DRAWN RATHER THAN BORDERED, so the bar's box is still exactly --nav-h. Every
+   scroll number on the landing page and the top padding of every project page's
+   work box is derived from that height, and a hairline is not worth making all
+   of them a pixel wrong. Absolute, so the flex row does not take it as an item. */
+@media (max-width: 767px) {
+  .nav.is-over-paper::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--color-index-grey);
+  }
+}
+
 /* The design's own 20 and 24, kept — measured rather than assumed, because the
    first guess was to enlarge them and that was wrong twice over.
    La Belle Aurore inks 1.37x its font size (ascent 0.72 + descent 0.65 per em),
@@ -629,13 +660,14 @@ p {
   color: var(--color-system-grey);
 }
 
-/* The head's label is the bar's 11 where the two below are the brief's 10.
-   It is on the bar's row and reads as part of it; [CONTACT] and [SOCIAL] are
-   captions inside the panel and belong with .brief__label. */
-.menu__head .menu__label {
-  font-size: 11rem;
-  line-height: calc(13.75 / 11);
-}
+/* THE HEAD'S LABEL IS THE SAME TEN AS THE TWO BELOW IT, which is what the
+   override that used to be here denied. The argument for 11 was that this one
+   sits on the bar's row and reads as part of the bar, where [CONTACT] and
+   [SOCIAL] are captions inside the panel — but the panel only ever exists
+   below 768, every small Inter mark on a phone is 10, and three labels in one
+   paper panel at two sizes reads as a mistake rather than as a distinction.
+   .menu__head centres its row on its own height, so nothing moved when the
+   line box came with it. */
 
 /* 44 square again, pulled back onto the row by its own padding so the bracket
    lands on the panel's margin and not a finger's width inside it. */
@@ -729,11 +761,13 @@ p {
   text-underline-offset: 0.28em;
 }
 
+/* Ten, with the 13.75 line box it had — the panel is a phone surface and this
+   is the last grey mark in it. */
 .menu__rule {
   margin: 40rem 0 0;
   font-family: var(--font-secondary);
-  font-size: 11rem;
-  line-height: calc(13.75 / 11);
+  font-size: 10rem;
+  line-height: calc(13.75 / 10);
   color: var(--color-system-grey);
 }
 
@@ -1369,6 +1403,15 @@ p {
     bottom: auto;
     height: 23.1rem;
     --pager-lit: var(--color-graphite);
+    /* TEN, AND THE LINE BOX STAYS AT 13.75. Every small Inter label on a phone
+       is 10 — the brief's [Client] already is, and so is the slide counter
+       beside this one — and 11 was the wide page's size left behind at a
+       breakpoint where the measure went from 1470 to 375. The leading is not
+       reduced with it: 13.75 is the row these labels sit on throughout, and
+       dropping it to match would move the pair off the line the counter above
+       is on. */
+    font-size: 10rem;
+    line-height: calc(13.75 / 10);
   }
 }
 
@@ -1393,6 +1436,19 @@ p {
 .foot__rule {
   grid-column: 1 / -1;
   color: var(--color-system-grey);
+}
+
+/* AND ON A PHONE IT IS TEN, where .foot sets the row's 11 for both widths.
+   It is the one grey mark in this footer — LINKEDIN and the address beside it
+   are graphite links and keep the row's size — and every grey mark on a narrow
+   page is 10: the brief's labels, the slide counter, PREV / NEXT. Scoped to
+   narrow rather than changed on .foot, because the wide footer is the desktop
+   design's and the line is on one row with the pair up there. */
+@media (max-width: 767px) {
+  .foot__rule {
+    font-size: 10rem;
+    line-height: calc(13.75 / 10);
+  }
 }
 
 .foot__link {

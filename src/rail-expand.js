@@ -5,11 +5,15 @@
    those slides are deck pages — headings, body copy, chart labels, set for a
    projector. The pictures read at that size and the words do not.
 
-   SO THE SLIDES DO NOT MOVE UNTIL THIS IS OPEN. The row used to be swipeable
-   in place, which let a reader drag through seventeen illegible slides and
-   never find the control that would have made them readable. Collapsed, the
-   page is one picture with a tap on it; the full screen is where the deck is
-   actually read.
+   COLLAPSED, THE PAGE IS ONE PICTURE WITH A TAP ON IT, and the full screen is
+   where the deck is actually read. The row used to be swipeable in place,
+   which let a reader drag through seventeen illegible slides; it is paged by
+   NEXT now, and the picture is the way into the size that makes it legible.
+
+   THE PICTURE IS THE WHOLE OF THAT AFFORDANCE. There was a [+] in the corner
+   offering the same thing, and it was the only piece of drawn chrome on a page
+   that has none anywhere else. See THE WAY IN below for what replaced it and
+   what that costs a reader who is not using a thumb.
 
    WHAT OPENING IT DOES IS TURN THE SCREEN, the way a video does when it goes
    full screen on a phone: the stage is the window's dimensions swapped and
@@ -36,11 +40,12 @@
    THE OVERLAY HAS TO OUTLIVE THE BREAKPOINT, which is the one thing about this
    that is not obvious. A phone turned sideways is 844 CSS pixels wide — past
    768 — so the narrow layout switches off at the exact moment this feature
-   asks for. Nothing here watches a media query, therefore: the controls are
-   appended once and the stylesheet decides which of them is up, with only the
-   enlarge button scoped to narrow windows. The overlay itself is keyed on
-   .is-expanded and holds at any width. See THE FULL SCREEN in
-   src/rail-page.css.
+   asks for. Nothing about the OVERLAY watches a media query, therefore: the
+   controls are appended once and the stylesheet decides which of them is up,
+   keyed on .is-expanded, which holds at any width. See THE FULL SCREEN in
+   src/rail-page.css. The one thing that does watch the query is the way IN —
+   the pin's button role — and that is correct: it belongs to the collapsed
+   narrow page, which is a page you are no longer on once this is open.
 
    The same turn is why this tells src/project-rail.js when the state changes.
    Crossing 768 is that module's signal to pin the rail, and a pinned rail
@@ -53,18 +58,18 @@
    no tap target promising one. Same bargain the scrub makes.
    ========================================================================== */
 
-// THE TWO MARKS ARE TYPE, NOT DRAWING. They were an SVG of the four corner
-// arrows, which is the conventional icon for this and was the wrong thing on
-// this page: every other mark on the site is set in Inter inside square
-// brackets — [CLIENT], [1/12], [MENU] — and a stroked glyph among them reads
-// as something borrowed out of another interface.
+// THE MARK IS TYPE, NOT DRAWING. It was an SVG of the four corner arrows,
+// which is the conventional icon for this and was the wrong thing on this
+// page: every other mark on the site is set in Inter inside square brackets —
+// [CLIENT], [1/12], [+] — and a stroked glyph among them reads as something
+// borrowed out of another interface.
 //
-// `<>` points outward and `><` points in, which is the instruction the corner
-// arrows were giving, in two characters the label face certainly has. They are
-// the brackets' own content rather than chevrons set beside them, so the mark
-// is one object at a glance and exactly as wide in both states.
-const OUT = '[<>]';
-const IN = '[><]';
+// `×` is U+00D7 and not a lowercase x or a dingbat ✕: it is the glyph in the
+// label face that is drawn on the figures' own axis, so it sits centred in the
+// line box without being nudged.
+//
+// There is no opening mark to pair it with any more — see THE WAY IN below.
+const IN = '×';
 
 function button(className, text, label) {
   const el = document.createElement('button');
@@ -87,6 +92,7 @@ export function mountRailExpand() {
   if (!rail) return;
 
   const pin = rail.querySelector('[data-pin]');
+  const track = rail.querySelector('[data-track]');
   const slides = rail.querySelectorAll('[data-slide]');
   const count = rail.querySelector('[data-count]');
   if (!pin || !slides.length) return;
@@ -94,7 +100,6 @@ export function mountRailExpand() {
   const narrow = matchMedia(NARROW);
   const portrait = matchMedia(PORTRAIT);
 
-  const expand = button('rail__expand', OUT, 'View the slides full screen');
   const close = button('rail__close', IN, 'Leave full screen');
   const prevHalf = button('rail__half rail__half--prev', '', 'Previous slide');
   const nextHalf = button('rail__half rail__half--next', '', 'Next slide');
@@ -166,26 +171,84 @@ export function mountRailExpand() {
       close.focus();
     } else {
       exitNative();
-      expand.focus();
+      // Back to the thing that was pressed to get in, which is the picture
+      // itself now that the corner button is gone. The track is focusable at
+      // this width — see THE WAY IN — so the ring lands on the work rather
+      // than at the top of the document.
+      if (narrow.matches) track?.focus();
     }
   }
 
-  expand.addEventListener('click', () => setOpen(true));
   close.addEventListener('click', () => setOpen(false));
 
   prevHalf.addEventListener('click', () => setPage(page - 1));
   nextHalf.addEventListener('click', () => setPage(page + 1));
   next.addEventListener('click', () => setPage(page + 1));
 
-  // TAP THE PICTURE TO OPEN IT. The button in the corner is the one a screen
-  // reader and a keyboard get, and it is 44 square against a slide that is
-  // most of the screen — so the slide is the target a thumb actually goes for.
+  /* --- THE WAY IN ----------------------------------------------------------- */
+
+  // TAP THE PICTURE. There is no enlarge button any more: it was one mark of
+  // drawn chrome on a page that has none anywhere else, sitting on paper above
+  // the work to announce something the work can say for itself. The slide is
+  // most of the screen and it is the target a thumb goes for whether or not
+  // there is a 44-square glyph in the corner offering the same thing.
   //
-  // Narrow only: above 768 a click on the pin is already a page turn, and the
-  // halves that do it are the whole width of the window.
+  // SO THE ARTWORK BECOMES THE CONTROL, rather than the tap being an extra
+  // that a button underwrites. That is the part a pointer does not need and
+  // everyone else does: without a <button> in the markup there is no tab stop
+  // and no announced name, and the full screen would be a gesture that only
+  // exists for people who can make it. role, tabindex and the label give the
+  // box the three things the corner button was carrying, and the keydown below
+  // gives it the two keys a real button answers to for free.
+  //
+  // IT GOES ON THE TRACK AND NOT THE PIN, and the difference is not cosmetic:
+  // the pin also holds the counter row, and NEXT inside it is a real <button>.
+  // A role="button" is not allowed to contain one — a control inside a control
+  // is a thing assistive technology has no way to express — and it would be
+  // announcing the presentation and its pager as one object. The track holds
+  // the slides and nothing else, which is exactly what is being offered.
+  //
+  // The CLICK stays on the pin, though, because a thumb should not have to
+  // find the picture's edges: everything in that box except the counter row
+  // opens the full screen. The pointer gets the generous target and the
+  // keyboard gets the honest one.
+  //
+  // NARROW ONLY, and taken back off above 768 — up there a click on the pin is
+  // already a page turn, the halves that do it are the width of the window,
+  // and a focusable box wrapping the whole presentation would be a tab stop in
+  // front of the rail that does nothing when it is pressed.
+  function setPinRole(on) {
+    if (!track) return;
+    if (on) {
+      track.setAttribute('role', 'button');
+      track.setAttribute('tabindex', '0');
+      track.setAttribute('aria-label', 'View the slides full screen');
+    } else {
+      track.removeAttribute('role');
+      track.removeAttribute('tabindex');
+      track.removeAttribute('aria-label');
+    }
+  }
+
+  // The guard is the same in both: not already open, and not a press that
+  // landed on one of the controls standing in the pin. Those carry their own
+  // clicks, and the counter row is type rather than a target.
+  function fromPin(e) {
+    if (open || !narrow.matches) return false;
+    return !e.target.closest('.progress, .pager, button, a');
+  }
+
   pin.addEventListener('click', (e) => {
-    if (open || !narrow.matches) return;
-    if (e.target.closest('.progress, .pager, button, a')) return;
+    if (fromPin(e)) setOpen(true);
+  });
+
+  track?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    if (!fromPin(e)) return;
+    // Space scrolls the page by default, and the page is about to be covered
+    // by an overlay — so the document would be left a screen further down when
+    // the reader comes back out of it.
+    e.preventDefault();
     setOpen(true);
   });
 
@@ -257,13 +320,9 @@ export function mountRailExpand() {
   // landscape — is a state in which the narrow media query this module would
   // otherwise have watched is false.
   //
-  // THE SPLIT IS WHICH BOX THEY BELONG TO. The halves and the close go in the
-  // PIN, which is the box the full screen rotates, so they turn with the
-  // picture and a tap on its right-hand side lands on the right-hand half
-  // without any coordinate arithmetic. The enlarge button stays on .rail,
-  // which does not rotate, because in the collapsed state the pin is static
-  // and has no corner of its own to sit in.
-  rail.append(expand);
+  // ALL THREE GO IN THE PIN, which is the box the full screen rotates, so they
+  // turn with the picture and a tap on its right-hand side lands on the
+  // right-hand half without any coordinate arithmetic.
   pin.append(close, prevHalf, nextHalf);
 
   // NEXT goes in the counter's row, at the other end from the number — the
@@ -302,6 +361,14 @@ export function mountRailExpand() {
     else pin.append(pager);
   }
 
-  placePager();
-  narrow.addEventListener('change', placePager);
+  // One listener for both, because both are the same question — which of the
+  // two pages this is — and two listeners on one query is two chances for them
+  // to disagree about the answer.
+  function syncWidth() {
+    placePager();
+    setPinRole(narrow.matches);
+  }
+
+  syncWidth();
+  narrow.addEventListener('change', syncWidth);
 }

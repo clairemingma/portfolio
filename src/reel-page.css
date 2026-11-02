@@ -431,29 +431,40 @@ body {
     margin: 0;
     padding: 0 var(--grid-margin);
     font-family: var(--font-secondary);
-    font-size: 11rem;
-    line-height: calc(13.75 / 11);
+    /* TEN, which is the size every small Inter label is on a phone — the
+       brief's [CLIENT], PREV / NEXT, and the rail's own counter. The line box
+       stays at the 13.75 they share. */
+    font-size: 10rem;
+    line-height: calc(13.75 / 10);
     font-variant-numeric: tabular-nums;
     text-transform: uppercase;
-    /* The lightest grey the site has, which is the reference's for a counter.
-       See .progress in src/rail-page.css. */
-    color: var(--color-index-grey);
+    /* THE LABELS' GREY, not the index grey a step below it. It shares this row
+       with NEXT, and two marks on one line in two different greys read as one
+       of them having been dimmed rather than as a position beside a control.
+       Kept in step with .progress in src/rail-page.css, which is the same row
+       doing the same job on the other template. */
+    color: var(--color-system-grey);
   }
 
   /* THE WAY ON, at the other end of the row — the reference's own arrangement.
      The frames are a swipe row here and this is the control for a reader who
-     does not swipe. In the labels' grey, not the counter's: it is a thing to
-     press. */
+     does not swipe.
+
+     SET AS A WORD AND NOT A LABEL, and at the same ten as the counter beside
+     it. Both are the rail's, deliberately: this is .progress__next in
+     src/rail-page.css under another name, and the note on why an instruction
+     is sentence case where every other small Inter mark on the site is caps
+     lives there. */
   .reel__next {
     margin-left: auto;
     padding: 0;
     border: 0;
     background: none;
     font-family: var(--font-secondary);
-    font-size: 11rem;
-    line-height: calc(13.75 / 11);
+    font-size: 10rem;
+    line-height: calc(13.75 / 10);
     letter-spacing: 0.03em;
-    text-transform: uppercase;
+    text-transform: none;
     color: var(--color-system-grey);
     cursor: pointer;
     transition: color var(--dur) var(--ease);

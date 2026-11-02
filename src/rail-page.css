@@ -706,10 +706,14 @@
   }
 
   :root {
-    /* THE ROW THE ENLARGE BUTTON STANDS IN, under the bar at the right
-       margin. A TOUCH TARGET's height rather than a typographic one: 44 is the
-       size a thumb can be asked to find, and the button fills it exactly. It
-       is reserved above the slides so the artwork is never behind it. */
+    /* THE AIR BETWEEN THE BAR AND THE WORK. It was the row the enlarge button
+       stood in — 44, a touch target's height rather than a typographic one,
+       because that is the size a thumb can be asked to find — and the button
+       is gone. The 44 is not: the design keeps the same distance from the rule
+       under the bar to the top of the picture, and what was a container is
+       simply the air it always looked like. Kept at its own name rather than
+       folded into the padding below, because it is still one quantity with one
+       reason, and the reason is now the design's spacing. */
     --rail-ctrl-row: 44rem;
 
     /* ELEVEN COLUMNS IS A TWELVE-COLUMN NUMBER, and down here the grid is FOUR —
@@ -812,12 +816,24 @@
   .progress {
     bottom: 0;
     height: var(--work-row);
-    /* THE LIGHTEST GREY THE SITE HAS, which is the reference's own for this
-       one mark: #c8c8c8 against the #919191 it sets its labels in and the
-       #404040 of the copy. The counter is the quietest thing on the page —
-       it is a position, not a label and not a control — and the step down
-       from the labels is what says so. */
-    color: var(--color-index-grey);
+    /* THE LABELS' GREY, where this was the index grey a step below it. The
+       lighter value was right while the counter shared the row with nothing
+       and was the one mark under the picture; it now sits on the same line as
+       NEXT, and two marks on one row in two different greys read as one of
+       them having been dimmed rather than as a position beside a control. The
+       reference sets its own [4/6] at #919191 for the same reason. The step
+       down to #c8c8c8 is still in the stylesheet — it is what .progress__track
+       rests at on the wide page. */
+    color: var(--color-system-grey);
+  }
+
+  /* TEN, like every other small Inter label on a phone — the brief's [Client],
+     PREV / NEXT, and NEXT at the other end of this row. The line box stays at
+     the 13.75 these labels share, so the number and the control sit on one
+     line. NEXT takes the same pair in its own block below. */
+  .progress__count {
+    font-size: 10rem;
+    line-height: calc(13.75 / 10);
   }
 
   .progress__slider {
@@ -832,17 +848,26 @@
 
      It lights the way every other control on this site does and rests in the
      labels' grey rather than the counter's, because it is a thing to press
-     and the number beside it is not. */
+     and the number beside it is not.
+
+     AND IT IS SET AS A WORD, NOT A LABEL. Every other piece of small Inter on
+     this site is uppercase — [CLIENT], LINKEDIN, PREV / NEXT — because they
+     are labels: names of categories and destinations, set as marks. This one
+     is an instruction to the picture above it, which the reference draws in
+     sentence case for exactly that reason, and it is the one thing in the row
+     that is neither bracketed nor a proper noun. PREV / NEXT at the foot of
+     the page keeps its caps: that pair names two other PROJECTS, and it is
+     the difference between moving through this work and leaving it. */
   .progress__next {
     margin-left: auto;
     padding: 0;
     border: 0;
     background: none;
     font-family: var(--font-secondary);
-    font-size: 11rem;
-    line-height: calc(13.75 / 11);
+    font-size: 10rem;
+    line-height: calc(13.75 / 10);
     letter-spacing: 0.03em;
-    text-transform: uppercase;
+    text-transform: none;
     color: var(--color-system-grey);
     cursor: pointer;
     transition: color var(--dur) var(--ease);
@@ -980,8 +1005,8 @@
    of the window disagree by a quarter turn.
 
    So the enlarge button hands the whole window to the row and says to turn the
-   phone. Sideways, 844 by 390 on the common handset, the slide comes out at 625
-   against the 357 it had upright — three times the area, and the type is
+   phone. Sideways, 844 by 390 on the common handset, the slide comes out at 693
+   against the 357 it had upright — close to four times the area, and the type is
    legible. This is the one place on the site that asks a reader to do something
    with the device rather than with the page, and it is asked for exactly
    because the alternative is artwork that cannot be read at all.
@@ -1005,11 +1030,17 @@
    real fullscreen is a bonus on the platforms that have it — one less strip of
    browser chrome, and an orientation lock the module can then ask for.
 
-   The slide is sized against the STAGE twice over and the smaller wins: its
-   width less a gutter at each side, or what its height allows once the counter
-   row has its band at the foot. The stage is already landscape either way, so
-   which of the two binds is now a property of the slide's ratio rather than of
-   how the reader happens to be holding the phone.
+   THE SLIDE TAKES THE WHOLE OF THE STAGE'S HEIGHT, and that is the one measure
+   this state is judged on: it is sized against the stage twice over and the
+   smaller wins — the stage's full width, or the full height read back through
+   16:9. On every phone the second binds, so the artwork runs from the top edge
+   of the glass to the bottom one with nothing above or below it.
+
+   It used to hold a gutter at each side and a counter row at the foot, which
+   cost the slide three bands of its height to say things the full screen does
+   not need to say: the inset is the horizontal remainder of a height-bound
+   slide anyway, and the number of the slide you are on is not worth a strip of
+   the artwork. See the counter at THE GROUND below.
 
    AFTER .rail.is-pinned, not before: the two are the same specificity and the
    overlay has to win if the module has not yet let go of the pin. */
@@ -1025,9 +1056,9 @@
    So the stage rotates instead, the way a video does when it goes full screen
    on a phone: the box is the window's dimensions SWAPPED — as wide as the
    screen is tall — and turned a quarter turn about its own centre. On a 390 by
-   844 handset that is an 844 by 390 stage, and the slide in it is 608 wide
-   against the 357 it had upright. Nearly three times the area, and the deck's
-   own type is legible at last.
+   844 handset that is an 844 by 390 stage, and the slide in it is 693 by the
+   full 390 against the 357 it had upright. Close to four times the area, and
+   the deck's own type is legible at last.
 
    `translate(-50%, -50%)` before the rotation and `top/left: 50%` under it is
    the ordinary way to turn a box about its own centre when its dimensions are
@@ -1051,14 +1082,15 @@
   --rail-stage-w: 100svh;
   --rail-stage-h: 100svw;
 
+  /* FULL BLEED, BOTH CAPS. No gutter is subtracted and no footer band is
+     reserved: a full screen that leaves a margin is a large picture, and the
+     only reason the margin was there is that the counter row needed a floor to
+     stand on. On a 390 by 844 handset the height cap binds at 693 wide by 390
+     tall — the slide is exactly as tall as the device is wide, which once the
+     stage is turned is the whole of the screen. */
   --rail-slide-w: min(
-    calc(var(--rail-stage-w) - 2 * var(--grid-gutter)),
-    calc(
-      (
-          var(--rail-stage-h) - var(--rail-progress-row) - 2 *
-            var(--grid-gutter)
-        ) * 16 / 9
-    )
+    var(--rail-stage-w),
+    calc(var(--rail-stage-h) * 16 / 9)
   );
   /* Both of these are derived from --rail-slide-w on :root, which means they
      were resolved there against the value :root had. Redefining the width here
@@ -1104,9 +1136,14 @@
   }
 }
 
+/* No band at the foot to centre the slide above — there is no counter row in
+   here any more, so the slide is centred in the stage itself. The declaration
+   stays rather than being deleted because the narrow block above sets
+   padding-bottom: var(--work-row) on this element, and the overlay outlives
+   that breakpoint. */
 .rail.is-expanded .rail__track {
   height: 100%;
-  padding-bottom: var(--rail-progress-row);
+  padding-bottom: 0;
 }
 
 /* ==========================================================================
@@ -1129,7 +1166,21 @@
    The collapsed row takes the same transform, so closing the full screen
    leaves the page you left on rather than rewinding to the first — one number
    describes both states, and the stride differs between them exactly as the
-   slide does. */
+   slide does.
+
+   AND THE TURN IS A CUT, NOT A SLIDE. There is no transition on either state:
+   NEXT replaces the picture, it does not travel to it. The row used to ease
+   250ms on the site's one curve, which is the right treatment for a rail you
+   can see is a rail — the wide page, where two slides are on screen at once
+   and the movement is what tells you they are a row. Down here the stage shows
+   exactly one slide and the next one is off the window by construction, so the
+   250ms is not a row moving; it is the picture you asked for arriving late,
+   with a blank sweep in between and a quarter second of nothing to look at on
+   every tap through twenty-one slides. A deck is paged, and paging is instant.
+
+   That also retires the prefers-reduced-motion exception that used to sit
+   here: it set `transition: none` on exactly these rules, and there is no
+   longer a transition for it to turn off. */
 @media (max-width: 767px) {
   .rail__track {
     transform: translate3d(
@@ -1137,7 +1188,6 @@
       0,
       0
     );
-    transition: transform var(--dur) var(--ease);
   }
 }
 
@@ -1147,13 +1197,6 @@
     0,
     0
   );
-  transition: transform var(--dur) var(--ease);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .rail__track {
-    transition: none;
-  }
 }
 
 /* THE TWO HALVES, and they are inside the pin on purpose: the pin is the box
@@ -1179,8 +1222,12 @@
   cursor: pointer;
 }
 
+/* The whole height of the stage in here, where above 768 they stop at the top
+   of the counter row: there is no row left to keep clear of, and a slide that
+   is the full height of the screen should answer a tap anywhere on its side. */
 .rail.is-expanded .rail__half {
   display: block;
+  bottom: 0;
 }
 
 .rail__half--prev {
@@ -1191,32 +1238,71 @@
   right: 0;
 }
 
+/* Lit against the dark, where the wide rail's ring is graphite against paper. */
 .rail__half:focus-visible {
-  outline: 2px solid var(--color-graphite);
+  outline: 2px solid var(--color-system-grey);
   outline-offset: -4rem;
 }
 
-/* THE OVERLAY IS PAPER TOO. It inherits .rail's ground, and that is charcoal
-   above 768 — but the overlay is only ever entered from the narrow page,
-   where there is no charcoal left anywhere, and a reader who turns the phone
-   sideways crosses the breakpoint without leaving the state. So it states the
-   ground itself rather than inheriting a colour that depends on how wide the
-   window happens to be at the moment. */
+/* THE PICTURE'S OWN FOCUS RING, and it is drawn on the BOX rather than on the
+   thing that holds the focus. src/rail-expand.js makes .rail__track the way
+   into the full screen below 768 — role, tabindex, a name — because there is
+   no longer a button offering it. The track is the whole row, twenty-one
+   slides wide, so its own ring would be drawn around a box that runs several
+   screens off each side of the window: what a reader would see of it is two
+   horizontal lines, above and below the picture, going out of the window in
+   both directions.
+
+   The pin is the box that IS the window onto that row, so the ring goes
+   there — inset by the site's own 2, clipped by nothing, and around exactly
+   the region a press is about to enlarge. An outline is drawn outside the
+   element's own border box and is not clipped by its own overflow, so the
+   pin's `overflow: hidden` does not touch it.
+
+   BOTH RULES ARE INSIDE THE @supports, which is the point of writing one at
+   all. Taking the track's own outline off is only safe where something has
+   replaced it; in an engine without :has() this block does not apply, the
+   track keeps the browser's default ring, and a reader gets a worse-looking
+   focus state rather than none. */
+@supports selector(:has(*)) {
+  .rail__pin:has(.rail__track:focus-visible) {
+    outline: 2px solid var(--color-graphite);
+    outline-offset: -2rem;
+  }
+
+  .rail__track:focus-visible {
+    outline: none;
+  }
+}
+
+/* THE OVERLAY IS THE CHARCOAL, which is the ground the presentation has on the
+   wide page and the one the narrow page gives up — see THE GROUND above. Giving
+   it back here is not a reversal of that: what the phone's paper avoids is a
+   slab of dark with a small picture floating in it, and in the full screen
+   there is no slab, because the slide IS the screen. A letterbox strip of
+   #1a1a1a at the edge of a 16:9 artwork is a projector's surround; the same
+   strip in paper is a white border, which reads as a page the artwork has been
+   printed on rather than as a screen it is being shown on.
+
+   Stated rather than inherited: the overlay is entered from the narrow page,
+   where .rail is paper, and a reader who turns the phone sideways crosses 768
+   without leaving the state — so it cannot depend on how wide the window
+   happens to be. Same reason the marks below are restated. */
 .rail.is-expanded,
+.rail.is-expanded .rail__pin,
 .rail.is-expanded .rail__slide {
-  background: var(--color-paper);
+  background: var(--color-charcoal);
 }
 
-/* And every mark in it, for the same reason: these are the rules that have to
-   hold in LANDSCAPE, which is past 768 and so outside every narrow block on
-   this page. */
+/* NO SLIDE NUMBERS IN THE FULL SCREEN. The counter earns its place on the two
+   states where the row is a row — the wide rail reports a scroll position you
+   can drag, and the collapsed phone needs to say how long a row is that shows
+   one picture at a time. Here it is neither: the reader is holding one slide at
+   full bleed, the halves and a swipe are the whole of the interface, and
+   `[4/17]` over the artwork is a line of type the deck did not ask for.
+   Removing it is also what hands the slide the band it stood in — the height
+   above is calculated without it. */
 .rail.is-expanded .progress {
-  bottom: 0;
-  color: var(--color-index-grey);
-}
-
-.rail.is-expanded .progress__slider,
-.rail.is-expanded .progress__next {
   display: none;
 }
 
@@ -1241,76 +1327,77 @@
 }
 
 /* ==========================================================================
-   THE CONTROLS — enlarge, close, and the two halves
+   THE CONTROLS — close, and the two halves
    ========================================================================== */
 
-/* Both buttons are injected by src/rail-expand.js and are children of .rail
-   rather than of the pin, so neither travels when the row is swiped. Each is a
-   44-square touch target drawn as a 16-unit mark: the padding is negative
-   space, pulled back out by the offsets so the icon lands on the corner it is
-   meant to be in rather than a finger's width inside it.
+/* THERE IS NO ENLARGE BUTTON. It stood at the right end of a 44 row under the
+   bar and it was the only drawn chrome on the narrow page — one mark, on
+   paper, above the work, saying that the picture under it could be made
+   bigger. THE PICTURE SAYS THAT. A tap anywhere on the slide opens the full
+   screen, which is the target a thumb goes for anyway, and the reference puts
+   nothing in that row either. The row itself stays: it is air above the work
+   in the design, not a container that lost its contents. See THE WAY IN in
+   src/rail-expand.js for the part that keeps it reachable without a pointer.
 
-   White on the charcoal, at the opacity .progress__track rests at, and full
-   strength when pressed. A control over artwork should be findable and should
-   not compete with it. */
-.rail__expand,
+   What is left is the close, injected by src/rail-expand.js. It is a 44-square
+   touch target drawn as a single small mark: the padding is negative space,
+   pulled back out by the offsets so the glyph lands on the corner it is meant
+   to be in rather than a finger's width inside it. The offsets pin the text
+   box's outer edge, so they hold whatever the glyph's own width is.
+
+   A control over artwork should be findable and should not compete with it, so
+   it rests in the system grey and lights to white under a press. */
 .rail__close {
   position: absolute;
   z-index: 3;
   display: none;
+  /* The square is stated as a minimum rather than left to the padding, which is
+     what the padding alone used to produce when the mark was three characters
+     wide. A lone + is about 8 units across, so padding would have drawn a 36 by
+     42 target — under the 44 a thumb is entitled to, and under it by different
+     amounts in each axis. */
+  align-items: center;
+  justify-content: center;
+  min-width: 44rem;
+  min-height: 44rem;
   padding: 14rem;
   border: 0;
   background: none;
-  /* The bar's own label face and size. These are [<>] and [><] — type, not
-     drawing — so they are set exactly as [1/12] and [MENU] are, and the only
-     thing that marks them as controls is that they light under a press. */
+  /* The bar's own label face. This is × — type, not drawing — so it is set as
+     [1/12] and [+] are, three units up because a lone glyph has a third of a
+     bracketed mark's ink and would otherwise read as a speck, and with the
+     line box collapsed onto the glyph so it centres in its square. The
+     tracking goes with the brackets: it was spacing characters apart and there
+     is only one character left. */
   font-family: var(--font-secondary);
-  font-size: 11rem;
-  line-height: calc(13.75 / 11);
-  letter-spacing: 0.03em;
+  font-size: 14rem;
+  line-height: 1;
   color: var(--color-system-grey);
   cursor: pointer;
   transition: color var(--dur) var(--ease);
 }
 
-.rail__expand:hover,
-.rail__expand:focus-visible,
+/* It only ever stands on the charcoal, so it lights to white: graphite is
+   #404040 on #1a1a1a, which is a press that makes the mark harder to see than
+   leaving it alone. */
 .rail__close:hover,
 .rail__close:focus-visible {
-  color: var(--color-graphite);
+  color: var(--color-white);
 }
 
-/* THE FOCUS TREATMENT IS THE SITE'S OWN, now that these are type. A ring
-   around a 44-square padded button draws a box a finger's width out from a
-   three-character mark and reads as a bordered control rather than a focused
-   one — which is what it did while the mark was an SVG, and why it carried a
+/* THE FOCUS TREATMENT IS THE SITE'S OWN, now that this is type. A ring around
+   a 44-square padded button draws a box a finger's width out from a one-
+   character mark and reads as a bordered control rather than a focused one —
+   which is what it did while the mark was an SVG, and why it carried a
    negative offset to pull it back in. Set as text, it takes what every other
-   text control here takes: the colour comes up AND the words are underlined
-   at the house 0.28em. Two signals rather than one, which is what justifies
+   text control here takes: the colour comes up AND the mark is underlined at
+   the house 0.28em. Two signals rather than one, which is what justifies
    dropping the ring. */
-.rail__expand:focus-visible,
 .rail__close:focus-visible {
   outline: none;
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.28em;
-}
-
-/* THE ENLARGE BUTTON IS THE ONE CONTROL THAT BELONGS TO A WIDTH. It takes the
-   right end of the control row under the bar, opposite PREV / NEXT at the left
-   — the row is 44 tall and so is this, so the two fill it exactly and the pair
-   read as the row's two ends. A wide window has no use for it: the rail is
-   already the whole screen up there, pinned, with the pager and the scrub to
-   drive it.
-
-   Stated here rather than up in the narrow block so it lands after the
-   `display: none` above it rather than before. */
-@media (max-width: 767px) {
-  .rail__expand {
-    display: flex;
-    top: var(--nav-h);
-    right: calc(var(--grid-margin) - 14rem);
-  }
 }
 
 /* Top right of the window, because inside the overlay there is no bar above it
@@ -1319,11 +1406,6 @@
   display: flex;
   top: calc(var(--grid-gutter) - 14rem);
   right: calc(var(--grid-gutter) - 14rem);
-}
-
-/* The two are never up together: one opens the state the other leaves. */
-.rail.is-expanded .rail__expand {
-  display: none;
 }
 
 /* AND NEXT IS A NARROW CONTROL, whose styling lives in the narrow block — so

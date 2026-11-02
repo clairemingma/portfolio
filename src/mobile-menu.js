@@ -35,8 +35,16 @@
 
 const NARROW = '(max-width: 767px)';
 
-const OPEN = '[Menu]';
-const SHUT = '[X]';
+// THE TRIGGER IS A SIGN AND THE PANEL'S HEADING IS THE WORD. The bar used to
+// carry [MENU] and the panel repeated it; the bar has four columns and the
+// wordmark takes two of them, so the one word that had to fit was spending a
+// third of the row saying what the thing it opens then says again at the top of
+// itself. [+] and [-] are the pair the reference uses for exactly this, and the
+// panel keeps [Menu] as its heading — so the word is still on screen the whole
+// time the panel is, which is when it is actually telling you anything.
+const NAME = '[Menu]';
+const OPEN = '[+]';
+const SHUT = '[-]';
 
 function el(tag, className, text) {
   const node = document.createElement(tag);
@@ -95,7 +103,7 @@ export function mountMobileMenu() {
   panel.setAttribute('aria-label', 'Menu');
 
   const head = el('div', 'menu__head');
-  head.append(el('p', 'menu__label', OPEN));
+  head.append(el('p', 'menu__label', NAME));
 
   const close = el('button', 'menu__close', SHUT);
   close.type = 'button';
