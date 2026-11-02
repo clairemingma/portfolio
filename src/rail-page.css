@@ -631,11 +631,19 @@
   }
 }
 
-/* And below 768 as well, once the menu is there to carry what this carried.
-   No media query on it: .has-mobile-menu is only ever on the document under
-   that breakpoint, and one class of extra specificity is what lets this beat
-   the `display: flex` above at the width where it is the live rule. */
-.has-mobile-menu .rail-foot {
+/* BELOW 768 IT STAYS, AND IT CARRIES THE LINE ALONE. This strip was taken off
+   the narrow pages entirely once the menu existed: it spent a fixed 37.594 of
+   a phone screen on two links and a copyright, and all three were in the panel.
+
+   The copyright is back because it is not a destination. LinkedIn and the
+   address are places to go, and a menu is where a reader looks for those; a
+   copyright is the mark at the bottom of a page that says the page has ended,
+   and a page that ends in a project title and nothing else reads as truncated
+   rather than finished. Every page on the site has one again.
+
+   The pair does not come back with it — see .rail-foot__link below. No media
+   query on this: .has-mobile-menu is only ever on the document under 768. */
+.has-mobile-menu .rail-foot__link {
   display: none;
 }
 
@@ -876,33 +884,46 @@
     transition: color var(--dur) var(--ease);
   }
 
+  /* TO WHITE, NOT TO GRAPHITE, now the row stands on the charcoal. #404040 on
+     #1a1a1a is a press that makes the word harder to read than leaving it
+     alone — the same correction the full screen's close button took when it
+     moved onto the dark. */
   .progress__next:hover,
   .progress__next:focus-visible {
-    color: var(--color-graphite);
+    color: var(--color-white);
   }
 
   /* ========================================================================
      THE GROUND
      ======================================================================== */
 
-  /* NO CHARCOAL ON A PHONE. The dark panel is the wide page's: there it is a
-     presentation laid on a ground that is not the page, with the brief on
-     paper above it, and the contrast between the two is the composition. On a
-     phone there is no composition to make — the box is most of the screen and
-     the brief runs straight on underneath it — so the charcoal reads as a
-     slab with a small picture floating in it rather than as a stage.
+  /* THE CHARCOAL COMES BACK, and it comes back as the CONTAINER rather than as
+     the page. This block said NO CHARCOAL ON A PHONE for a revision, and the
+     argument was that the dark reads as a slab with a small picture floating
+     in it — which was true of what was here then: a box with no stated edges,
+     a slide somewhere inside it, and paper running on underneath.
 
-     Paper throughout, therefore, and every mark on it comes down with it: the
-     counter above, the pager, and the two buttons at THE CONTROLS. */
+     What changed is that the box has edges now. --work-art is one figure on
+     all seven pages — see THE BOX THE ARTWORK IS FITTED INTO in
+     project-brief.css — and a ground is what makes a box with a stated height
+     legible as a box. The dark is not a slab the artwork floats in; it is the
+     surround the artwork is shown against, which is what it already is in the
+     full screen and on every wide page. A 16:9 slide that meets the measure
+     and leaves 151 above and below it reads as a picture on a stage, where
+     against paper the same air read as nothing at all.
+
+     THE BRIEF STAYS ON PAPER, and that is the whole composition on a phone:
+     the work on the dark, the writing on the page, and the line between them
+     where the container ends. Only the container takes it. */
   .rail,
   .rail__pin {
-    background: var(--color-paper);
+    background: var(--color-charcoal);
   }
 
-  /* The letterbox behind a slide that is not exactly 16:9. It was charcoal to
-     match the band it sat in; it matches the paper now. */
+  /* The letterbox behind a slide that is not exactly 16:9, matching the band
+     it sits in again. */
   .rail__slide {
-    background: var(--color-paper);
+    background: var(--color-charcoal);
   }
 
   /* ========================================================================
@@ -1268,8 +1289,11 @@
    track keeps the browser's default ring, and a reader gets a worse-looking
    focus state rather than none. */
 @supports selector(:has(*)) {
+  /* The system grey, which is what .rail__half's ring takes and for the same
+     reason: the pin is charcoal at this width, and a graphite ring on #1a1a1a
+     is a focus state nobody can see. */
   .rail__pin:has(.rail__track:focus-visible) {
-    outline: 2px solid var(--color-graphite);
+    outline: 2px solid var(--color-system-grey);
     outline-offset: -2rem;
   }
 

@@ -1451,6 +1451,23 @@ p {
   }
 }
 
+/* AND THE PAIR COMES OUT OF THE LANDING PAGE'S FOOTER TOO. Above 768 it was
+   already gone — .foot--collected below takes it out because the bar has
+   collected it by the time the footer is on screen. Below 768 the bar cannot
+   hold it, so it stayed here, and the reasoning stopped being true the moment
+   the panel existed: [+] is in the bar on every screen of this page and
+   LinkedIn and the address are both in it.
+
+   What is left is the copyright, which is what the foot of every other page
+   on the site now carries and nothing more — see .rail-foot in rail-page.css.
+   Scoped to .has-mobile-menu rather than to the width, because the panel is
+   what justifies the removal: a page whose script never arrived still has the
+   pair down here, which is the only contact it would otherwise have. */
+.has-mobile-menu .foot__link,
+.has-mobile-menu .foot__mail {
+  display: none;
+}
+
 .foot__link {
   grid-column: 1 / span 2;
   text-transform: uppercase;

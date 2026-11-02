@@ -281,6 +281,34 @@ body {
        on the common line, because what that line is measured from is
        --work-h and not what happens inside it. */
     height: var(--work-h);
+    /* EDGE TO EDGE, which only started to matter once the box had a ground.
+       .still carries the page's margins as padding, so these two were 357
+       wide where the rail's pin and the reel's row are the window's whole 390
+       — invisible while everything was paper, and two different-shaped dark
+       bands the moment it was not. The box is pulled back out to the window
+       and re-states the margin as its own padding, so the artwork inside is
+       still measured against 357 and nothing about its size changes.
+
+       width: auto IS LOAD-BEARING. Both pages declare `width: 100%` on their
+       own box, which resolves against .still's CONTENT box — 357 — so the
+       negative margins shifted a 357-wide box leftward instead of widening
+       it, and the band came out the right size in the wrong place. Released,
+       the box is a stretched flex item whose width is the container's content
+       less its margins: the window exactly, and it cannot overflow the way an
+       explicit 100vw could on a window that still has a classic scrollbar. */
+    width: auto;
+    margin-inline: calc(-1 * var(--grid-margin));
+    padding-inline: var(--grid-margin);
+    /* AND THE BOX TAKES THE DARK, which is new to this template rather than
+       returning to it: these pages have been paper top to bottom since they
+       were built, because their work is one picture and there was no second
+       ground for it to sit against. There is one now, and it is the same one
+       the other two templates give their work — the container on the dark,
+       the brief on paper under it. See THE CHARCOAL COMES BACK in
+       rail-page.css. The full --work-h and not --work-art, so the band runs
+       to the same depth as the rail's, whose last --work-row is a counter
+       these pages have no use for. */
+    background: var(--color-charcoal);
   }
 
   .still__brief {
@@ -300,10 +328,12 @@ body {
     padding-bottom: var(--grid-gutter);
   }
 
-  /* The footer strip comes off. It carried the copyright and the two contact
-     links the bar cannot hold at this width, and all three are in the menu
-     now — see src/mobile-menu.js. */
-  .has-mobile-menu .still__foot {
+  /* THE STRIP STAYS AND CARRIES THE LINE ALONE. It used to come off entirely,
+     with the copyright and the two contact links all three in the menu. The
+     copyright is back because it is not a destination — see the note on
+     .rail-foot in rail-page.css, which is the same decision on all three
+     templates — and the pair is still the panel's. */
+  .has-mobile-menu .still__foot-link {
     display: none;
   }
 }

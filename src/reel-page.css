@@ -372,6 +372,13 @@ body {
        the cap on the shot inside it cannot drift apart. */
     height: var(--work-art);
     margin-top: var(--nav-h);
+    /* THE CONTAINER TAKES THE DARK, where this template's body used to carry
+       it at wide and give it up at narrow. The counter row below takes it too
+       — the two together are --work-h, so the band runs from under the bar to
+       the foot of the work exactly as the rail's does, and the brief begins
+       on paper under it. See THE CHARCOAL COMES BACK in rail-page.css for the
+       argument; it is one decision on three templates. */
+    background: var(--color-charcoal);
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
@@ -477,6 +484,8 @@ body {
        Kept in step with .progress in src/rail-page.css, which is the same row
        doing the same job on the other template. */
     color: var(--color-system-grey);
+    /* The foot of the container's band — see the note on .reel__shots above. */
+    background: var(--color-charcoal);
   }
 
   /* THE WAY ON, at the other end of the row — the reference's own arrangement.
@@ -503,9 +512,12 @@ body {
     transition: color var(--dur) var(--ease);
   }
 
+  /* To white, not to graphite — the row stands on the charcoal now, and
+     #404040 on #1a1a1a is a press that hides the word. Same correction
+     .progress__next took. */
   .reel__next:hover,
   .reel__next:focus-visible {
-    color: var(--color-graphite);
+    color: var(--color-white);
   }
 
   /* The brief, in flow under the row. The 222 and the sticky are the wide
@@ -549,10 +561,15 @@ body {
   }
 
   /* The footer rides INSIDE the lead on this template rather than beside it,
-     which is the one way this page differs from the other two — so hiding it
-     is a rule here where they get it on their own footers. The menu carries
-     the copyright, the address and LinkedIn now; see src/mobile-menu.js. */
-  .has-mobile-menu .reel__foot {
+     which is the one way this page differs from the other two — so this is a
+     rule here where they get it on their own footers.
+
+     THE LINE STAYS AND THE PAIR GOES. The whole strip used to come off at this
+     width, with all three in the menu; the copyright is back because it is not
+     a destination — see the note on .rail-foot in rail-page.css, which is the
+     same decision on all three templates. LinkedIn and the address are still
+     the panel's. */
+  .has-mobile-menu .reel__foot-link {
     display: none;
   }
 
