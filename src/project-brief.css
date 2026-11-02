@@ -80,6 +80,13 @@
   font-size: 12rem;
   line-height: calc(13.2 / 12);
   color: var(--color-graphite);
+  /* PRETTY HERE TOO, which .brief__text has had and this did not. Most values
+     are one line and the property costs them nothing; the ones that wrap are
+     where it earns its place — "Market Strategy, Design & Product Development"
+     breaks with "Development" alone on the second line, and a single word
+     under a full one is the orphan this is for. The facts are a column of
+     short lines, so a bad break shows more here than it does in prose. */
+  text-wrap: pretty;
 }
 
 /* .brief__prose wraps the paragraphs so that the brief's own 20 falls BETWEEN

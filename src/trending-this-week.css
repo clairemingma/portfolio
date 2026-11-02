@@ -173,13 +173,35 @@
    3:4 gives the width back. The second cap is the measure, which takes over on
    a wide short phone where the box is squarer than the plate. */
 @media (max-width: 767px) {
+  /* THE RATIO WINS, AND THE WIDTH IS WHAT IT IS GIVEN. This read
+     `height: 100%; width: auto; max-width: 100%`, which looks like the same
+     arrangement the clips and the shots use and is not, because .plate is a
+     DIV with an aspect-ratio rather than a replaced element with an intrinsic
+     one. A definite height plus a clamped width does not re-derive the height
+     on a non-replaced box: the ratio simply loses. The box came out 356.8 by
+     503.2 — 0.709 against the 3:4 it declares — and .plate__frame is
+     `object-fit: cover`, so every frame was cropped by the difference.
+
+     It had been wrong and nearly invisible for a while: at the 482 box this
+     page used to get, 357 by 482 is 0.7407 and the crop was under half a per
+     cent. Giving the work the last twenty took the box to 503 and took the
+     ratio to 0.709, which is five and a half per cent off and plainly visible.
+
+     So the WIDTH is the declared dimension and the height comes from the
+     ratio. min() takes the measure, or what the box's height allows at 3:4,
+     whichever is smaller — so the plate meets the width on a phone held
+     upright and the height on a short window, and is exactly 3:4 either way.
+     The frames are 927 by 1236, so cover and contain are now the same
+     operation and nothing is cut.
+
+     The 3 / 4 here has to stay in step with the aspect-ratio above it. Two
+     places, same file, ten lines apart. */
   .plate {
-    width: auto;
-    height: 100%;
-    max-width: 100%;
-    /* The box every project page gives its picture, read from the shared
-       token rather than restated — see THE BOX THE ARTWORK IS FITTED INTO in
-       project-brief.css. Same figure this always resolved to. */
+    width: min(100%, calc(var(--work-art) * 3 / 4));
+    height: auto;
+    /* The box every project page gives its picture — see THE BOX THE ARTWORK
+       IS FITTED INTO in project-brief.css. A guard rather than the binding
+       cap now: the min() above already keeps the height inside it. */
     max-height: var(--work-art);
   }
 }
