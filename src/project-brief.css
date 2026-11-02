@@ -80,13 +80,13 @@
   font-size: 12rem;
   line-height: calc(13.2 / 12);
   color: var(--color-graphite);
-  /* PRETTY HERE TOO, which .brief__text has had and this did not. Most values
-     are one line and the property costs them nothing; the ones that wrap are
-     where it earns its place — "Market Strategy, Design & Product Development"
-     breaks with "Development" alone on the second line, and a single word
-     under a full one is the orphan this is for. The facts are a column of
-     short lines, so a bad break shows more here than it does in prose. */
-  text-wrap: pretty;
+  /* GREEDY, for the reason .brief__text is — see the note there. This had
+     `pretty` for one commit, on the argument that it would keep
+     "Development" off a line of its own. It would have, by pulling a word
+     down off the line above, which is the same trade that was wrong in the
+     prose and is wronger here: two lines is the most any value runs to, so
+     every word `pretty` moves is a visible fraction of the whole value. */
+  text-wrap: auto;
 }
 
 /* .brief__prose wraps the paragraphs so that the brief's own 20 falls BETWEEN
@@ -126,12 +126,41 @@
    :first-child rather than a modifier class, so a brief that runs to one
    paragraph still opens with the indent and nothing in the markup has to know
    how many paragraphs follow it. */
+/* GREEDY, AND THAT IS A DECISION RATHER THAN A DEFAULT. This said
+   `text-wrap: pretty` and the breaks it produced are the reason it no longer
+   does.
+
+   `pretty` asks the engine to optimise the paragraph's ENDING — to avoid a
+   last line with one word on it — and the way it pays for that is by pulling
+   words DOWN off the lines above. Greedy wrapping cannot do that: a line takes
+   the next word whenever the next word fits, so it never leaves a gap you can
+   see a word would have filled. `pretty` leaves exactly those gaps, and on a
+   357 measure they are not subtle.
+
+   MEASURED, on the brief that showed it. Same paragraph, same 390 phone, line
+   by line, comparing each line's leftover space against the width of the first
+   word on the line below:
+
+     pretty   3 lines broke early — "the" (19.0) left in 24.4 of slack,
+              "one," (26.0) in 27.3, "or" (13.1) in 36.6
+     auto     0
+
+   Chrome only tidies the last few lines and produced those three; Safari
+   optimises the whole paragraph and is worse, which is where "shifted week /
+   to week" came from — a clause split across a line break with room to spare
+   on the first one.
+
+   What this gives up is the orphan `pretty` exists to prevent: a paragraph can
+   now end with a single word on its own line. That is a thing a reader notices
+   once at the end of a paragraph, against a thing they notice on every line of
+   it. Stated as `auto` rather than deleted, so the next person to reach for
+   `pretty` here reads this first. */
 .brief__text {
   font-family: var(--font-primary);
   font-size: 16rem;
   line-height: normal;
   color: var(--color-graphite);
-  text-wrap: pretty;
+  text-wrap: auto;
 }
 
 .brief__text:first-child {
