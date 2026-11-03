@@ -120,6 +120,13 @@ const PLATES = [
 // the delivered file. The page's CSS caps it against the window and takes the
 // width from the picture — see src/reel-page.css.
 //
+// A frame that needs one is also written with a --shot-lift, which is how far
+// down the page must move it so the PICTURE lands in the middle of the screen
+// rather than the file. Only a frame cut out of a larger canvas with an uneven
+// band of its drop shadow kept has one; everything shot by a camera is its own
+// edges and the two centres are the same point. Same provenance as --shot-h:
+// the image build is what knows how the file was cut, so it is what says this.
+//
 // `link` is optional and wraps every frame of that reel in an anchor. It is per
 // reel rather than per frame because a reel's frames are one piece of work seen
 // from more than one angle — here the marketplace page on a desktop and the same
@@ -502,7 +509,7 @@ for (const reel of REELS) {
           : []),
         `${pad}          <img`,
         `${pad}            class="reel__shot"`,
-        `${pad}            style="--shot-h: ${frame.h}"`,
+        `${pad}            style="--shot-h: ${frame.h}${frame.lift ? `; --shot-lift: ${frame.lift}` : ''}"`,
         `${pad}            src="${dir}/${frame.name}.webp"`,
         `${pad}            alt="${reel.title} — frame ${i + 1} of ${frames.length}."`,
         i === 0

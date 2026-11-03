@@ -328,12 +328,12 @@ const REELS = [
   //      height the design draws it.
   //
   // THE SHADOW IS PART OF THE PICTURE AND THE EMPTY CANVAS IS NOT, and telling
-  // those two apart is the whole of what `crops` and `feather` do here. An earlier
-  // pass cut frame 1 to the window exactly, which solved the size and threw the
-  // shadow away with the emptiness — the mockup sat on the page as a hard-edged
-  // rectangle. What the crop takes now is the window plus the shadow that reads:
-  // 100 either side and 250 below, which is where the falloff passes about 7% and
-  // stops being a thing the eye finds.
+  // those two apart is the whole of what `windows` and `shadows` do here. An
+  // earlier pass cut frame 1 to the window exactly, which solved the size and
+  // threw the shadow away with the emptiness — the mockup sat on the page as a
+  // hard-edged rectangle. What the crop takes now is the window plus the shadow
+  // that reads: 100 either side and 250 below, which is where the falloff passes
+  // about 7% and stops being a thing the eye finds.
   //
   // THE BUDGET FOR IT IS THE PAGE'S OWN SLACK, and that is why 250 and not more.
   // The frame comes to 712 units tall against the 717 the design's 835-high window
@@ -341,18 +341,29 @@ const REELS = [
   // renders at exactly the 825x587 it is drawn at. Ask for more shadow than that
   // and the cap takes it back out of the window.
   //
-  // `feather` IS WHAT MAKES THE CUT INVISIBLE. A soft shadow does not end, it
-  // fades — so cropping one at any threshold leaves a straight edge where it was
-  // still faintly inked, and on the paper ground the narrow page now uses that
-  // edge reads as a rectangle drawn around the mockup. The ramp below takes the
-  // alpha to zero over the last 120 units at the foot and 80 at the sides, so the
-  // crop ends where the shadow was already going.
+  // TWO MEASUREMENTS, AND THE REST IS ARITHMETIC. This entry used to state the
+  // extract and the feather as finished numbers, and they disagreed: the extract
+  // kept 100px of shadow at each side while the feather ramped over 160, so the
+  // ramp ran 60px PAST the shadow and into the mockup, and the left and right
+  // edges of the browser window were delivered at 62% alpha. On the charcoal that
+  // is a grey band down each side of the picture, inside the frame — which is
+  // what it looked like, and it is not a thing anyone chose.
   //
-  // Measured rather than assumed, and the corner is the one number here that a
+  // So the only numbers here now are WHERE THE PICTURE IS and HOW MUCH SHADOW TO
+  // KEEP. The extract, the ramp and the lift below are all read off those two, and
+  // a ramp can no longer be set wider than the band it is ramping over.
+  //
+  // Measured rather than assumed, and the window is the one number here that a
   // re-export can silently invalidate. To re-measure: the device is the fully
   // opaque region, so its box is the alpha >= 250 bounding box of the export. The
   // check that it is right is that the window comes to 1650x1174 and no other
   // number, because that is 2x the 825x587 the design draws it at.
+  //
+  // `top: 0` IS THE EXPORT'S OWN LIMIT and is what makes the lift necessary. A
+  // drop shadow is cast downward, so there are only 54 pixels of canvas above the
+  // window to keep and 1017 below; the kept band is 0 above and 250 below, and a
+  // frame with its picture flush to the top of its canvas is a frame the page
+  // centres 125 source pixels too high. See `lift` in the loop below.
   {
     slug: 'shop-every-store',
     dir: 'assets/projects/shop-every-store/frames',
@@ -361,11 +372,11 @@ const REELS = [
       1: { w: 925, h: 712 },
       2: { w: 346, h: 707 },
     },
-    crops: {
-      1: { left: 190, top: 54, width: 1850, height: 1424 },
+    windows: {
+      1: { left: 290, top: 54, width: 1650, height: 1174 },
     },
-    feather: {
-      1: { bottom: 240, sides: 160 },
+    shadows: {
+      1: { top: 0, sides: 100, bottom: 250 },
     },
   },
 ];
@@ -812,17 +823,32 @@ for (const reel of REELS) {
   for (const frame of frames) {
     const src = `${reel.dir}/${frame.file}`;
     const box = reel.boxes[frame.name] ?? reel.box;
-    // An optional extract, in source pixels, taken BEFORE anything else — so the
+
+    // THE EXTRACT AND THE RAMP ARE ONE DESCRIPTION, read off the two things the
+    // reel actually measured: where the picture sits on its canvas, and how wide
+    // a band of the shadow around it is worth keeping. Only a mockup declares
+    // either; see the note at Shop Every Store for what they mean and for what
+    // went wrong when they were two independent sets of numbers.
+    //
+    // The extract is in SOURCE pixels and is taken before anything else, so the
     // scale below is measured against what is left rather than against the whole
-    // canvas. Only a mockup ever needs one; see the note at Shop Every Store.
-    const crop = reel.crops?.[frame.name];
+    // canvas. The ramp is in source pixels too, and runs between the two edges
+    // the shadow band already has: zero alpha at the cut, full alpha where the
+    // picture starts. It CANNOT reach the picture, because its distance is the
+    // same number the crop kept.
+    const win = reel.windows?.[frame.name];
+    const shadow = { top: 0, sides: 0, bottom: 0, ...reel.shadows?.[frame.name] };
+    const crop = win && {
+      left: win.left - shadow.sides,
+      top: win.top - shadow.top,
+      width: win.width + 2 * shadow.sides,
+      height: win.height + shadow.top + shadow.bottom,
+    };
     let pipe = sharp(src);
     if (crop) pipe.extract(crop);
-    // The ramp that lets a cropped shadow end without an edge. After the extract
-    // and before the resize, so its distances are in source pixels like the
-    // crop's own. See the note at Shop Every Store.
-    const fade = reel.feather?.[frame.name];
-    if (fade) pipe = await feather(pipe, fade);
+    if (crop && (shadow.sides || shadow.bottom)) {
+      pipe = await feather(pipe, { sides: shadow.sides, bottom: shadow.bottom });
+    }
 
     const { width: sw, height: sh } = crop
       ? { width: crop.width, height: crop.height }
@@ -842,7 +868,37 @@ for (const reel of REELS) {
       .webp({ quality: 86 })
       .toFile(`${OUT}/projects/${reel.slug}/${frame.name}.webp`);
 
-    placed.push({ name: frame.name, h: box.h });
+    // HOW FAR DOWN THE PAGE HAS TO MOVE THE FRAME SO THE PICTURE IS CENTRED,
+    // and it is the kept shadow's own asymmetry halved.
+    //
+    // reel-page.css centres the frame in the box it is given, and what it can
+    // centre is the FILE — so a file whose picture is flush to its top edge and
+    // carries 250 pixels of shadow underneath puts the mockup 125 pixels above
+    // the middle of that box and leaves all of the air at the foot. It is not a
+    // rounding error at these sizes: on the design's own 835-high window it is
+    // 62.5 units, which is the difference between a picture centred in the
+    // screen and one sitting a visible step high in it.
+    //
+    // AS A SHARE OF THE FRAME'S OWN HEIGHT, not as a length, and that is the
+    // whole reason this is a ratio. The same file is drawn at 712 units down the
+    // wide page and at about 274 across a phone, where the measure binds instead
+    // of the window — a fixed 62.5 would be right on one and nearly three times
+    // too much on the other. A percentage of the box translates to the same
+    // fraction of whatever that box turned out to be, so one number is correct
+    // at every size the frame is ever drawn.
+    //
+    // The sign is what the shadow does: more kept below than above moves the
+    // picture up, so the lift moves the frame back down by half the difference.
+    // A frame with no crop, or one whose kept shadow is even, has no lift and the
+    // markup carries nothing — see --shot-lift in scripts/build-gallery.mjs.
+    const lift = crop
+      ? +(
+          (((shadow.bottom - shadow.top) / 2) * 100) /
+          crop.height
+        ).toFixed(4)
+      : 0;
+
+    placed.push({ name: frame.name, h: box.h, ...(lift ? { lift } : {}) });
   }
 
   // Its own manifest shape, and its own name — `.reel.json`, beside the decks'
