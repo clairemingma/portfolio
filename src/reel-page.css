@@ -361,16 +361,6 @@ body {
     flex-direction: column;
   }
 
-  /* `width: 100%` USED TO BE HERE and it is what the box below replaces. 100%
-     of this column is the whole window, which was right while the dark ran
-     edge to edge; against a box with margins it wins over the stretch and
-     leaves the right edge 32 units past the measure, with the page scrolling
-     sideways by the difference. The width is the container's less its own
-     margins now — see THE BOX below. */
-  .reel__shots {
-    order: 1;
-  }
-
   /* --shot-air USED TO BE REDECLARED HERE, down from the wide page's 40 to a
      gutter, and it is gone because nothing below reads it any more. It was the
      band the shot was held clear of its box by, on both axes; the box states
@@ -380,8 +370,13 @@ body {
      a value and no reader. The wide page keeps its 40. */
 
   /* The box. It is .reel__shots rather than the lead, because down here the
-     lead is not a panel at all — it is the brief, in flow, under the work. */
+     lead is not a panel at all — it is the brief, in flow, under the work.
+     `width: 100%` used to be the first thing on it, which was right while the
+     dark ran edge to edge and wrong against a box with margins: an explicit
+     width wins over the stretch below, so the right edge landed 32 units past
+     the measure and the page scrolled sideways by the difference. */
   .reel__shots {
+    order: 1;
     /* flex: none UNDOES THE BASE'S `flex: 1`, and it is load-bearing. Up here
        this column is a flex item of a ROW and `flex: 1` means "take the rest
        of the width". Down here the row has become a column, so the same
@@ -406,12 +401,11 @@ body {
     height: var(--work-art);
     /* THE DARK IS A BOX ON THE PAGE, not a band across it — see THE DARK IS A
        BOX in rail-page.css, which is the same change on the other template and
-       where the whole of the argument lives. A gutter under the bar and the
-       page's margin at each side, so what it comes to is the rectangle the
-       still pages give their work: --work-art tall and the measure wide, with
-       the writing below it on the same measure. */
-    margin: var(--grid-gutter) var(--grid-margin) 0;
-    margin-top: calc(var(--nav-h) + var(--grid-gutter));
+       where the whole of the argument lives. The bar's band and a gutter of
+       air above, the page's margin at each side, so what it comes to is the
+       rectangle the still pages give their work: --work-art tall and the
+       measure wide, with the writing below it on the same measure. */
+    margin: calc(var(--nav-h) + var(--grid-gutter)) var(--grid-margin) 0;
     background: var(--color-charcoal);
     display: flex;
     overflow-x: auto;
@@ -437,17 +431,17 @@ body {
     display: none;
   }
 
-  /* NO INSET LEFT TO PAY. The screen held the frame a margin clear of each
-     edge while the dark ran the full width of the window — which is what put
-     the picture on the text's measure. The box is on that measure itself now,
-     so the same padding would inset the frame a second time and take it 32
-     units narrower than the paragraphs under it. The screen is the box, and
-     the frame fills it. */
+  /* `padding: 0 var(--grid-margin)` USED TO BE HERE, and it is gone rather
+     than zeroed — the wide rule sets none, so there is nothing to override.
+     The screen held the frame a margin clear of each edge while the dark ran
+     the full width of the window, which is what put the picture on the text's
+     measure. The box is on that measure itself now, so the same padding would
+     inset the frame a second time and take it 32 units narrower than the
+     paragraphs under it. The screen is the box, and the frame fills it. */
   .reel__screen {
     flex: none;
     width: 100%;
     height: 100%;
-    padding: 0;
     scroll-snap-align: center;
   }
 

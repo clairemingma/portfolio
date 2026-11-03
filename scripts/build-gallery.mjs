@@ -13,6 +13,94 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 
+// ===========================================================================
+// HOW WIDE THE PICTURE ACTUALLY IS — the `sizes` half of every srcset
+// ===========================================================================
+//
+// The image build delivers each slide and frame at three sizes; see THE LADDER
+// in scripts/build-images.mjs. `sizes` is what lets the browser choose between
+// them, and it has to be the CSS width the picture is GIVEN, because the
+// browser multiplies it by the screen's pixel ratio and takes the smallest
+// candidate that covers the result. Overstate it and the saving is lost;
+// understate it and the picture is soft.
+//
+// So these are read off the stylesheets rather than estimated. `sizes` cannot
+// see custom properties — it is resolved before the element has a style — so
+// each term is the same arithmetic the CSS does, written out:
+//
+//   below 768   the measure. 100vw less two 16-unit margins at 0.26667vw to
+//               the unit, which is 91.47vw. Both templates give their work the
+//               full measure down here.
+//   768..1439   one unit is 0.06944vw, so every length is a share of the
+//               window and the picture is too.
+//   1440 and up one unit is capped at 1px, so the units become pixels and only
+//               --col still grows with the window.
+//
+// The rail's slide is eleven columns and ten gutters — see --rail-slide-w in
+// src/rail-page.css — which comes to 89.01vw while the unit scales, and to
+// 11 x (100vw - 260px) / 12 + 200px above 1440. That second one is 91.67vw
+// less 38px, and at the design's own 1470 it is 1309, which is the number the
+// stylesheet draws. The height cap on a short window can make the slide
+// narrower than either; `sizes` does not model that, and does not need to —
+// erring wide costs a sharper file, never a soft one.
+const NARROW_MEASURE = '91.5vw';
+const RAIL_SIZES =
+  `(max-width: 767px) ${NARROW_MEASURE}, (max-width: 1439px) 89vw,` +
+  ' calc(91.67vw - 38px)';
+
+// A reel frame is its own box wide rather than a share of the grid, so this is
+// per frame: `w` design units, which is vw while the unit scales and pixels
+// once it is capped. Below 768 it fills the measure like everything else.
+function reelSizes(w) {
+  return (
+    `(max-width: 767px) ${NARROW_MEASURE},` +
+    ` (max-width: 1439px) ${(w * 0.06944).toFixed(2)}vw,` +
+    ` ${w}px`
+  );
+}
+
+// The candidates. Ascending, which is the order they are read in, and the
+// widest is the one with the plain name — see `deliver` in build-images.
+function srcset(dir, frame) {
+  return [...frame.widths]
+    .sort((a, b) => a - b)
+    .map((w, i, all) =>
+      i === all.length - 1
+        ? `${dir}/${frame.name}.webp ${w}w`
+        : `${dir}/${frame.name}-${w}.webp ${w}w`,
+    )
+    .join(', ');
+}
+
+// THE PRELOAD HINT HAS TO MAKE THE SAME CHOICE THE <img> WILL, and once a
+// frame has a srcset a bare href no longer does. The hint would fetch the
+// widest file while the element picked the 800, and a phone would download
+// both — which is worse than having had no hint at all.
+//
+// imagesrcset and imagesizes are the preload spelling of the same two
+// attributes, and they are written from the same two functions, so the
+// selection cannot diverge. href stays as the fallback for a browser that
+// reads neither.
+//
+// The whole element is replaced rather than its href, because it has grown
+// from one attribute to three. Matched on `rel="preload" as="image"` and ended
+// at the first `/>`, which is the shape every page's hint has — written on one
+// line in some of them and across five in others, hence the \s+.
+function splicePreload(html, dir, frame, sizes) {
+  return html.replace(
+    /<link\s+rel="preload"\s+as="image"[\s\S]*?\/>/,
+    [
+      '<link',
+      '      rel="preload"',
+      '      as="image"',
+      `      href="${dir}/${frame.name}.webp"`,
+      `      imagesrcset="${srcset(dir, frame)}"`,
+      `      imagesizes="${sizes}"`,
+      '    />',
+    ].join('\n'),
+  );
+}
+
 // Both presentations are RAILS now — the pinned kind, read sideways inside a
 // section that stands still while the page scrolls past it. `cls` and `indent`
 // are kept as fields rather than folded into the template because they are the
@@ -247,16 +335,22 @@ for (const page of PAGES) {
   // by JS — they are siblings on a row, so an off-track slide really is off screen
   // and `loading="lazy"` means what it says. The first is eager and high priority:
   // it is the one the rail opens on and the one the preload hint below names.
-  // src/project-rail.js promotes the rest to eager once the page is idle, so a
-  // scrub never lands on a blank.
+  // src/frames-ahead.js moves a window of high-priority frames along with the
+  // reader and promotes the rest once the page is idle, so neither NEXT nor the
+  // scrub lands on a blank.
+  //
+  // `src` STAYS, beside the srcset, and is not a leftover: it is what a browser
+  // without srcset loads, and it is the href the preload hint below names.
   const pad = ' '.repeat(page.indent);
   const slides = frames
-    .map((name, i) =>
+    .map((frame, i) =>
       [
         `${pad}<img`,
         `${pad}  class="${page.cls}"`,
         `${pad}  data-slide`,
-        `${pad}  src="${dir}/${name}.webp"`,
+        `${pad}  src="${dir}/${frame.name}.webp"`,
+        `${pad}  srcset="${srcset(dir, frame)}"`,
+        `${pad}  sizes="${RAIL_SIZES}"`,
         `${pad}  alt="${page.title} — slide ${i + 1} of ${frames.length}."`,
         i === 0 ? `${pad}  fetchpriority="high"` : `${pad}  loading="lazy"`,
         `${pad}  decoding="async"`,
@@ -279,14 +373,11 @@ for (const page of PAGES) {
   );
 
   // The one frame worth preloading is the one the markup lights.
-  html = html.replace(
-    /(<link\s+rel="preload"\s+as="image"\s+href=")[^"]*(")/,
-    `$1${dir}/${first}.webp$2`,
-  );
+  html = splicePreload(html, dir, first, RAIL_SIZES);
 
   await writeFile(page.html, html);
   console.log(
-    `${page.html}: ${frames.length} slides (${first}..${frames.at(-1)})`,
+    `${page.html}: ${frames.length} slides (${first.name}..${frames.at(-1).name})`,
   );
   touched++;
 }
@@ -296,7 +387,15 @@ for (const plate of PLATES) {
     console.log(`${plate.html}: not in this checkout, skipped`);
     continue;
   }
-  const { slug, frames } = JSON.parse(await readFile(plate.manifest, 'utf8'));
+  // STEMS, not entries. A manifest frame is an object — a stem and, where the
+  // ladder gave it one, the widths it was delivered at — and a plate has no
+  // widths to carry: its frames are stacked in one box at one size and cycled
+  // in place, so there is nothing for a srcset to choose between. Unwrapped
+  // here so the three blocks below go on naming files the way they read.
+  const { slug, frames: entries } = JSON.parse(
+    await readFile(plate.manifest, 'utf8'),
+  );
+  const frames = entries.map((f) => f.name);
   const dir = `/img/projects/${slug}`;
   const first = frames[0];
 
@@ -511,6 +610,8 @@ for (const reel of REELS) {
         `${pad}            class="reel__shot"`,
         `${pad}            style="--shot-h: ${frame.h}${frame.lift ? `; --shot-lift: ${frame.lift}` : ''}"`,
         `${pad}            src="${dir}/${frame.name}.webp"`,
+        `${pad}            srcset="${srcset(dir, frame)}"`,
+        `${pad}            sizes="${reelSizes(frame.w)}"`,
         `${pad}            alt="${reel.title} — frame ${i + 1} of ${frames.length}."`,
         i === 0
           ? `${pad}            fetchpriority="high"`
@@ -534,10 +635,7 @@ for (const reel of REELS) {
     `$1[1/${frames.length}]`,
   );
 
-  html = html.replace(
-    /(<link\s+rel="preload"\s+as="image"\s+href=")[^"]*(")/,
-    `$1${dir}/${first.name}.webp$2`,
-  );
+  html = splicePreload(html, dir, first, reelSizes(first.w));
 
   await writeFile(reel.html, html);
   console.log(

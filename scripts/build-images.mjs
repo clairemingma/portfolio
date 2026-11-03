@@ -421,6 +421,89 @@ const PLATES = [
 
 const DPR = 2;
 
+// ===========================================================================
+// THE LADDER — the sizes a slide or a frame is delivered at
+// ===========================================================================
+//
+// ONE FILE WAS THE WRONG NUMBER, and a phone is where it showed. Every slide is
+// cut to 2x the box the design draws it in, which on a rail is 11 columns and
+// comes to 2618 pixels across. Below 768 the same slide is drawn at 91.5% of the
+// window — 357 CSS pixels on a 390 phone — so the file is seven times the
+// picture, and Huā Yǔ asks a phone for 5.3 MB to paint about 300 KB of pixels.
+// That is the whole of why NEXT could be slow before anything was prefetched:
+// the bytes were not there because there were far too many of them.
+//
+// THREE SIZES, AND ALL THREE ARE THE DESIGN'S OWN. Nothing here is a round
+// number picked to look like a breakpoint:
+//
+//   full     2x the box the design draws the slide in. The wide page at 2x,
+//            and what the single file has always been.
+//   half     1x the same box, which is what an ordinary desktop paints.
+//   NARROW   2x the box a PHONE draws it in. The narrow measure is 91.5vw —
+//            100vw less the two 16-unit margins, at 0.26667vw to the unit — and
+//            430 is the widest of the common handsets, so 430 x 0.915 x 2 is
+//            787. 800 is that, rounded up to a number worth writing down.
+//
+// The browser picks from them with the `sizes` the gallery build writes, so a
+// 390 phone at 2x takes the 800 and a 3x one takes the half. Neither is a
+// guess this file has to make.
+//
+// A STEP IS DROPPED WHEN IT IS NOT A STEP. Never an upscale, so a frame whose
+// box is already narrow — the reel's phone mockup at 692 — simply has a shorter
+// ladder; and never two sizes within a fifth of each other, which is a second
+// file for a saving the reader cannot measure. Shop Every Store's browser
+// mockup is 1850 across, so its half is 925 and the 800 below it is dropped.
+const NARROW_PX = 800;
+const STEP = 0.8;
+
+function ladder(full) {
+  const steps = [full, Math.round(full / 2), NARROW_PX].sort((a, b) => b - a);
+  const out = [];
+  for (const w of steps) {
+    if (w > full || (out.length && w > out.at(-1) * STEP)) continue;
+    out.push(w);
+  }
+  return out;
+}
+
+// Writes one frame at every size on its ladder and reports the widths actually
+// delivered, widest first, which is what the markup needs for a `srcset`.
+//
+// ENCODED TO A BUFFER AND THEN NAMED, which is the one fiddly thing here and is
+// not fussiness. `fit: 'inside'` gives the delivered file the SOURCE's aspect
+// ratio rather than the box's, so a tall source comes out NARROWER than the
+// width asked for — and a file named for the width it was asked for, carrying a
+// `srcset` descriptor to match, would be telling the browser a number that is
+// not the picture's. Both the name and the descriptor are the width that came
+// back, so they cannot disagree.
+//
+// The widest keeps the plain name. Every path already written — in markup, in a
+// preload hint, in a manifest — goes on meaning the same file, and the sizes
+// below it are additions rather than a renaming.
+//
+// `base.clone()` and not a fresh `sharp(src)` per size: the source is decoded
+// once and the resizes share it. Across the three rails that is 50 slides at
+// 3840x2160 decoded once each instead of three times.
+async function deliver(base, { w, h, fit }, path) {
+  const out = [];
+  for (const [i, width] of ladder(w).entries()) {
+    const { data, info } = await base
+      .clone()
+      .resize({
+        width,
+        height: Math.round((h * width) / w),
+        fit,
+        withoutEnlargement: true,
+      })
+      .webp({ quality: 86 })
+      .toBuffer({ resolveWithObject: true });
+    if (i && out.includes(info.width)) continue;
+    await writeFile(`${path}${i ? `-${info.width}` : ''}.webp`, data);
+    out.push(info.width);
+  }
+  return out;
+}
+
 // The frames in a directory, in the order the deck or the carousel has them.
 //
 // Any of the four extensions, because the intake should not care: a deck arrives
@@ -454,11 +537,24 @@ async function listFrames(dir) {
 // Not under public/. This is a handoff between two build steps, and anything
 // under public/ is copied verbatim into the deploy — so it was shipping a build
 // artefact to production as though it were an asset.
+// A frame is its stem and, where it has one, the widths it was delivered at —
+// the `widths` the ladder reported, which the gallery build turns into a
+// `srcset`. A plate has none: its ten frames are stacked in one box and cycled,
+// so there is one size and the markup names it directly.
 async function writeManifest(slug, frames) {
   await mkdir(MANIFESTS, { recursive: true });
   await writeFile(
     `${MANIFESTS}/${slug}.json`,
-    JSON.stringify({ slug, frames: frames.map((f) => f.name) }, null, 2) + '\n',
+    JSON.stringify(
+      {
+        slug,
+        frames: frames.map((f) =>
+          f.widths ? { name: f.name, widths: f.widths } : { name: f.name },
+        ),
+      },
+      null,
+      2,
+    ) + '\n',
   );
 }
 
@@ -681,15 +777,18 @@ for (const page of PAGES) {
 
     // The whole frame, scaled to fit inside the box, never enlarged past it. The
     // delivered file therefore has the source's aspect ratio, not the box's.
-    await sharp(src)
-      .resize({
-        width: Math.round(stage.w * scale),
-        height: Math.round(stage.h * scale),
+    //
+    // At every size on the ladder, so a phone is not sent the wide page's 2618
+    // to paint 357 of — see THE LADDER above.
+    frame.widths = await deliver(
+      sharp(src),
+      {
+        w: Math.round(stage.w * scale),
+        h: Math.round(stage.h * scale),
         fit: 'inside',
-        withoutEnlargement: true,
-      })
-      .webp({ quality: 86 })
-      .toFile(`${OUT}/projects/${page.slug}/${frame.name}.webp`);
+      },
+      `${OUT}/projects/${page.slug}/${frame.name}`,
+    );
   }
 
   await writeManifest(page.slug, frames);
@@ -858,15 +957,18 @@ for (const reel of REELS) {
     const scale = Math.min(DPR, sw / box.w, sh / box.h);
     scales.add(scale.toFixed(2));
 
-    await pipe
-      .resize({
-        width: Math.round(box.w * scale),
-        height: Math.round(box.h * scale),
+    // `cover` into a box of the source's own shape crops nothing — see the note
+    // at REELS — and the ladder keeps every size on that same shape, so what the
+    // smaller files are is the same picture at fewer pixels.
+    const widths = await deliver(
+      pipe,
+      {
+        w: Math.round(box.w * scale),
+        h: Math.round(box.h * scale),
         fit: 'cover',
-        position: 'centre',
-      })
-      .webp({ quality: 86 })
-      .toFile(`${OUT}/projects/${reel.slug}/${frame.name}.webp`);
+      },
+      `${OUT}/projects/${reel.slug}/${frame.name}`,
+    );
 
     // HOW FAR DOWN THE PAGE HAS TO MOVE THE FRAME SO THE PICTURE IS CENTRED,
     // and it is the kept shadow's own asymmetry halved.
@@ -898,13 +1000,20 @@ for (const reel of REELS) {
         ).toFixed(4)
       : 0;
 
-    placed.push({ name: frame.name, h: box.h, ...(lift ? { lift } : {}) });
+    placed.push({
+      name: frame.name,
+      h: box.h,
+      w: box.w,
+      widths,
+      ...(lift ? { lift } : {}),
+    });
   }
 
   // Its own manifest shape, and its own name — `.reel.json`, beside the decks'
-  // and the clips'. A reel frame carries a height as well as a stem, because the
-  // markup has to state the box the design drew it at and this is the only place
-  // that number lives. scripts/build-gallery.mjs writes it out as --shot-h.
+  // and the clips'. A reel frame carries its BOX as well as its stem, because
+  // the markup has to state both: the height the design drew it at, which goes
+  // out as --shot-h, and the width, which is what the `sizes` on its srcset is
+  // measured in. This is the only place either number lives.
   await mkdir(MANIFESTS, { recursive: true });
   await writeFile(
     `${MANIFESTS}/${reel.slug}.reel.json`,
