@@ -714,8 +714,6 @@ p {
 .menu__link:hover,
 .menu__link:focus-visible {
   text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.28em;
 }
 
 /* The address and LinkedIn, below a rule. They are what the footer strip used
@@ -757,8 +755,6 @@ p {
 .menu__reach-link:hover,
 .menu__reach-link:focus-visible {
   text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.28em;
 }
 
 /* Ten, with the 13.75 line box it had — the panel is a phone surface and this
@@ -902,8 +898,6 @@ p {
 .nav__link:hover .nav__link-word,
 .nav__link:focus-visible .nav__link-word {
   text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.28em;
 }
 
 /* ==========================================================================
@@ -1414,6 +1408,45 @@ p {
     line-height: calc(13.75 / 10);
   }
 }
+
+/* --- THE LAST ROW IS ONE ROW ---------------------------------------------- */
+
+/* THE COPYRIGHT AND THE PAIR SHARE A LINE ON A PHONE: © 2026 Claire Ong at the
+   left margin, PREV / NEXT at the right, in the one 37.594 band every footer on
+   this site is. That is what the wide pages already draw — the still page's
+   footer band is a grid with the line in column 1 and the pair in 9 to 12, and
+   the rail's progress row sits directly on the same band — and two stacked rows
+   of small grey Inter at the end of a phone page read as the page ending twice.
+
+   THE PAIR IS PULLED BACK OVER THE STRIP, which is a negative margin and is the
+   one way to do it without rewriting the markup: in all three templates the two
+   are separate elements with no common row to put them in. The reel's strip
+   lives inside .reel__lead and the pager is a sibling of the lead; the rail's
+   pager is moved to the body by script and the strip is a body child; only the
+   still page has them as plain siblings. A wrapper would have to be added to
+   seven pages and undone again above 768, where all three already place the two
+   ends of the band themselves.
+
+   So each template states the same four things on its own pager: the strip's
+   height, the same figure back as margin-top, the air after the row moved from
+   padding to margin so the pair stays centred in the band it has landed on,
+   and `position: relative`. The strip keeps its own box and the line inside it
+   does not move.
+
+   THE relative IS NOT DECORATION. A box pulled over another box is behind it
+   unless something says otherwise, and two of the three strips have a ground:
+   .rail-foot is paper and the reel's rides inside .reel__lead, which is paper
+   and is itself positioned. Pulled up without this, PREV / NEXT was painted
+   over by the strip it had landed on and simply disappeared. Positioned, the
+   pair paints after the strip — it is the later of the two in the document on
+   every template — and no z-index is needed to say so.
+
+   SCOPED TO .has-mobile-menu, and that is the condition that makes the overlap
+   safe rather than a habit copied from the rules above. With the menu mounted
+   the strip holds the copyright ALONE — LinkedIn and the address are in the
+   panel — so the row is one short line at the left and the pair cannot reach
+   it. Without script all three are still in the strip, which is already more
+   than a 375 row holds, and the pair stays on its own line below them. */
 
 /* ==========================================================================
    FOOT

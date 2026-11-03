@@ -281,34 +281,22 @@ body {
        on the common line, because what that line is measured from is
        --work-h and not what happens inside it. */
     height: var(--work-h);
-    /* EDGE TO EDGE, which only started to matter once the box had a ground.
-       .still carries the page's margins as padding, so these two were 357
-       wide where the rail's pin and the reel's row are the window's whole 390
-       — invisible while everything was paper, and two different-shaped dark
-       bands the moment it was not. The box is pulled back out to the window
-       and re-states the margin as its own padding, so the artwork inside is
-       still measured against 357 and nothing about its size changes.
+    /* AND THE BOX HAS NO GROUND. It took the charcoal for a revision — the
+       other two templates stand their work on the dark with the brief on
+       paper under it, and matching them looked like making one page of the
+       three. It is not the same thing here. The rail and the reel put several
+       frames on that ground and the dark is what holds the set together; each
+       of these pages has ONE picture, so the band is a slab with a single
+       object floating in the middle of it and a hard edge where the brief
+       starts. These pages were paper top to bottom from the day they were
+       built, and that is what the designs draw.
 
-       width: auto IS LOAD-BEARING. Both pages declare `width: 100%` on their
-       own box, which resolves against .still's CONTENT box — 357 — so the
-       negative margins shifted a 357-wide box leftward instead of widening
-       it, and the band came out the right size in the wrong place. Released,
-       the box is a stretched flex item whose width is the container's content
-       less its margins: the window exactly, and it cannot overflow the way an
-       explicit 100vw could on a window that still has a classic scrollbar. */
-    width: auto;
-    margin-inline: calc(-1 * var(--grid-margin));
-    padding-inline: var(--grid-margin);
-    /* AND THE BOX TAKES THE DARK, which is new to this template rather than
-       returning to it: these pages have been paper top to bottom since they
-       were built, because their work is one picture and there was no second
-       ground for it to sit against. There is one now, and it is the same one
-       the other two templates give their work — the container on the dark,
-       the brief on paper under it. See THE CHARCOAL COMES BACK in
-       rail-page.css. The full --work-h and not --work-art, so the band runs
-       to the same depth as the rail's, whose last --work-row is a counter
-       these pages have no use for. */
-    background: var(--color-charcoal);
+       The edge-to-edge pull went with it — the negative margins and the
+       padding that gave them back existed only so the dark ran the full width
+       of the window rather than stopping at the page's 357. With no fill
+       there is nothing to run: the box is the measure, as everything else on
+       a narrow page is, and the artwork inside it is sized against the same
+       357 either way. */
   }
 
   .still__brief {
@@ -326,6 +314,17 @@ body {
     order: 4;
     justify-content: flex-end;
     padding-bottom: var(--grid-gutter);
+  }
+
+  /* AND IT SHARES THE LINE WITH THE COPYRIGHT — see THE LAST ROW IS ONE ROW in
+     styles.css. This template is the one that already draws the two as the two
+     ends of a single band above 768; down here it is the same band. */
+  .has-mobile-menu .still .pager {
+    position: relative;
+    height: var(--still-foot-h);
+    margin-top: calc(-1 * var(--still-foot-h));
+    padding-bottom: 0;
+    margin-bottom: var(--grid-gutter);
   }
 
   /* THE STRIP STAYS AND CARRIES THE LINE ALONE. It used to come off entirely,
@@ -452,8 +451,6 @@ body {
 .still__foot-link:hover,
 .still__foot-link:focus-visible {
   text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.28em;
 }
 
 @media (min-width: 768px) {

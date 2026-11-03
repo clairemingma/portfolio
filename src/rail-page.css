@@ -618,8 +618,6 @@
 .rail-foot__link:hover,
 .rail-foot__link:focus-visible {
   text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.28em;
 }
 
 /* AFTER the rules above, not before them: the media query and `.rail-foot` have
@@ -702,15 +700,28 @@
   /* PREV / NEXT, moved here out of the pin by src/rail-expand.js — see the
      note on placePager there. As a child of body it is simply the last row of
      the page, under the brief, which is where the other two templates order
-     theirs to. */
-  .pager {
+     theirs to.
+
+     THE STRIP IS ORDERED ABOVE IT and the pair is pulled back onto it, so the
+     two are one row — see THE LAST ROW IS ONE ROW in styles.css. The numbers
+     swapped: the copyright used to be the row under the pair, which is the
+     arrangement the other two templates had as well. */
+  .rail-foot {
     order: 3;
+  }
+
+  .pager {
+    order: 4;
     justify-content: flex-end;
     padding: 0 var(--grid-margin) var(--grid-gutter);
   }
 
-  .rail-foot {
-    order: 4;
+  .has-mobile-menu .pager {
+    position: relative;
+    height: var(--rail-foot-h);
+    margin-top: calc(-1 * var(--rail-foot-h));
+    padding-bottom: 0;
+    margin-bottom: var(--grid-gutter);
   }
 
   :root {
@@ -775,18 +786,21 @@
      layout must not depend on which side of that we are on. */
   .rail,
   .rail.is-pinned {
-    height: calc(var(--nav-h) + var(--work-h));
+    height: calc(var(--nav-h) + var(--grid-gutter) + var(--work-h));
   }
 
   .rail__pin,
   .rail.is-pinned .rail__pin {
     position: static;
     height: 100%;
-    /* The bar's band, and nothing else now that the control row is gone. What
-       is left under it is --work-art plus the counter row at the foot, which
-       the track's own bottom padding keeps clear — so the box the slide is
-       centred in is the box every other template gives its picture. */
-    padding-top: var(--nav-h);
+    /* THE PADDING IS THE DARK BOX'S FOUR SIDES. What this element reserves is
+       everything that is NOT the box: the bar's band and a gutter of air above
+       it, the page's margin at each side, and the counter's row below it. What
+       is left — the content box — is --work-art tall and the measure wide, and
+       it is the only part of this element that takes the charcoal. See THE
+       DARK IS A BOX at the foot of this block. */
+    padding: calc(var(--nav-h) + var(--grid-gutter)) var(--grid-margin)
+      var(--work-row);
     /* NOT A SCROLLER DOWN HERE, which is the change the full screen made
        necessary. The row was swipeable in place: a reader could drag through
        seventeen deck slides at 200 units tall, reading none of them, and the
@@ -807,8 +821,19 @@
     transform: none !important;
   }
 
+  /* NO PADDING LEFT TO PAY, on either axis. The track held the slides a
+     --rail-inset clear of each end so the picture landed on the text's
+     measure, and kept a --work-row at the foot for the counter. The pin's own
+     padding is both of those now — the margin at the sides and the counter's
+     row below — so the track is exactly the dark box and the slide is centred
+     in the whole of it. Left in, each would be paid twice: the slide would come
+     out 32 units narrower than the paragraphs and sit a row high in its box.
+
+     --rail-inset is still read by --rail-gap and --rail-stride, which is the
+     distance a page turn moves this row by and is unchanged: the neighbour's
+     left edge still lands exactly on the right edge of the window. */
   .rail__track {
-    padding-bottom: var(--work-row);
+    padding: 0;
   }
 
   /* THE COUNTER, alone on the floor of the box. .rail__pin is static at this
@@ -884,13 +909,14 @@
     transition: color var(--dur) var(--ease);
   }
 
-  /* TO WHITE, NOT TO GRAPHITE, now the row stands on the charcoal. #404040 on
-     #1a1a1a is a press that makes the word harder to read than leaving it
-     alone — the same correction the full screen's close button took when it
-     moved onto the dark. */
+  /* BACK TO GRAPHITE, now the row stands on paper again. It went white when
+     this row was the foot of a charcoal band — #404040 on #1a1a1a is a press
+     that makes the word harder to read than leaving it alone — and the band
+     is a box above this row now, so the ground under the word is paper and
+     white is the same mistake the other way round. See THE DARK IS A BOX. */
   .progress__next:hover,
   .progress__next:focus-visible {
-    color: var(--color-white);
+    color: var(--color-graphite);
   }
 
   /* ========================================================================
@@ -914,10 +940,34 @@
 
      THE BRIEF STAYS ON PAPER, and that is the whole composition on a phone:
      the work on the dark, the writing on the page, and the line between them
-     where the container ends. Only the container takes it. */
-  .rail,
+     where the container ends. Only the container takes it.
+
+     THE DARK IS A BOX, NOT A BAND, and that is the last thing this ground had
+     to learn. It ran the full width of the window and from under the bar to
+     the foot of the counter — a slab with the page's margins inside it, so the
+     slide lined up with the paragraphs below but the ground it stood on did
+     not line up with anything. What it is now is the same rectangle the still
+     pages give their work: a gutter under the bar, the page's margin at each
+     side, --work-art tall. The three templates draw one box on a phone.
+
+     `background-clip: content-box` IS HOW, and it is why the padding above is
+     written as four sides rather than as a top. The ground is painted on the
+     pin's CONTENT box — what is left after the bar, the gutter, the margins
+     and the counter's row are taken off — so the box cannot drift from the
+     thing it is the ground for: both are the same element's content box, and
+     one declaration moves them together. A separate inner element, or an inset
+     ::before, would be a second box to keep in step with this one.
+
+     THE COUNTER COMES OFF THE DARK with it. It was the foot of the band; it is
+     under the box now, on paper, which is what takes .progress__next's press
+     back to graphite below. */
+  .rail {
+    background: none;
+  }
+
   .rail__pin {
     background: var(--color-charcoal);
+    background-clip: content-box;
   }
 
   /* The letterbox behind a slide that is not exactly 16:9, matching the band
@@ -1146,7 +1196,13 @@
   left: 50%;
   width: var(--rail-stage-w);
   height: var(--rail-stage-h);
-  padding-top: 0;
+  /* ALL FOUR SIDES, where this read `padding-top: 0`. The narrow block pads
+     this element on four sides now and the padding is the dark box's four
+     edges — the bar's band and a gutter above, the page's margin at the sides,
+     the counter's row below. In here there is no bar, no margin and no
+     counter: the stage IS the window, and anything left of that padding would
+     inset a full-screen slide by it. */
+  padding: 0;
   transform: translate(-50%, -50%) rotate(90deg);
   /* No native scroll in here. The row is paged by an index — see THE PAGE —
      because a scroller inside a rotated box asks the reader to drag along an
@@ -1319,6 +1375,11 @@
 .rail.is-expanded .rail__pin,
 .rail.is-expanded .rail__slide {
   background: var(--color-charcoal);
+  /* And to the BORDER box, which the narrow page clips to the content box so
+     the dark is a box with the page's margins around it. There is nothing to
+     leave clear in here — the overlay is the window — and the padding above is
+     zero either way, so this says what it means rather than relying on that. */
+  background-clip: border-box;
 }
 
 /* NO SLIDE NUMBERS IN THE FULL SCREEN. The counter earns its place on the two
@@ -1417,14 +1478,12 @@
    character mark and reads as a bordered control rather than a focused one —
    which is what it did while the mark was an SVG, and why it carried a
    negative offset to pull it back in. Set as text, it takes what every other
-   text control here takes: the colour comes up AND the mark is underlined at
-   the house 0.28em. Two signals rather than one, which is what justifies
-   dropping the ring. */
+   text control here takes: the colour comes up AND the mark is underlined, in
+   the browser's own underline. Two signals rather than one, which is what
+   justifies dropping the ring. */
 .rail__close:focus-visible {
   outline: none;
   text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.28em;
 }
 
 /* Top right of the window, because inside the overlay there is no bar above it
