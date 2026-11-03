@@ -550,33 +550,18 @@ export function mountRail() {
 
   /* --- the slides' loading ------------------------------------------------- */
 
-  // EVERY SLIDE IS PROMOTED TO EAGER ONCE THE PAGE HAS SETTLED, and this is a
-  // real requirement rather than a nicety.
+  // IT IS NOT THIS MODULE'S ANY MORE. Promoting every slide to eager once the
+  // page had settled used to live here, for the scrub: it is a JUMP — press the
+  // far end of the progress row and the rail goes straight to slide seventeen —
+  // and a lazy image begins loading when it intersects the viewport, which is
+  // the moment it is needed rather than before it.
   //
-  // The gallery build writes `loading="lazy"` on every slide but the first, which
-  // is right on arrival: seventeen full-screen photographs is several megabytes
-  // and all but one of them is off the right edge of the window. But the scrub is
-  // a JUMP — press the far end of the progress row and the rail goes straight to
-  // slide seventeen — and a lazy image begins loading when it intersects the
-  // viewport, which is the moment it is needed rather than before it. So the
-  // scrub could land on a blank box and hold it for as long as 300 KB takes.
-  //
-  // This is the deck page's behaviour, kept: project-deck.js did the same thing
-  // for the same reason, and it went out of the checkout with the deck template.
-  //
-  // requestIdleCallback so it costs nothing on arrival — the browser runs it when
-  // it has nothing better to do, which on this page is as soon as the first slide
-  // and the fonts are in. setTimeout is the fallback for Safari, which still does
-  // not ship the idle callback.
-  function eager() {
-    for (const slide of slides) slide.loading = 'eager';
-  }
-
-  if (typeof requestIdleCallback === 'function') {
-    requestIdleCallback(eager, { timeout: 3000 });
-  } else {
-    setTimeout(eager, 1200);
-  }
+  // That is still true and still done, in src/frames-ahead.js, which is mounted
+  // from src/rail-expand.js beside the index it reads. What moved it is that the
+  // narrow page needed the same thing with an ORDER on it — the next frame
+  // before the other nineteen, and decoded rather than merely fetched — and two
+  // modules each promoting the same images on their own timer is two answers to
+  // one question. See the note at the head of that file.
 
   /* --- wiring -------------------------------------------------------------- */
 

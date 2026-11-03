@@ -1,3 +1,5 @@
+import { mountFramesAhead } from './frames-ahead.js';
+
 /* ==========================================================================
    The reel's counter
 
@@ -32,6 +34,14 @@ export function mountReelCounter() {
   const frames = shots.querySelectorAll('.reel__screen');
   if (frames.length < 2) return;
 
+  // The frame after this one, kept ready to paint. The row snaps across in a
+  // few hundred milliseconds and the picture is asked for and shown in that
+  // same movement, so a frame still arriving is a blank box at the end of it.
+  // The build writes every frame but the first `loading="lazy"`, which is
+  // right on arrival and wrong by the time NEXT is pressed — see
+  // src/frames-ahead.js.
+  const ahead = mountFramesAhead(shots.querySelectorAll('.reel__shot'));
+
   let shown = 1;
 
   /* --- the way on ---------------------------------------------------------- */
@@ -57,6 +67,11 @@ export function mountReelCounter() {
     const step = shots.clientWidth;
     const at = Math.round(shots.scrollLeft / step);
     const to = at >= frames.length - 1 ? 0 : at + 1;
+    // On the press, not when the scroll lands. The frame being moved to is
+    // already ready in the ordinary case — this is what the last call asked
+    // for — and on the one press that outruns the loading, asking here buys
+    // the whole of the smooth scroll rather than none of it.
+    ahead(to);
     shots.scrollTo({ left: to * step, behavior: 'smooth' });
   });
   count.closest('.reel__count')?.append(next);
@@ -76,6 +91,9 @@ export function mountReelCounter() {
     if (n === shown) return;
     shown = n;
     count.textContent = `[${n}/${frames.length}]`;
+    // A swipe moves the row too, and it is the same question: whatever landed
+    // under the window, the one after it is the next thing asked for.
+    ahead(n - 1);
   }
 
   // rAF-throttled, so a flick collapses to one write per frame. paint() reads

@@ -58,6 +58,8 @@
    no tap target promising one. Same bargain the scrub makes.
    ========================================================================== */
 
+import { mountFramesAhead } from './frames-ahead.js';
+
 // THE MARK IS TYPE, NOT DRAWING. It was an SVG of the four corner arrows,
 // which is the conventional icon for this and was the wrong thing on this
 // page: every other mark on the site is set in Inter inside square brackets —
@@ -116,6 +118,13 @@ export function mountRailExpand() {
   // inside of.
   let page = 0;
 
+  // The frame after this one, kept ready to paint. The turn is a CUT at this
+  // width and in the full screen — see THE PAGE in src/rail-page.css — so a
+  // slide that has not arrived is a blank box the instant NEXT is pressed.
+  // See src/frames-ahead.js, which also owns the idle promotion the rest of
+  // the row needs for the wide page's scrub.
+  const ahead = mountFramesAhead(slides);
+
   // IT WRAPS, which is what makes NEXT worth having at the foot of the row: a
   // control that stops working on the last slide is one a reader has to notice
   // has stopped. Twelve and seventeen slides are short enough that coming back
@@ -128,6 +137,10 @@ export function mountRailExpand() {
     page = to;
     rail.style.setProperty('--rail-page', String(page));
     if (count) count.textContent = `[${page + 1}/${slides.length}]`;
+    // After the turn, not before it: the slide being moved to is already ready
+    // — that is what the last call asked for — and what this one reaches is the
+    // one after it, which is the next press.
+    ahead(page);
   }
 
   /* --- the real fullscreen, where there is one ------------------------------ */
